@@ -495,7 +495,18 @@ export default function Home() {
 
                   <Separator />
 
-                  <div className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-xs font-mono text-green-400 border border-slate-800">
+                  <div className="relative bg-slate-950 p-4 rounded-lg overflow-x-auto text-xs font-mono text-green-400 border border-slate-800 group">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => {
+                        navigator.clipboard.writeText(JSON.stringify(selectedNode, null, 2));
+                        toast({ title: "Copied JSON", description: "Node data copied to clipboard." });
+                      }}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
                     <pre>{JSON.stringify(selectedNode, null, 2)}</pre>
                   </div>
                 </>

@@ -75,6 +75,7 @@ export default function Home() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [selectedNode, setSelectedNode] = useState<PNodeInfo | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
   const { toast } = useToast();
 
   const client = new XandeumClient();
@@ -139,30 +140,58 @@ export default function Home() {
   };
 
   const handleExport = () => {
-    toast({
-      title: "Export Started",
-      description: "Dowloading node_list.csv...",
-    });
-    setTimeout(() => {
+    if (filteredNodes.length === 0) {
       toast({
-        title: "Export Complete",
-        description: "The CSV file has been saved.",
+        variant: "destructive",
+        title: "Export Failed",
+        description: "No nodes to export.",
       });
-    }, 1000);
+      return;
+    }
+
+    const headers = ["Node Identity (Pubkey)", "Status", "Gossip Address", "Version", "RPC Endpoint", "TPU Endpoint"];
+    const csvContent = [
+      headers.join(","),
+      ...filteredNodes.map(node => [
+        node.pubkey,
+        node.rpc ? "Active" : "Inactive",
+        node.gossip || "N/A",
+        node.version || "Unknown",
+        node.rpc || "N/A",
+        node.tpu || "N/A"
+      ].map(field => `"${field}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `xandeum_nodes_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Export Complete",
+      description: `Successfully exported ${filteredNodes.length} nodes to CSV.`,
+    });
   };
 
   const handleFilter = () => {
+    setShowActiveOnly(prev => !prev);
     toast({
-      title: "Filters",
-      description: "Advanced filtering modal would open here. (Demo)",
+      title: !showActiveOnly ? "Filter applied" : "Filter cleared",
+      description: !showActiveOnly ? "Showing active nodes only." : "Showing all nodes.",
     });
   };
 
 
-  const filteredNodes = nodes.filter(node =>
-    node.pubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (node.gossip && node.gossip.includes(searchTerm))
-  );
+  const filteredNodes = nodes.filter(node => {
+    const matchesSearch = node.pubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (node.gossip && node.gossip.includes(searchTerm));
+    const matchesStatus = showActiveOnly ? (!!node.rpc || !!node.tpu) : true;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans transition-colors duration-300">
@@ -282,9 +311,39 @@ export default function Home() {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="text-muted-foreground" onClick={handleFilter}>
-                  <Filter className="mr-2 h-4 w-4" /> Filter
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={showActiveOnly ? "default" : "outline"} size="sm" className={showActiveOnly ? "" : "text-muted-foreground"}>
+                      <Filter className="mr-2 h-4 w-4" /> {showActiveOnly ? "Active Only" : "Filter"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                      Filter by Status
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => {
+                      setShowActiveOnly(false);
+                      toast({ title: "Filter Cleared", description: "Showing all nodes." });
+                    }}
+                      className="cursor-pointer">
+                      <div className="flex items-center justify-between w-full">
+                        All Nodes
+                        {!showActiveOnly && <div className="h-2 w-2 rounded-full bg-primary" />}
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => {
+                      setShowActiveOnly(true);
+                      toast({ title: "Filter Applied", description: "Showing active nodes only." });
+                    }}
+                      className="cursor-pointer">
+                      <div className="flex items-center justify-between w-full">
+                        Active Only
+                        {showActiveOnly && <div className="h-2 w-2 rounded-full bg-emerald-500" />}
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button variant="outline" size="sm" className="text-muted-foreground" onClick={handleExport}>
                   <Download className="mr-2 h-4 w-4" /> Export
                 </Button>

@@ -2,8 +2,7 @@
 
 This is a dashboard I built to monitor Xandeum pNodes. It fetches live data explicitly using the `getClusterNodes` method from the Solana/Xandeum RPC.
 
-<video src="public/demo.mov" width="100%" controls playsinline></video>
-> *Watch the full demo: [demo.mov](public/demo.mov)*
+![Dashboard Preview](public/demo.gif)
 
 ## What it does
 

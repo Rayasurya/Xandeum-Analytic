@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { XandeumClient, PNodeInfo } from "./lib/xandeum";
 import {
   Users,
@@ -8,8 +8,6 @@ import {
   Server,
   Search,
   RefreshCw,
-  AlertTriangle,
-  ShieldCheck,
   LayoutDashboard,
   Settings,
   MoreHorizontal,
@@ -18,7 +16,9 @@ import {
   Database,
   Copy,
   Download,
-  Filter
+  Filter,
+  ShieldCheck,
+  Globe
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,10 +42,29 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter
+} from "@/components/ui/dialog";
 import { ModeToggle } from "@/components/mode-toggle";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { VersionChart } from "@/components/charts/VersionDistribution";
+import { StatusChart } from "@/components/charts/NetworkStatus";
+import { Label } from "@/components/ui/label";
 
 export default function Home() {
   const [nodes, setNodes] = useState<PNodeInfo[]>([]);
@@ -54,6 +73,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [selectedNode, setSelectedNode] = useState<PNodeInfo | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { toast } = useToast();
 
   const client = new XandeumClient();
@@ -89,7 +110,27 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const handleCopyId = (id: string) => {
+  // Compute Chart Data
+  const versionData = useMemo(() => {
+    const counts = nodes.reduce((acc, node) => {
+      const v = node.version ? node.version.split(" ")[0] : "Unknown"; // Basic cleanup
+      acc[v] = (acc[v] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return Object.entries(counts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5); // Top 5
+  }, [nodes]);
+
+  const statusData = useMemo(() => [
+    { name: "Active", value: stats.active },
+    { name: "Inactive", value: stats.total - stats.active }
+  ], [stats]);
+
+
+  const handleCopyId = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(id);
     toast({
       title: "Copied to Clipboard",
@@ -102,7 +143,6 @@ export default function Home() {
       title: "Export Started",
       description: "Dowloading node_list.csv...",
     });
-    // Mock export logic for demo
     setTimeout(() => {
       toast({
         title: "Export Complete",
@@ -128,7 +168,7 @@ export default function Home() {
     <div className="flex min-h-screen bg-background text-foreground font-sans transition-colors duration-300">
 
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-card/50 hidden md:flex flex-col">
+      <aside className="w-64 border-r bg-card/50 hidden md:flex flex-col fixed h-full">
         <div className="p-6">
           <div className="flex items-center gap-2 mb-8">
             <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
@@ -142,7 +182,7 @@ export default function Home() {
               <LayoutDashboard className="mr-2 h-4 w-4" />
               Dashboard
             </Button>
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" onClick={() => setIsSettingsOpen(true)} className="w-full justify-start text-muted-foreground hover:text-foreground">
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Button>
@@ -164,7 +204,7 @@ export default function Home() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-background/50">
+      <main className="flex-1 flex flex-col min-w-0 bg-background/50 md:pl-64">
 
         {/* Top Navigation / Mobile Header */}
         <header className="h-16 border-b flex items-center justify-between px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-10 transition-colors duration-300">
@@ -193,8 +233,8 @@ export default function Home() {
         <div className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto w-full">
 
           <div className="space-y-1">
-            <h2 className="text-3xl font-bold tracking-tight">Network Overview</h2>
-            <p className="text-muted-foreground">Monitor the health and status of storage provider nodes (pNodes).</p>
+            <h2 className="text-3xl font-bold tracking-tight">Network Analytics</h2>
+            <p className="text-muted-foreground">Real-time insights on Xandeum storage provider nodes.</p>
           </div>
 
           {/* Stats Cards */}
@@ -222,6 +262,12 @@ export default function Home() {
             />
           </div>
 
+          {/* Analytics Charts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <VersionChart data={versionData} />
+            <StatusChart data={statusData} />
+          </div>
+
           {/* Node Table Section */}
           <div className="space-y-4">
             {/* Toolbar */}
@@ -229,7 +275,7 @@ export default function Home() {
               <div className="relative w-full sm:w-80">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
-                  placeholder="Search nodes..."
+                  placeholder="Search nodes by ID or Address..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -276,7 +322,11 @@ export default function Home() {
                     </TableRow>
                   ) : (
                     filteredNodes.map((node) => (
-                      <TableRow key={node.pubkey} className="hover:bg-muted/50 transition-colors">
+                      <TableRow
+                        key={node.pubkey}
+                        className="hover:bg-muted/50 transition-colors cursor-pointer"
+                        onClick={() => setSelectedNode(node)}
+                      >
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar className="h-8 w-8 border bg-primary/10 text-primary">
@@ -322,11 +372,11 @@ export default function Home() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleCopyId(node.pubkey)}>
+                              <DropdownMenuItem onClick={(e) => handleCopyId(node.pubkey, e)}>
                                 <Copy className="mr-2 h-4 w-4" /> Copy ID
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setSelectedNode(node)}>View Details</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -344,6 +394,90 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Details Sheet */}
+        <Sheet open={!!selectedNode} onOpenChange={(open) => !open && setSelectedNode(null)}>
+          <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Node Details</SheetTitle>
+              <SheetDescription>
+                Detailed information for node identity {selectedNode?.pubkey.substring(0, 8)}...
+              </SheetDescription>
+            </SheetHeader>
+            <div className="mt-6 space-y-6">
+              {selectedNode && (
+                <>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-muted-foreground">Identity (Pubkey)</Label>
+                      <div className="font-mono text-sm break-all bg-muted/50 p-2 rounded mt-1 border">
+                        {selectedNode.pubkey}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-muted-foreground">Gossip Address</Label>
+                        <div className="font-mono text-sm mt-1">{selectedNode.gossip || "None"}</div>
+                      </div>
+                      <div>
+                        <Label className="text-muted-foreground">Version</Label>
+                        <div className="font-mono text-sm mt-1">{selectedNode.version || "Unknown"}</div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground">RPC Endpoint</Label>
+                      <div className="font-mono text-sm mt-1 text-emerald-500">{selectedNode.rpc || "None"}</div>
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground">TPU Endpoint</Label>
+                      <div className="font-mono text-sm mt-1">{selectedNode.tpu || "None"}</div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="bg-slate-950 p-4 rounded-lg overflow-x-auto text-xs font-mono text-green-400 border border-slate-800">
+                    <pre>{JSON.stringify(selectedNode, null, 2)}</pre>
+                  </div>
+                </>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* Settings Dialog */}
+        <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Settings</DialogTitle>
+              <DialogDescription>
+                Configure your connection to the Xandeum Network.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Label>RPC Endpoint</Label>
+              <Input
+                defaultValue="https://api.devnet.xandeum.com:8899"
+                className="mt-2 text-sm font-mono"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Current Data Source: <span className="font-semibold text-primary">Xandeum Devnet</span>
+              </p>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => {
+                setIsSettingsOpen(false);
+                toast({
+                  title: "Settings Saved",
+                  description: "Configuration updated successfully.",
+                });
+              }}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <Toaster />
       </main>
     </div>

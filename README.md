@@ -7,7 +7,8 @@ This is a dashboard I built to monitor Xandeum pNodes. It fetches live data expl
 ## What it does
 
 - **Live Data**: Connects directly to the Xandeum Devnet to show active storage nodes.
-- **Node Explorer**: Search nodes by their ID or network address.
+- **Analytics**: Visualizes software version distribution and network status with interactive charts.
+- **Node Explorer**: Search nodes, view detailed raw JSON data, and filter results.
 - **Theme Support**: Includes both dark and light modes (customized with Xandeum brand colors).
 
 ## Tech Stack

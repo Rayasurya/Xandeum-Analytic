@@ -15,9 +15,9 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    /* Primary Purple derived from Xandeum logo (~#8B5CF6 / #7C3AED) */
-    --primary: 263 90% 51%;
-    /* Strong Purple */
+    /* Primary Orange derived from Xandeum brand */
+    --primary: 24 95% 53%;
+    /* Vibrant Orange */
     --primary-foreground: 0 0% 98%;
 
     /* Secondary Cyan from gradient (~#06B6D4) */
@@ -37,7 +37,7 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 263 90% 51%;
+    --ring: 24 95% 53%;
 
     --radius: 0.5rem;
   }
@@ -55,8 +55,8 @@
     --popover: 240 10% 4%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 263 70% 50%;
-    /* #7c3aed Purple */
+    --primary: 24 95% 60%;
+    /* Bright Orange for Dark Mode */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 189 94% 43%;
@@ -74,7 +74,7 @@
 
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 263 70% 50%;
+    --ring: 24 95% 60%;
   }
 }
 

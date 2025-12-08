@@ -14,13 +14,14 @@ import {
   Wifi,
   WifiOff,
   Database,
-  Copy,
   Download,
   Filter,
   ShieldCheck,
   Globe,
   Zap,
-  Tag
+  Tag,
+  BookOpen,
+  Copy
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -217,18 +218,24 @@ export default function Home() {
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Button>
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground" onClick={() => window.open("https://docs.xandeum.com", "_blank")}>
+              <BookOpen className="mr-2 h-4 w-4" />
+              Documentation
+            </Button>
           </nav>
         </div>
 
         <div className="mt-auto p-6 border-t">
           <div className="flex items-center gap-3">
-            <Avatar className="h-9 w-9 border">
-              <AvatarImage src="/avatar-placeholder.png" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
+            <div className="h-9 w-9 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+              <Wifi className="h-5 w-5 text-emerald-500" />
+            </div>
             <div className="text-sm">
-              <p className="font-medium">Admin User</p>
-              <p className="text-muted-foreground text-xs">View Profile</p>
+              <p className="font-medium">Xandeum Devnet</p>
+              <p className="text-muted-foreground text-xs flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Operational
+              </p>
             </div>
           </div>
         </div>

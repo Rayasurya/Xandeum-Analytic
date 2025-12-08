@@ -18,7 +18,9 @@ import {
   Download,
   Filter,
   ShieldCheck,
-  Globe
+  Globe,
+  Zap,
+  Tag
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -271,21 +273,21 @@ export default function Home() {
             <StatCard
               title="Total Nodes"
               value={stats.total}
-              icon={<Server className="h-5 w-5 text-primary" />}
+              icon={<Globe className="h-5 w-5 text-primary" />}
               desc="Devices in network"
               loading={loading}
             />
             <StatCard
               title="Active Nodes"
               value={stats.active}
-              icon={<Activity className="h-5 w-5 text-secondary" />}
+              icon={<Zap className="h-5 w-5 text-secondary" />}
               desc="Online & Responsive"
               loading={loading}
             />
             <StatCard
               title="Software Version"
               value={nodes[0]?.version || "Unknown"}
-              icon={<ShieldCheck className="h-5 w-5 text-primary" />}
+              icon={<Tag className="h-5 w-5 text-primary" />}
               desc="Latest stable release"
               loading={loading}
             />

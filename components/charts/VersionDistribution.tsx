@@ -21,6 +21,7 @@ export function VersionChart({ data }: VersionChartProps) {
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
+                                    stroke="none"
                                     data={data}
                                     cx="50%"
                                     cy="50%"

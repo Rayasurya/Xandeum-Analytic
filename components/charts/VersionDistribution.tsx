@@ -7,7 +7,13 @@ interface VersionChartProps {
     data: { name: string; value: number }[]
 }
 
-const COLORS = ["#F97316", "#06B6D4", "#10B981", "#F59E0B", "#EF4444"]
+const COLORS = [
+    "#f97316", // Electric Orange
+    "#06b6d4", // Neon Cyan
+    "#c2410c", // Dark Orange
+    "#0891b2", // Dark Cyan
+    "#334155"  // Slate-700
+];
 
 export function VersionChart({ data }: VersionChartProps) {
     return (

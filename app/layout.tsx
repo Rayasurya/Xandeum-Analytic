@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Xandeum Analytics Platform",
-  description: "Real-time monitoring for Xandeum pNodes",
+  title: "Xandeum Nexus | Network Intelligence",
+  description: "Real-time storage layer monitoring and pNode analytics.",
   icons: {
     icon: "/icon.svg",
   },

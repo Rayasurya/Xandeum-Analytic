@@ -4,8 +4,12 @@ import { Connection, ContactInfo } from "@solana/web3.js";
 const XANDEUM_RPC_ENDPOINT = "https://api.devnet.xandeum.com:8899";
 
 export interface PNodeInfo extends ContactInfo {
-    // Add any specific derived fields if necessary, for now extending standard ContactInfo
-    // ContactInfo includes: pubkey, gossip, tpu, rpc, version, etc.
+    // version is inherited from ContactInfo (string | null)
+    shredVersion?: number;
+    featureSet?: number;
+    tpuForwards?: string;
+    tvu?: string;
+    serveRepair?: string;
 }
 
 export class XandeumClient {

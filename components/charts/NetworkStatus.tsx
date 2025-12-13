@@ -8,45 +8,52 @@ interface StatusChartProps {
 }
 
 const COLORS = {
-    "Active": "#10B981", // Emerald-500
-    "Inactive": "#64748B" // Slate-500
+    "Active": "#06b6d4", // Cyan-500 (Neon Cyber)
+    "Inactive": "#1e293b" // Slate-800 (Dark background)
 }
 
 export function StatusChart({ data }: StatusChartProps) {
     return (
-        <Card className="col-span-1 bg-card/50 border shadow-sm">
+        <Card className="col-span-1 bg-card/50 border-primary/20 shadow-sm relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">Network Activity Status</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    Network Activity Status
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="h-[200px] w-full">
                     {data.some(d => d.value > 0) ? (
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#1e293b" opacity={0.5} />
                                 <XAxis type="number" hide />
                                 <YAxis
                                     dataKey="name"
                                     type="category"
-                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                                    tick={{ fill: '#94a3b8', fontSize: 12, fontFamily: 'monospace' }}
                                     width={80}
+                                    axisLine={false}
+                                    tickLine={false}
                                 />
                                 <Tooltip
-                                    cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
-                                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
-                                    itemStyle={{ color: 'hsl(var(--foreground))' }}
-                                    labelStyle={{ color: 'hsl(var(--foreground))' }}
+                                    cursor={{ fill: '#1e293b' }}
+                                    contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', color: '#f8fafc' }}
+                                    itemStyle={{ color: '#06b6d4', fontFamily: 'monospace' }}
+                                    labelStyle={{ color: '#94a3b8' }}
                                 />
-                                <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={32}>
+                                <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
                                     {data.map((entry, index) => (
+                                        // Active gets Neon Cyan, Inactive gets dark Slate
                                         <Cell key={`cell-${index}`} fill={entry.name === "Active" ? COLORS.Active : COLORS.Inactive} />
                                     ))}
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-                            No status data available
+                        <div className="h-full flex items-center justify-center text-muted-foreground text-sm font-mono">
+                            // NO_DATA_STREAM
                         </div>
                     )}
                 </div>

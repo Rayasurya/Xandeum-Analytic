@@ -4,77 +4,72 @@
 
 @layer base {
   :root {
-    /* Xandeum Light Mode (Inferred & Adapted) */
-    --background: 240 10% 98%;
-    /* Very light grey/white */
-    --foreground: 240 10% 3.9%;
+    /* Xandeum Nexus - Deep Cyber Theme */
+    --background: 222 47% 4%;
+    /* #020617 Deep Navy/Black */
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card: 222 47% 6%;
+    /* Slightly lighter than bg */
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Primary Orange derived from Xandeum brand */
+    /* Electric Orange (#f97316) */
     --primary: 24 95% 53%;
-    /* Vibrant Orange */
     --primary-foreground: 0 0% 98%;
 
-    /* Secondary Cyan from gradient (~#06B6D4) */
+    /* Neon Cyan (#06b6d4) */
     --secondary: 189 94% 43%;
-    /* Cyan */
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 263 70% 90%;
-    /* Light Purple Accent */
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 24 95% 53%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 189 94% 43%;
+    /* Cyan Ring */
 
     --radius: 0.5rem;
   }
 
   .dark {
-    /* Xandeum Dark Mode (as per current design) */
-    --background: 240 10% 4%;
-    /* Zinc 950 essentially */
-    --foreground: 0 0% 98%;
+    /* Identical to root for "Dark Mode First" approach */
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
 
-    --card: 240 10% 4%;
-    /* Unified card background */
-    --card-foreground: 0 0% 98%;
+    --card: 222 47% 6%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 24 95% 60%;
-    /* Bright Orange for Dark Mode */
+    --primary: 24 95% 53%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 189 94% 43%;
-    /* Cyan */
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 24 95% 60%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 189 94% 43%;
   }
 }
 

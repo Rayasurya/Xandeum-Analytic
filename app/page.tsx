@@ -79,6 +79,7 @@ export default function Home() {
   const [selectedNode, setSelectedNode] = useState<PNodeInfo | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showActiveOnly, setShowActiveOnly] = useState(false);
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
   const { toast } = useToast();
 
   const client = new XandeumClient();
@@ -189,12 +190,46 @@ export default function Home() {
   };
 
 
-  const filteredNodes = nodes.filter(node => {
-    const matchesSearch = node.pubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (node.gossip && node.gossip.includes(searchTerm));
-    const matchesStatus = showActiveOnly ? (!!node.rpc || !!node.tpu) : true;
-    return matchesSearch && matchesStatus;
-  });
+  const handleSort = (key: string) => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const filteredNodes = useMemo(() => {
+    let result = nodes.filter(node => {
+      const matchesSearch = node.pubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (node.gossip && node.gossip.includes(searchTerm));
+      const matchesStatus = showActiveOnly ? (!!node.rpc || !!node.tpu) : true;
+      return matchesSearch && matchesStatus;
+    });
+
+    if (sortConfig) {
+      result.sort((a, b) => {
+        let aValue: any = "";
+        let bValue: any = "";
+
+        if (sortConfig.key === "pubkey") {
+          aValue = a.pubkey;
+          bValue = b.pubkey;
+        } else if (sortConfig.key === "status") {
+          aValue = a.rpc ? 1 : 0;
+          bValue = b.rpc ? 1 : 0;
+        } else if (sortConfig.key === "version") {
+          aValue = a.version || "";
+          bValue = b.version || "";
+        }
+
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [nodes, searchTerm, showActiveOnly, sortConfig]);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans transition-colors duration-300">
@@ -364,10 +399,16 @@ export default function Home() {
               <Table>
                 <TableHeader className="bg-muted/50">
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="w-[200px] font-medium">Node Identity</TableHead>
-                    <TableHead className="font-medium">Status</TableHead>
+                    <TableHead className="w-[200px] font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort("pubkey")}>
+                      Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </TableHead>
+                    <TableHead className="font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort("status")}>
+                      Status {sortConfig?.key === "status" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </TableHead>
                     <TableHead className="font-medium hidden md:table-cell">Network Address</TableHead>
-                    <TableHead className="font-medium hidden sm:table-cell">Version</TableHead>
+                    <TableHead className="font-medium hidden sm:table-cell cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort("version")}>
+                      Version {sortConfig?.key === "version" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                    </TableHead>
                     <TableHead className="text-right font-medium">Actions</TableHead>
                   </TableRow>
                 </TableHeader>

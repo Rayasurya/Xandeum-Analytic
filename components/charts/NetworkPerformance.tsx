@@ -2,33 +2,27 @@
 
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Area, AreaChart } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useMemo, useState, useEffect } from "react"
 
-export function NetworkPerformance() {
-    // Simulated real-time data
-    const [data, setData] = useState<{ time: string; latency: number }[]>([])
+interface NetworkPerformanceProps {
+    data: { time: string; tps: number }[]
+}
 
-    useEffect(() => {
-        // Init data
-        const initialData = Array.from({ length: 20 }, (_, i) => ({
-            time: new Date(Date.now() - (20 - i) * 1000).toLocaleTimeString([], { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-            latency: 15 + Math.random() * 15 // 15-30ms baseline
-        }))
-        setData(initialData)
-
-        const interval = setInterval(() => {
-            setData(prev => {
-                const now = new Date();
-                const newPoint = {
-                    time: now.toLocaleTimeString([], { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-                    latency: 15 + Math.random() * 15 + (Math.random() > 0.9 ? 50 : 0) // Occasional spike
-                }
-                return [...prev.slice(1), newPoint]
-            })
-        }, 1000)
-
-        return () => clearInterval(interval)
-    }, [])
+export function NetworkPerformance({ data }: NetworkPerformanceProps) {
+    if (!data || data.length === 0) {
+        return (
+            <Card className="bg-card/50 border-primary/20 shadow-sm col-span-1 lg:col-span-2 relative overflow-hidden group">
+                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardTitle className="text-sm font-medium text-muted-foreground tracking-wider uppercase flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-cyan-500/20" />
+                        Network Performance
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="h-[250px] flex items-center justify-center text-muted-foreground font-mono text-xs">
+                    WAITING_FOR_METRICS...
+                </CardContent>
+            </Card>
+        )
+    }
 
     return (
         <Card className="bg-card/50 border-primary/20 shadow-sm col-span-1 lg:col-span-2 relative overflow-hidden group">
@@ -38,14 +32,14 @@ export function NetworkPerformance() {
                     <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
                     Real-Time Network Performance
                 </CardTitle>
-                <div className="text-xs font-mono text-cyan-500">Live Gossip Latency</div>
+                <div className="text-xs font-mono text-cyan-500">Live TPS History</div>
             </CardHeader>
             <CardContent>
                 <div className="h-[250px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={data}>
                             <defs>
-                                <linearGradient id="colorLatency" x1="0" y1="0" x2="0" y2="1">
+                                <linearGradient id="colorTps" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
                                     <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                                 </linearGradient>
@@ -56,9 +50,10 @@ export function NetworkPerformance() {
                                 tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
                                 tickLine={false}
                                 axisLine={false}
+                                interval="preserveStartEnd"
                             />
                             <YAxis
-                                domain={[0, 100]}
+                                domain={['auto', 'auto']}
                                 tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
                                 tickLine={false}
                                 axisLine={false}
@@ -68,14 +63,16 @@ export function NetworkPerformance() {
                                 contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', color: '#f8fafc' }}
                                 itemStyle={{ color: '#06b6d4', fontFamily: 'monospace' }}
                                 labelStyle={{ color: '#94a3b8', fontSize: '12px' }}
+                                labelFormatter={(label) => `Time: ${label}`}
+                                formatter={(value: number) => [value.toFixed(1), "TPS"]}
                             />
                             <Area
                                 type="monotone"
-                                dataKey="latency"
+                                dataKey="tps"
                                 stroke="#06b6d4"
                                 strokeWidth={2}
                                 fillOpacity={1}
-                                fill="url(#colorLatency)"
+                                fill="url(#colorTps)"
                                 isAnimationActive={false}
                             />
                         </AreaChart>

@@ -41,6 +41,31 @@ export class XandeumClient {
     }
 
     /**
+     * Get real network metrics from the RPC
+     */
+    async getNetworkMetrics() {
+        try {
+            const [epochInfo, perfSamples, supply] = await Promise.all([
+                this.connection.getEpochInfo(),
+                this.connection.getRecentPerformanceSamples(30),
+                this.connection.getSupply()
+            ]);
+
+            return {
+                epoch: epochInfo.epoch,
+                tpsHistory: perfSamples.map(sample => ({
+                    time: new Date().toLocaleTimeString(), // We'd ideally calculate this from slot time, but for now live update is fine
+                    tps: sample.numTransactions / sample.samplePeriodSecs
+                })).reverse(),
+                totalSupply: (supply.value.total / 1000000000).toFixed(2) + " SOL"
+            };
+        } catch (error) {
+            console.error("Failed to fetch metrics:", error);
+            return null;
+        }
+    }
+
+    /**
      * Get formatted stats for dashboard
      */
     async getStats() {

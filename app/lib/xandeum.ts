@@ -53,11 +53,14 @@ export class XandeumClient {
 
             return {
                 epoch: epochInfo.epoch,
-                tpsHistory: perfSamples.map(sample => ({
-                    time: new Date().toLocaleTimeString(), // We'd ideally calculate this from slot time, but for now live update is fine
-                    tps: sample.numTransactions / sample.samplePeriodSecs
-                })).reverse(),
-                totalSupply: (supply.value.total / 1000000000).toFixed(2) + " SOL"
+                tpsHistory: perfSamples.map((sample, i) => {
+                    const timeOffset = i * (sample.samplePeriodSecs || 60) * 1000;
+                    return {
+                        time: new Date(Date.now() - timeOffset).toLocaleTimeString([], { hour12: false }),
+                        tps: sample.numTransactions / sample.samplePeriodSecs
+                    };
+                }).reverse(),
+                totalSupply: (supply.value.total / 1000000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " SOL"
             };
         } catch (error) {
             console.error("Failed to fetch metrics:", error);

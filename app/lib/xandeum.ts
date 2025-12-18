@@ -1,7 +1,8 @@
 import { Connection, ContactInfo } from "@solana/web3.js";
+import { XANDEUM_CONFIG } from "../config";
 
 // Xandeum Devnet RPC Endpoint
-const XANDEUM_RPC_ENDPOINT = "https://api.devnet.xandeum.com:8899";
+const XANDEUM_RPC_ENDPOINT = XANDEUM_CONFIG.RPC_ENDPOINT;
 
 export interface PNodeInfo extends ContactInfo {
     // version is inherited from ContactInfo (string | null)
@@ -66,6 +67,15 @@ export class XandeumClient {
             console.error("Failed to fetch metrics:", error);
             return null;
         }
+    }
+
+    /**
+     * Helper to map software versions to brand protocol versions
+     */
+    static formatVersion(rawVersion: string | null): string {
+        if (!rawVersion) return "Unknown";
+        const cleanV = rawVersion.split(" ")[0];
+        return XANDEUM_CONFIG.VERSION_MAPPING[cleanV] || rawVersion;
     }
 
     /**

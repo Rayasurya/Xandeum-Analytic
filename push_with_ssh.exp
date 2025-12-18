@@ -4,7 +4,7 @@ set timeout 30
 set passphrase "2920"
 
 # Start ssh-agent and get its output
-spawn bash -c "eval `ssh-agent -s` && ssh-add /Users/rayasurya/.ssh/id_ed25519 && git add . && git commit -m 'Fix: Correct protocol version to v0.7 Heidelberg' && git push origin main"
+spawn bash -c "eval `ssh-agent -s` && ssh-add /Users/rayasurya/.ssh/id_ed25519 && git add . && git commit -m 'Root Fix: Centralize protocol version and implement Agave->Heidelberg mapping' && git push origin main"
 
 expect {
     "Enter passphrase for /Users/rayasurya/.ssh/id_ed25519:" {

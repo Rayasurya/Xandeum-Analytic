@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { XandeumClient, PNodeInfo } from "./lib/xandeum";
+import { XANDEUM_CONFIG } from "./config";
 import {
   Activity,
   Server,
@@ -170,7 +171,7 @@ export default function Home() {
   // Compute Chart Data
   const versionData = useMemo(() => {
     const counts = nodes.reduce((acc, node) => {
-      const v = node.version ? node.version.split(" ")[0] : "Unknown";
+      const v = XandeumClient.formatVersion(node.version);
       acc[v] = (acc[v] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -374,8 +375,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="text-sm">
-                <p className="font-medium text-foreground font-mono">Devnet {stats.active > 0 ? "Active" : "Offline"}</p>
-                <p className="text-secondary text-[10px] font-mono whitespace-nowrap">v0.7.0 (Heidelberg)</p>
+                <p className="font-medium text-foreground font-mono">{XANDEUM_CONFIG.NETWORK} {stats.active > 0 ? "Active" : "Offline"}</p>
+                <p className="text-secondary text-[10px] font-mono whitespace-nowrap">{XANDEUM_CONFIG.PROTOCOL_VERSION} ({XANDEUM_CONFIG.PROTOCOL_NAME})</p>
               </div>
             </div>
           </div>
@@ -587,7 +588,7 @@ export default function Home() {
                               ) : <span className="text-muted-foreground/50 animate-pulse">...</span>}
                             </TableCell>
                             <TableCell>{node.rpc ? <Badge className="bg-emerald-500/20 text-emerald-400">OPERATIONAL</Badge> : <Badge variant="destructive">OFFLINE</Badge>}</TableCell>
-                            <TableCell className="hidden md:table-cell"><span className="font-mono text-muted-foreground text-xs">{node.version?.split(' ')[0] || "Unknown"}</span></TableCell>
+                            <TableCell className="hidden md:table-cell"><span className="font-mono text-muted-foreground text-xs">{XandeumClient.formatVersion(node.version)}</span></TableCell>
                             <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">{node.gossip}</TableCell>
                           </TableRow>
                         )
@@ -668,7 +669,7 @@ export default function Home() {
                         <Server className="inline w-3 h-3 mr-1" /> Version
                       </Label>
                       <div className="font-mono text-sm text-foreground">
-                        {selectedNode?.version || "Unknown"}
+                        {XandeumClient.formatVersion(selectedNode?.version || "Unknown")}
                       </div>
                     </div>
                   </div>

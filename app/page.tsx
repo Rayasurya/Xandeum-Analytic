@@ -87,6 +87,7 @@ export default function Home() {
   const [selectedNode, setSelectedNode] = useState<PNodeInfo | null>(null);
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
   const [filterCountry, setFilterCountry] = useState<string>("all");
+  const [filterVersion, setFilterVersion] = useState<string>("all");
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
 
   const { toast } = useToast();
@@ -219,7 +220,14 @@ export default function Home() {
         if (!geo || geo.country !== filterCountry) matchesCountry = false;
       }
 
-      return matchesSearch && matchesStatus && matchesCountry;
+      // 4. Version Filter
+      let matchesVersion = true;
+      if (filterVersion !== "all") {
+        const nodeVersion = node.version?.split(' ')[0] || "Unknown";
+        if (nodeVersion !== filterVersion) matchesVersion = false;
+      }
+
+      return matchesSearch && matchesStatus && matchesCountry && matchesVersion;
     });
 
     if (sortConfig) {
@@ -244,7 +252,7 @@ export default function Home() {
       });
     }
     return result;
-  }, [nodes, searchTerm, filterStatus, filterCountry, sortConfig, geoCache]);
+  }, [nodes, searchTerm, filterStatus, filterCountry, filterVersion, sortConfig, geoCache]);
 
   // Handle viewing a specific node (load Geo from cache)
   const handleNodeClick = (node: PNodeInfo) => {
@@ -352,12 +360,7 @@ export default function Home() {
               onClick={() => setActiveView("analytics")}
             />
 
-            <div className="pt-4 pb-2">
-              <span className="text-[10px] uppercase text-muted-foreground/50 font-bold px-4 tracking-wider">Protocol</span>
-            </div>
-            <SidebarButton icon={<CreditCard className="mr-3 h-4 w-4" />} label="Pricing" />
-            <SidebarButton icon={<FileText className="mr-3 h-4 w-4" />} label="Governance" />
-            <SidebarButton icon={<BookOpen className="mr-3 h-4 w-4" />} label="Documentation" onClick={() => window.open("https://docs.xandeum.com", "_blank")} />
+
           </nav>
         </div>
 
@@ -442,6 +445,8 @@ export default function Home() {
                   value={activeVersionsCount}
                   subtext="Unique Versions"
                   subtextClassName="text-muted-foreground"
+                  onClick={() => setActiveView("pnodes")}
+                  className="cursor-pointer hover:border-primary/50 transition-colors"
                 />
 
               </div>
@@ -483,9 +488,9 @@ export default function Home() {
                       <Button variant="outline" className="border-border bg-card text-muted-foreground hover:text-foreground">
                         <Filter className="h-4 w-4 mr-2" />
                         Filters
-                        {(filterStatus !== "all" || filterCountry !== "all") && (
+                        {(filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all") && (
                           <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
-                            {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0)}
+                            {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0) + (filterVersion !== "all" ? 1 : 0)}
                           </Badge>
                         )}
                       </Button>
@@ -523,6 +528,23 @@ export default function Home() {
                         <DropdownMenuItem key={country} onClick={() => setFilterCountry(country)} className="flex items-center justify-between cursor-pointer">
                           <span className="truncate max-w-[150px]">{country}</span>
                           {filterCountry === country && <Check className="h-4 w-4 text-primary" />}
+                        </DropdownMenuItem>
+                      ))}
+
+                      <Separator className="my-1 bg-border" />
+
+                      {/* Version Section */}
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Version
+                      </div>
+                      <DropdownMenuItem onClick={() => setFilterVersion("all")} className="flex items-center justify-between cursor-pointer">
+                        All Versions
+                        {filterVersion === "all" && <Check className="h-4 w-4 text-primary" />}
+                      </DropdownMenuItem>
+                      {versionData.map((v) => (
+                        <DropdownMenuItem key={v.name} onClick={() => setFilterVersion(v.name)} className="flex items-center justify-between cursor-pointer">
+                          <span className="truncate max-w-[150px]">{v.name}</span>
+                          {filterVersion === v.name && <Check className="h-4 w-4 text-primary" />}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
@@ -600,6 +622,8 @@ export default function Home() {
               <GlobalMap data={countryData} />
             </div>
           )}
+
+
 
         </div>
 
@@ -760,7 +784,7 @@ export default function Home() {
                   </Button>
 
                   {/* Raw Data Toggle */}
-                  <div className="bg-muted p-4 rounded-lg overflow-x-auto text-[10px] font-mono text-secondary/80 border border-border group mt-8">
+                  <div className="bg-muted p-4 rounded-lg overflow-x-auto text-[10px] font-mono text-secondary/80 border border-border group mt-8 relative">
                     <div className="absolute top-2 right-2 text-xs text-muted-foreground">
                       RAW_JSON_STREAM
                     </div>

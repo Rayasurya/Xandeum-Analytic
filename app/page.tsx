@@ -375,7 +375,7 @@ export default function Home() {
               </div>
               <div className="text-sm">
                 <p className="font-medium text-foreground font-mono">Devnet {stats.active > 0 ? "Active" : "Offline"}</p>
-                <p className="text-secondary text-[10px] font-mono">v2.2.0-stable</p>
+                <p className="text-secondary text-[10px] font-mono whitespace-nowrap">v0.7.0 (Heidelberg)</p>
               </div>
             </div>
           </div>

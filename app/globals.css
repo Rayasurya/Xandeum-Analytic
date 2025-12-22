@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Xandeum Nexus - Deep Cyber Theme */
+    /* Xandeum Scope - Deep Cyber Theme */
     --background: 222 47% 4%;
     /* #020617 Deep Navy/Black */
     --foreground: 210 40% 98%;
@@ -112,5 +112,34 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Custom Scrollbar Styling - True Overlay */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted) / 0.4);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
+
+  /* Firefox - hide scrollbar */
+  * {
+    scrollbar-width: none;
+  }
+
+  /* Webkit - hide scrollbar */
+  ::-webkit-scrollbar {
+    display: none;
   }
 }

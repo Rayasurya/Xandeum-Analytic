@@ -51,6 +51,12 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
                                 tickLine={false}
                                 axisLine={false}
                                 interval="preserveStartEnd"
+                                tickCount={8}
+                                tickFormatter={(time: string) => {
+                                    // Show only HH:MM, remove seconds
+                                    const parts = time.split(':');
+                                    return parts.length >= 2 ? `${parts[0]}:${parts[1]}` : time;
+                                }}
                             />
                             <YAxis
                                 domain={['auto', 'auto']}

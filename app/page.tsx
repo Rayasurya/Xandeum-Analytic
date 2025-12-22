@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { XandeumClient, PNodeInfo } from "./lib/xandeum";
 import { XANDEUM_CONFIG } from "./config";
 import {
@@ -18,14 +18,20 @@ import {
   Map as MapIcon,
   CreditCard,
   FileText,
-  Wifi, // Added Wifi icon
-  Copy, // Added Copy icon
-  Check // Added Check icon
+  Wifi,
+  Copy,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  X
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
+import { AnalyticsBar } from "@/components/charts/AnalyticsBar";
+import { CountryChart } from "@/components/charts/CountryChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -36,6 +42,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,10 +71,35 @@ import { VersionChart } from "@/components/charts/VersionDistribution";
 import { StatusChart } from "@/components/charts/NetworkStatus";
 import { NetworkPerformance } from "@/components/charts/NetworkPerformance";
 import { Label } from "@/components/ui/label";
-import { CountryChart } from "@/components/charts/CountryDistribution";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+
 import { GlobalMap } from "@/components/charts/GlobalMap";
+import { StorageDistribution } from "@/components/charts/StorageDistribution";
+import { NodeLeaderboard } from "@/components/charts/NodeLeaderboard";
+
 
 type ViewState = "dashboard" | "pnodes" | "analytics" | "map";
+
+const formatStorage = (bytes: number) => {
+  if (!bytes) return "0 GB";
+  const gb = bytes / (1024 * 1024 * 1024);
+  if (gb >= 1000) return `${(gb / 1024).toFixed(1)} TB`;
+  return `${gb.toFixed(4)} GB`;
+};
+
+const formatBytes = (bytes: number) => {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
+
+const formatPubkey = (key: string) => {
+  if (!key) return "Unknown";
+  return `${key.slice(0, 4)}...${key.slice(-4)}`;
+};
 
 export default function Home() {
   // Navigation State
@@ -165,13 +197,29 @@ export default function Home() {
   };
 
   useEffect(() => {
+    // Initial Fetch
     fetchData();
+
+    // Poll for live metrics every 5 seconds
+    const interval = setInterval(async () => {
+      try {
+        const metrics = await client.getNetworkMetrics();
+        if (metrics) {
+          setMetrics(metrics);
+        }
+      } catch (err) {
+        console.error("Metric Polling Failed", err);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
+
 
   // Compute Chart Data
   const versionData = useMemo(() => {
     const counts = nodes.reduce((acc, node) => {
-      const v = XandeumClient.formatVersion(node.version);
+      const v = XandeumClient.formatVersion(node.version || null);
       acc[v] = (acc[v] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -179,6 +227,35 @@ export default function Home() {
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
+  }, [nodes]);
+
+  const storageDistributionData = useMemo(() => {
+    const bins = {
+      "< 100 GB": 0,
+      "100 GB - 1 TB": 0,
+      "1 TB - 10 TB": 0,
+      "> 10 TB": 0
+    };
+    nodes.forEach(node => {
+      const gb = (node.storage_committed || 0) / (1024 * 1024 * 1024);
+      if (gb < 100) bins["< 100 GB"]++;
+      else if (gb < 1000) bins["100 GB - 1 TB"]++;
+      else if (gb < 10000) bins["1 TB - 10 TB"]++;
+      else bins["> 10 TB"]++;
+    });
+    return Object.entries(bins).map(([name, value]) => ({ name, value }));
+  }, [nodes]);
+
+  const leaderboardData = useMemo(() => {
+    // Sort by Storage Committed (Real Data) instead of empty Credits
+    return nodes
+      .sort((a, b) => (b.storage_committed || 0) - (a.storage_committed || 0))
+      .slice(0, 5)
+      .map(node => ({
+        name: `${node.pubkey?.slice(0, 4)}...${node.pubkey?.slice(-4)}`,
+        fullPubkey: node.pubkey || "Unknown",
+        value: Number(((node.storage_committed || 0) / (1024 * 1024 * 1024)).toFixed(2)) // GB
+      }));
   }, [nodes]);
 
   const countryData = useMemo(() => {
@@ -205,7 +282,7 @@ export default function Home() {
   const filteredNodes = useMemo(() => {
     let result = nodes.filter(node => {
       // 1. Search Filter
-      const matchesSearch = node.pubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = (node.pubkey?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
         (node.gossip && node.gossip.includes(searchTerm));
 
       // 2. Status Filter
@@ -279,7 +356,7 @@ export default function Home() {
     }
     setSortConfig({ key, direction });
   };
-  // ... handleExport ...
+
   const handleExport = () => {
     if (filteredNodes.length === 0) return;
     const headers = ["Node Identity (Pubkey)", "Status", "Gossip Address", "Version", "RPC Endpoint", "Country", "City", "ISP"];
@@ -319,498 +396,669 @@ export default function Home() {
     // ... basic HTML generation ...
   };
 
+  // Sidebar State - custom resizable
+  const [sidebarWidth, setSidebarWidth] = useState(256);
+  const [isDragging, setIsDragging] = useState(false);
+  const isCollapsed = sidebarWidth < 80;
+  const minWidth = 60;
+  const maxWidth = 400;
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const newWidth = Math.max(minWidth, Math.min(maxWidth, e.clientX));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
+  // Right Sidebar State - for pNodes detail panel
+  const [rightSidebarWidth, setRightSidebarWidth] = useState(420);
+  const [isRightDragging, setIsRightDragging] = useState(false);
+  const rightMinWidth = 300;
+  const rightMaxWidth = 600;
+
+  const handleRightMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsRightDragging(true);
+  };
+
+  useEffect(() => {
+    const handleRightMouseMove = (e: MouseEvent) => {
+      if (!isRightDragging) return;
+      const windowWidth = window.innerWidth;
+      const newWidth = Math.max(rightMinWidth, Math.min(rightMaxWidth, windowWidth - e.clientX));
+      setRightSidebarWidth(newWidth);
+    };
+
+    const handleRightMouseUp = () => {
+      setIsRightDragging(false);
+    };
+
+    if (isRightDragging) {
+      document.addEventListener('mousemove', handleRightMouseMove);
+      document.addEventListener('mouseup', handleRightMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleRightMouseMove);
+      document.removeEventListener('mouseup', handleRightMouseUp);
+    };
+  }, [isRightDragging]);
+
+  // Show right panel only when in pNodes view and a node is selected
+  const showRightPanel = activeView === "pnodes" && !!selectedNode;
+
   return (
-    <div className="flex min-h-screen bg-background text-foreground font-sans transition-colors duration-300">
+    <div className="flex min-h-screen bg-background text-foreground font-sans transition-colors duration-300 h-screen overflow-hidden">
 
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-border bg-card hidden md:flex flex-col fixed h-full z-20">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-              <Database className="text-primary h-6 w-6" />
+      {/* Desktop Sidebar (Custom Resizable) */}
+      <div className="hidden md:flex h-full relative" style={{ width: sidebarWidth }}>
+        <aside
+          className={cn(
+            "h-full flex flex-col w-full border-r border-border bg-card overflow-hidden",
+            isCollapsed && "items-center"
+          )}
+          style={{ width: sidebarWidth }}
+        >
+          <div className={cn("flex-shrink-0 p-6 px-4", isCollapsed && "p-2 py-4 flex flex-col items-center")}>
+            <div className={cn("flex items-center gap-3 mb-10", isCollapsed && "mb-4 justify-center")}>
+              <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                <Database className="text-primary h-6 w-6" />
+              </div>
+              {!isCollapsed && (
+                <div className="flex flex-col">
+                  <span className="font-bold text-xl tracking-tight text-foreground leading-none">XANDEUM</span>
+                  <span className="text-[10px] font-mono text-cyan-500 tracking-[0.2em] uppercase mt-1">Scope</span>
+                </div>
+              )}
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-xl tracking-tight text-foreground leading-none">XANDEUM</span>
-              <span className="text-[10px] font-mono text-cyan-500 tracking-[0.2em] uppercase mt-1">Nexus</span>
-            </div>
+
+            <nav className={cn("space-y-1.5", isCollapsed && "space-y-2 w-full flex flex-col items-center")}>
+              <SidebarButton
+                icon={<LayoutDashboard className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
+                label="Dashboard"
+                active={activeView === "dashboard"}
+                onClick={() => setActiveView("dashboard")}
+                collapsed={isCollapsed}
+              />
+              <SidebarButton
+                icon={<Server className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
+                label="pNodes"
+                active={activeView === "pnodes"}
+                onClick={() => setActiveView("pnodes")}
+                collapsed={isCollapsed}
+              />
+              <SidebarButton
+                icon={<MapIcon className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
+                label="Storage Map"
+                active={activeView === "map"}
+                onClick={() => setActiveView("map")}
+                collapsed={isCollapsed}
+              />
+              <SidebarButton
+                icon={<Activity className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
+                label="Analytics"
+                active={activeView === "analytics"}
+                onClick={() => setActiveView("analytics")}
+                collapsed={isCollapsed}
+              />
+            </nav>
           </div>
 
-          <nav className="space-y-1.5">
-            <SidebarButton
-              icon={<LayoutDashboard className="mr-3 h-4 w-4" />}
-              label="Dashboard"
-              active={activeView === "dashboard"}
-              onClick={() => setActiveView("dashboard")}
-            />
-            <SidebarButton
-              icon={<Server className="mr-3 h-4 w-4" />}
-              label="pNodes"
-              active={activeView === "pnodes"}
-              onClick={() => setActiveView("pnodes")}
-            />
-            <SidebarButton
-              icon={<MapIcon className="mr-3 h-4 w-4" />}
-              label="Storage Map"
-              active={activeView === "map"}
-              onClick={() => setActiveView("map")}
-            />
-            <SidebarButton
-              icon={<Activity className="mr-3 h-4 w-4" />}
-              label="Analytics"
-              active={activeView === "analytics"}
-              onClick={() => setActiveView("analytics")}
-            />
-
-
-          </nav>
-        </div>
-
-        <div className="mt-auto p-0">
-          <div className="bg-gradient-to-t from-cyan-950/10 to-transparent p-6 border-t border-border">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className={`h-2 w-2 rounded-full absolute -right-1 -top-1 ${stats.active > 0 ? "bg-cyan-500 animate-pulse" : "bg-red-500"}`} />
-                <div className="h-8 w-8 rounded-lg bg-secondary/10 flex items-center justify-center border border-secondary/30">
-                  <Globe className="h-4 w-4 text-secondary" />
+          <div className="mt-auto p-0 w-full mb-1">
+            {isCollapsed ? (
+              <div className="flex justify-center py-4 border-t border-border">
+                <div className={`h-3 w-3 rounded-full ${stats.active > 0 ? "bg-cyan-500 animate-pulse" : "bg-red-500"}`} title={stats.active > 0 ? "Online" : "Offline"} />
+              </div>
+            ) : (
+              <div className="bg-gradient-to-t from-cyan-950/10 to-transparent p-6 border-t border-border">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className={`h-2 w-2 rounded-full absolute -right-1 -top-1 ${stats.active > 0 ? "bg-cyan-500 animate-pulse" : "bg-red-500"}`} />
+                    <div className="h-8 w-8 rounded-lg bg-secondary/10 flex items-center justify-center border border-secondary/30">
+                      <Globe className="h-4 w-4 text-secondary" />
+                    </div>
+                  </div>
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground font-mono">{XANDEUM_CONFIG.NETWORK} {stats.active > 0 ? "Active" : "Offline"}</p>
+                    <p className="text-secondary text-[10px] font-mono whitespace-nowrap">{XANDEUM_CONFIG.PROTOCOL_VERSION} ({XANDEUM_CONFIG.PROTOCOL_NAME})</p>
+                  </div>
                 </div>
               </div>
-              <div className="text-sm">
-                <p className="font-medium text-foreground font-mono">{XANDEUM_CONFIG.NETWORK} {stats.active > 0 ? "Active" : "Offline"}</p>
-                <p className="text-secondary text-[10px] font-mono whitespace-nowrap">{XANDEUM_CONFIG.PROTOCOL_VERSION} ({XANDEUM_CONFIG.PROTOCOL_NAME})</p>
-              </div>
+            )}
+          </div>
+        </aside>
+        {/* Drag Handle */}
+        <div
+          onMouseDown={handleMouseDown}
+          className={cn(
+            "w-1 h-full bg-border hover:bg-primary/50 transition-colors cursor-col-resize absolute right-0 top-0",
+            isDragging && "bg-primary/50"
+          )}
+        />
+      </div>
+
+      {/* Main Content + Right Panel Container */}
+      <div className="flex-1 flex min-w-0 h-full overflow-hidden">
+        <main className={cn("flex-1 flex flex-col min-w-0 min-h-0 bg-background relative overflow-x-hidden h-full", (activeView === "pnodes" || activeView === "map") ? "overflow-hidden" : "overflow-y-auto")}>
+          {/* Background */}
+          <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+          <div className="absolute top-[-200px] right-[-200px] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+
+          {/* Header */}
+          <header className="h-24 flex-shrink-0 border-b border-border flex items-center justify-between px-8 py-4 bg-background/80 backdrop-blur-md sticky top-0 z-30">
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-xl font-bold text-foreground tracking-tight truncate">
+                {activeView === "dashboard" && "Network Intelligence"}
+                {activeView === "pnodes" && "Node Registry"}
+                {activeView === "analytics" && "Global Analytics"}
+                {activeView === "map" && "Geographic Distribution"}
+              </h1>
+              <p className="text-xs text-muted-foreground font-mono flex items-center gap-2 truncate" suppressHydrationWarning>
+                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${metrics?.epoch ? "bg-emerald-500 animate-pulse" : "bg-yellow-500"}`} />
+                <span className="truncate">SYSTEM ONLINE // SYNC_ID: #{Math.floor(Date.now() / 10000).toString(16).toUpperCase()}</span>
+              </p>
             </div>
-          </div>
-        </div>
-      </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-background md:pl-64 relative overflow-hidden">
-        {/* Background */}
-        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
-        <div className="absolute top-[-200px] right-[-200px] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-
-        {/* Header */}
-        <header className="h-20 border-b border-border flex items-center justify-between px-8 bg-background/80 backdrop-blur-md sticky top-0 z-30">
-          <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-foreground tracking-tight">
-              {activeView === "dashboard" && "Network Intelligence"}
-              {activeView === "pnodes" && "Node Registry"}
-              {activeView === "analytics" && "Global Analytics"}
-              {activeView === "map" && "Geographic Distribution"}
-            </h1>
-            <p className="text-xs text-muted-foreground font-mono flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full ${metrics?.epoch ? "bg-emerald-500 animate-pulse" : "bg-yellow-500"}`} />
-              SYSTEM ONLINE // SYNC_ID: #{Math.floor(Date.now() / 10000).toString(16).toUpperCase()}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4 ml-auto">
-            <div className="hidden lg:flex items-center gap-6 mr-6 border-r border-border pr-6">
-              <div className="text-right">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Total Supply</p>
-                <p className="text-sm font-mono text-secondary font-bold">{metrics?.totalSupply || "Loading..."}</p>
+            <div className="flex items-center gap-2 ml-auto">
+              <div className="hidden lg:flex items-center gap-4 mr-3 border-r border-border pr-3">
+                <div className="text-right">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Total Supply</p>
+                  <p className="text-sm font-mono text-secondary font-bold">{metrics?.totalSupply || "Loading..."}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Epoch</p>
+                  <p className="text-sm font-mono text-foreground font-bold">{metrics?.epoch || "Syncing"}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Epoch</p>
-                <p className="text-sm font-mono text-foreground font-bold">{metrics?.epoch || "Syncing"}</p>
-              </div>
+              <ModeToggle />
             </div>
-            <ModeToggle />
-          </div>
-        </header>
+          </header>
 
-        <div className="p-6 md:p-8 space-y-8 max-w-[1800px] mx-auto w-full relative z-10">
+          <div className={cn("w-full relative z-10", activeView === "dashboard" ? "px-8 py-6 space-y-8" : "hidden")}>
 
-          {/* VIEW: DASHBOARD */}
-          {activeView === "dashboard" && (
-            <>
-              {/* Hero Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <DashboardCard
-                  icon={<Server className="w-3 h-3 text-secondary" />}
-                  title="Total Nodes"
-                  value={stats.total}
-                  subtext="Global Network"
-                  subtextClassName="text-secondary/80"
-                />
-                <DashboardCard
-                  icon={<Zap className="w-3 h-3 text-primary" />}
-                  title="Online Nodes"
-                  value={stats.active}
-                  subtext="RPC/TPU Responding"
-                  subtextClassName="text-emerald-500"
-                />
-                <DashboardCard
-                  icon={<Activity className="w-3 h-3 text-muted-foreground" />}
-                  title="Active Versions"
-                  value={activeVersionsCount}
-                  subtext="Unique Versions"
-                  subtextClassName="text-muted-foreground"
-                  onClick={() => setActiveView("pnodes")}
-                  className="cursor-pointer hover:border-primary/50 transition-colors"
-                />
+            {/* VIEW: DASHBOARD */}
+            {activeView === "dashboard" && (
+              <>
+                {/* Hero Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <DashboardCard
+                    icon={<Server className="w-3 h-3 text-secondary" />}
+                    title="Total Nodes"
+                    value={stats.total}
+                    subtext="Global Network"
+                    subtextClassName="text-secondary/80"
+                    tooltip="Total number of nodes discovered in the network gossip mesh."
+                  />
+                  <DashboardCard
+                    icon={<Zap className="w-3 h-3 text-primary" />}
+                    title="Online Nodes"
+                    value={stats.active}
+                    subtext="RPC/TPU Responding"
+                    subtextClassName="text-emerald-500"
+                    tooltip="Nodes actively participating in consensus and responding to RPC requests."
+                  />
+                  <DashboardCard
+                    icon={<Database className="w-3 h-3 text-blue-400" />}
+                    title="Total Storage"
+                    value={(() => {
+                      const totalBytes = nodes.reduce((acc, node) => acc + (node.storage_committed || 0), 0);
+                      const tb = totalBytes / (1024 * 1024 * 1024 * 1024);
+                      return `${tb.toFixed(1)} TB`;
+                    })()}
+                    subtext="Network Capacity"
+                    subtextClassName="text-blue-400"
+                    tooltip="Aggregate storage capacity committed by all nodes securely."
+                  />
+                  <DashboardCard
+                    icon={<Activity className="w-3 h-3 text-muted-foreground" />}
+                    title="Active Versions"
+                    value={activeVersionsCount}
+                    subtext="Unique Versions"
+                    subtextClassName="text-muted-foreground"
+                    onClick={() => setActiveView("pnodes")}
+                    className="cursor-pointer hover:border-primary/50 transition-colors"
+                  />
 
-              </div>
+                </div>
 
-              {/* Main Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <NetworkPerformance data={metrics?.tpsHistory || []} />
-                <div className="grid grid-cols-1 gap-6">
-                  <StatusChart data={statusData} />
+                {/* ... existing charts ... */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                  <NetworkPerformance data={metrics?.tpsHistory || []} />
+                  <div className="grid grid-cols-1 gap-6">
+                    <StatusChart data={statusData} />
+                  </div>
+                </div>
+
+                {/* Quick Geo Insight */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <CountryChart data={countryData} />
+                </div>
+              </>
+            )}          </div>
+
+          {/* VIEW: NODES - Full height layout with right panel sticking to edge */}
+          {activeView === "pnodes" && (
+            <div className="flex flex-1 min-h-0 overflow-hidden">
+              {/* Table Section with padding */}
+              <div className={cn("flex-1 min-w-0 px-8 py-6 space-y-4 overflow-y-auto", selectedNode && "hidden md:block")}>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card/50 p-4 rounded-xl border border-border">
+                  <div className="relative w-full sm:w-80">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      placeholder="Search Node ID..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 bg-background border-input focus:border-primary text-foreground placeholder:text-muted-foreground font-mono text-sm"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button className="bg-primary hover:bg-orange-600 text-primary-foreground font-bold" onClick={handleExport}>
+                      <Download className="mr-2 h-4 w-4" /> EXPORT ENRICHED CSV
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="border-border bg-card text-muted-foreground hover:text-foreground overflow-hidden whitespace-nowrap flex-shrink-0">
+                          <Filter className="h-4 w-4 mr-2" />
+                          Filters
+                          {(filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all") && (
+                            <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
+                              {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0) + (filterVersion !== "all" ? 1 : 0)}
+                            </Badge>
+                          )}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56 bg-popover border-border text-popover-foreground">
+                        {/* Status Section */}
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          Status
+                        </div>
+                        <DropdownMenuItem onClick={() => setFilterStatus("all")} className="flex items-center justify-between cursor-pointer">
+                          All Nodes
+                          {filterStatus === "all" && <Check className="h-4 w-4 text-primary" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setFilterStatus("active")} className="flex items-center justify-between cursor-pointer">
+                          Active Only
+                          {filterStatus === "active" && <Check className="h-4 w-4 text-emerald-500" />}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setFilterStatus("inactive")} className="flex items-center justify-between cursor-pointer">
+                          Inactive Only
+                          {filterStatus === "inactive" && <Check className="h-4 w-4 text-red-500" />}
+                        </DropdownMenuItem>
+
+                        <Separator className="my-1 bg-border" />
+
+                        {/* Country Section */}
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          Country
+                        </div>
+                        <DropdownMenuItem onClick={() => setFilterCountry("all")} className="flex items-center justify-between cursor-pointer">
+                          All Countries
+                          {filterCountry === "all" && <Check className="h-4 w-4 text-primary" />}
+                        </DropdownMenuItem>
+                        {/* Dynamically list top countries found in cache */}
+                        {Array.from(new Set(Object.values(geoCache).map((g: any) => g.country))).slice(0, 5).map((country: any) => (
+                          <DropdownMenuItem key={country} onClick={() => setFilterCountry(country)} className="flex items-center justify-between cursor-pointer">
+                            <span className="truncate max-w-[150px]">{country}</span>
+                            {filterCountry === country && <Check className="h-4 w-4 text-primary" />}
+                          </DropdownMenuItem>
+                        ))}
+
+                        <Separator className="my-1 bg-border" />
+
+                        {/* Version Section */}
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          Version
+                        </div>
+                        <DropdownMenuItem onClick={() => setFilterVersion("all")} className="flex items-center justify-between cursor-pointer">
+                          All Versions
+                          {filterVersion === "all" && <Check className="h-4 w-4 text-primary" />}
+                        </DropdownMenuItem>
+                        {versionData.map((v) => (
+                          <DropdownMenuItem key={v.name} onClick={() => setFilterVersion(v.name)} className="flex items-center justify-between cursor-pointer">
+                            <span className="truncate max-w-[150px]">{v.name}</span>
+                            {filterVersion === v.name && <Check className="h-4 w-4 text-primary" />}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-border bg-card/50 overflow-hidden shadow-sm backdrop-blur-sm">
+                  <Table className="w-full table-fixed">
+                    <TableHeader className="bg-muted/50">
+                      <TableRow className="hover:bg-transparent border-border">
+                        <TableHead className="w-[5%]"></TableHead>
+                        <TableHead className="w-[30%] font-bold text-secondary cursor-pointer" onClick={() => handleSort("pubkey")}>
+                          Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                        </TableHead>
+                        <TableHead className="w-[25%] font-bold text-secondary hidden md:table-cell pl-4">Version</TableHead>
+                        <TableHead className="w-[20%] font-bold text-secondary text-right">Uptime</TableHead>
+                        <TableHead className="w-[20%] font-bold text-secondary text-right">Storage</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredNodes.length === 0 ? (
+                        <TableRow><TableCell colSpan={7} className="h-24 text-center">No nodes found...</TableCell></TableRow>
+                      ) : (
+                        filteredNodes.map((node) => {
+                          const ip = node.gossip?.split(':')[0] || "";
+                          const geo = geoCache[ip];
+
+                          // Format Uptime
+                          let uptimeString = "0s";
+                          if (node.uptime) {
+                            const days = node.uptime / 86400;
+                            if (days > 1) uptimeString = `${days.toFixed(1)}d`;
+                            else {
+                              const hours = node.uptime / 3600;
+                              uptimeString = `${hours.toFixed(1)}h`;
+                            }
+                          }
+
+                          // Format Storage
+                          const committed = formatStorage(node.storage_committed || 0);
+                          const used = formatBytes(node.storage_used || 0);
+
+                          return (
+                            <TableRow
+                              key={node.pubkey}
+                              className={cn(
+                                "cursor-pointer border-border transition-colors",
+                                selectedNode?.pubkey === node.pubkey
+                                  ? "bg-primary/10 border-l-2 border-l-primary hover:bg-primary/20"
+                                  : "hover:bg-muted/50"
+                              )}
+                              onClick={() => handleNodeClick(node)}
+                            >
+                              <TableCell><div className={`h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
+                              <TableCell>
+                                <div className="flex flex-col">
+                                  <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
+                                  <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell pl-4">
+                                <Badge variant="outline" className="bg-cyan-950/30 text-cyan-400 border-cyan-800/50 font-mono text-xs max-w-[180px] truncate inline-block">
+                                  {XandeumClient.formatVersion(node.version || null)}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right font-mono text-sm text-foreground">{uptimeString}</TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex flex-col items-end">
+                                  <span className="font-bold text-sm text-foreground">{committed}</span>
+                                  <span className="text-[10px] text-muted-foreground">
+                                    {((node.storage_committed || 0) / (1024 * 1024)).toFixed(0)} MB Cached
+                                  </span>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
 
-              {/* Quick Geo Insight */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <CountryChart data={countryData} />
-              </div>
-            </>
+              {/* Right Panel - Node Details (sticks to edge) */}
+              {selectedNode && (
+                <>
+                  {/* Resize Handle */}
+                  <div
+                    onMouseDown={handleRightMouseDown}
+                    className="w-1 h-full cursor-col-resize bg-border hover:bg-primary/50 flex-shrink-0 transition-colors z-50 hidden md:block"
+                  />
+                  <aside
+                    className="hidden md:flex flex-shrink-0 h-full min-h-0 flex-col overflow-hidden shadow-sm"
+                    style={{ width: rightSidebarWidth, backgroundColor: '#020617' }}
+                  >
+
+                    {/* Header */}
+                    <div className="flex-shrink-0 border-b border-border p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Server className="h-5 w-5 text-primary" />
+                          <h2 className="text-lg font-bold tracking-tight text-foreground">Node Details</h2>
+                        </div>
+                        <button
+                          onClick={() => setSelectedNode(null)}
+                          className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                          aria-label="Close panel"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <p className="text-muted-foreground font-mono text-xs mt-1 truncate">
+                        {selectedNode?.pubkey}
+                      </p>
+                    </div>
+
+                    {/* Content */}
+                    {(() => {
+                      const ip = selectedNode?.gossip?.split(':')[0] || "";
+                      const geoData = geoCache[ip];
+
+                      return (
+                        <ScrollArea className="flex-1" style={{ height: 'calc(100vh - 180px)' }}>
+                          <div className="p-4 space-y-4">
+                            {/* Status & Version */}
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="space-y-1 flex-shrink-0">
+                                <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
+                                  <Wifi className="inline w-3 h-3 mr-1" /> Status
+                                </Label>
+                                <div className="flex items-center gap-2">
+                                  {selectedNode?.rpc ? (
+                                    <Badge className="bg-emerald-500/20 text-emerald-400 border-none">
+                                      Online
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="destructive">Offline</Badge>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="space-y-1 text-right min-w-0 flex-1">
+                                <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
+                                  Version
+                                </Label>
+                                <div className="font-mono text-sm text-foreground break-all">
+                                  {XandeumClient.formatVersion(selectedNode?.version || "Unknown")}
+                                </div>
+                              </div>
+                            </div>
+
+                            <Separator className="bg-border" />
+
+                            {/* Addresses */}
+                            <div className="space-y-3">
+                              <div>
+                                <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
+                                  Gossip
+                                </Label>
+                                <div className="font-mono text-xs bg-muted p-2 rounded border border-border mt-1 break-all text-foreground">
+                                  {selectedNode?.gossip || "N/A"}
+                                </div>
+                              </div>
+                              <div>
+                                <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
+                                  RPC
+                                </Label>
+                                <div className="font-mono text-xs bg-muted p-2 rounded border border-border mt-1 break-all text-foreground">
+                                  {selectedNode?.rpc || "N/A"}
+                                </div>
+                              </div>
+                            </div>
+
+                            <Separator className="bg-border" />
+
+                            {/* Geolocation */}
+                            <div>
+                              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                                <Globe className="h-4 w-4 text-primary" /> Geolocation
+                              </h4>
+                              {!geoData && isGeoSyncing ? (
+                                <div className="space-y-2">
+                                  <Skeleton className="h-4 w-full bg-muted" />
+                                  <Skeleton className="h-4 w-3/4 bg-muted" />
+                                </div>
+                              ) : geoData ? (
+                                <div className="grid grid-cols-2 gap-3 text-xs">
+                                  <div>
+                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Country</p>
+                                    <p className="font-medium text-foreground flex items-center gap-1">
+                                      <span>
+                                        {geoData.countryCode
+                                          ? geoData.countryCode.toUpperCase().replace(/./g, (char: string) => String.fromCodePoint(char.charCodeAt(0) + 127397))
+                                          : "🌐"}
+                                      </span>
+                                      <span className="truncate">{geoData.country}</span>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">City</p>
+                                    <p className="font-medium text-foreground truncate">{geoData.city}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Region</p>
+                                    <p className="font-medium text-foreground truncate">{geoData.regionName || "N/A"}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Timezone</p>
+                                    <p className="font-medium text-foreground truncate">{geoData.timezone || "N/A"}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">ASN</p>
+                                    <p className="font-medium text-foreground truncate">{geoData.as || "N/A"}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Organization</p>
+                                    <p className="font-medium text-foreground truncate">{geoData.org || geoData.isp || "N/A"}</p>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-muted-foreground text-xs">No Geo Data</div>
+                              )}
+                            </div>
+
+                            <Button
+                              onClick={handleExportHtml}
+                              className="w-full bg-primary hover:bg-orange-600 text-primary-foreground font-bold h-10 mt-4"
+                              size="sm"
+                            >
+                              <Download className="mr-2 h-4 w-4" /> Export as HTML
+                            </Button>
+
+                            <Separator className="bg-border my-4" />
+
+                            {/* Raw JSON Stream */}
+                            <div>
+                              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-primary" /> RAW_JSON_STREAM
+                              </h4>
+                              <div className="bg-muted/50 rounded-lg border border-border p-3 font-mono text-[10px] text-muted-foreground overflow-x-auto max-h-40 overflow-y-auto">
+                                <pre className="whitespace-pre-wrap break-all">
+                                  {JSON.stringify({
+                                    pubkey: selectedNode?.pubkey,
+                                    gossip: selectedNode?.gossip,
+                                    rpc: selectedNode?.rpc,
+                                    version: selectedNode?.version,
+                                    storage_committed: selectedNode?.storage_committed,
+                                    storage_used: selectedNode?.storage_used,
+                                    storage_usage_percent: selectedNode?.storage_usage_percent,
+                                    uptime: selectedNode?.uptime,
+                                    credits: selectedNode?.credits,
+                                  }, null, 2)}
+                                </pre>
+                              </div>
+                            </div>
+                          </div>
+                        </ScrollArea>
+                      )
+                    })()}
+
+                  </aside>
+                </>
+              )}
+            </div>
           )}
 
-          {/* VIEW: NODES */}
-          {activeView === "pnodes" && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card/50 p-4 rounded-xl border border-border">
-                <div className="relative w-full sm:w-80">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Search Node ID..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-background border-input focus:border-primary text-foreground placeholder:text-muted-foreground font-mono text-sm"
+          {activeView === "analytics" && (
+            <div className="px-8 py-6 space-y-6">
+              {/* Row 1: Network Performance (2 cols) + Status Bar (1 col) */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <NetworkPerformance data={metrics?.tpsHistory || []} />
+                </div>
+                <div className="lg:col-span-1">
+                  <AnalyticsBar
+                    title="Network Node Status"
+                    segments={[
+                      { label: "Online (RPC Active)", value: stats.active, color: "#3178c6" },
+                      { label: "Gossip Only", value: stats.total - stats.active, color: "#f1e05a" },
+                    ]}
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button className="bg-primary hover:bg-orange-600 text-primary-foreground font-bold" onClick={handleExport}>
-                    <Download className="mr-2 h-4 w-4" /> EXPORT ENRICHED CSV
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="border-border bg-card text-muted-foreground hover:text-foreground">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filters
-                        {(filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all") && (
-                          <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
-                            {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0) + (filterVersion !== "all" ? 1 : 0)}
-                          </Badge>
-                        )}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 bg-popover border-border text-popover-foreground">
-                      {/* Status Section */}
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        Status
-                      </div>
-                      <DropdownMenuItem onClick={() => setFilterStatus("all")} className="flex items-center justify-between cursor-pointer">
-                        All Nodes
-                        {filterStatus === "all" && <Check className="h-4 w-4 text-primary" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setFilterStatus("active")} className="flex items-center justify-between cursor-pointer">
-                        Active Only
-                        {filterStatus === "active" && <Check className="h-4 w-4 text-emerald-500" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setFilterStatus("inactive")} className="flex items-center justify-between cursor-pointer">
-                        Inactive Only
-                        {filterStatus === "inactive" && <Check className="h-4 w-4 text-red-500" />}
-                      </DropdownMenuItem>
-
-                      <Separator className="my-1 bg-border" />
-
-                      {/* Country Section */}
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        Country
-                      </div>
-                      <DropdownMenuItem onClick={() => setFilterCountry("all")} className="flex items-center justify-between cursor-pointer">
-                        All Countries
-                        {filterCountry === "all" && <Check className="h-4 w-4 text-primary" />}
-                      </DropdownMenuItem>
-                      {/* Dynamically list top countries found in cache */}
-                      {Array.from(new Set(Object.values(geoCache).map((g: any) => g.country))).slice(0, 5).map((country: any) => (
-                        <DropdownMenuItem key={country} onClick={() => setFilterCountry(country)} className="flex items-center justify-between cursor-pointer">
-                          <span className="truncate max-w-[150px]">{country}</span>
-                          {filterCountry === country && <Check className="h-4 w-4 text-primary" />}
-                        </DropdownMenuItem>
-                      ))}
-
-                      <Separator className="my-1 bg-border" />
-
-                      {/* Version Section */}
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        Version
-                      </div>
-                      <DropdownMenuItem onClick={() => setFilterVersion("all")} className="flex items-center justify-between cursor-pointer">
-                        All Versions
-                        {filterVersion === "all" && <Check className="h-4 w-4 text-primary" />}
-                      </DropdownMenuItem>
-                      {versionData.map((v) => (
-                        <DropdownMenuItem key={v.name} onClick={() => setFilterVersion(v.name)} className="flex items-center justify-between cursor-pointer">
-                          <span className="truncate max-w-[150px]">{v.name}</span>
-                          {filterVersion === v.name && <Check className="h-4 w-4 text-primary" />}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
               </div>
 
-              <div className="rounded-xl border border-border bg-card/50 overflow-hidden shadow-sm backdrop-blur-sm">
-                <Table>
-                  <TableHeader className="bg-muted/50">
-                    <TableRow className="hover:bg-transparent border-border">
-                      <TableHead className="w-[40px]"></TableHead>
-                      <TableHead className="w-[200px] font-bold text-secondary cursor-pointer" onClick={() => handleSort("pubkey")}>
-                        Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </TableHead>
-                      <TableHead className="font-bold text-secondary">Country</TableHead>
-                      <TableHead className="font-bold text-secondary cursor-pointer" onClick={() => handleSort("status")}>
-                        Status {sortConfig?.key === "status" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </TableHead>
-                      <TableHead className="font-bold text-secondary hidden md:table-cell">Client Ver</TableHead>
-                      <TableHead className="font-bold text-secondary hidden sm:table-cell">Gossip Address</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredNodes.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="h-24 text-center">No nodes found...</TableCell></TableRow>
-                    ) : (
-                      filteredNodes.map((node) => {
-                        const ip = node.gossip?.split(':')[0] || "";
-                        const geo = geoCache[ip];
-                        return (
-                          <TableRow key={node.pubkey} className="hover:bg-muted/50 cursor-pointer border-border" onClick={() => handleNodeClick(node)}>
-                            <TableCell><div className={`h-2 w-2 rounded-full ${node.rpc ? "bg-emerald-500" : "bg-red-500"}`} /></TableCell>
-                            <TableCell><span className="font-mono text-foreground text-sm truncate max-w-[150px]">{node.pubkey}</span></TableCell>
-                            <TableCell className="font-mono text-xs text-foreground">
-                              {geo ? (
-                                <span className="flex items-center gap-1">
-                                  {geo.countryCode}
-                                </span>
-                              ) : <span className="text-muted-foreground/50 animate-pulse">...</span>}
-                            </TableCell>
-                            <TableCell>{node.rpc ? <Badge className="bg-emerald-500/20 text-emerald-400">OPERATIONAL</Badge> : <Badge variant="destructive">OFFLINE</Badge>}</TableCell>
-                            <TableCell className="hidden md:table-cell"><span className="font-mono text-muted-foreground text-xs">{XandeumClient.formatVersion(node.version)}</span></TableCell>
-                            <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">{node.gossip}</TableCell>
-                          </TableRow>
-                        )
-                      })
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          )}
-
-          {/* VIEW: ANALYTICS */}
-          {activeView === "analytics" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-card/40 border-border p-4"><VersionChart data={versionData} /></Card>
-              <Card className="bg-card/40 border-border p-4 col-span-1"><StatusChart data={statusData} /></Card>
-
-              {/* New Country Distribution Panel */}
-              <div className="col-span-1 md:col-span-2">
+              {/* Row 2: Country Chart (2 cols) + Version Chart (1 col) + Storage Distribution (1 col) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <CountryChart data={countryData} />
+                <VersionChart data={versionData} />
+                <StorageDistribution data={storageDistributionData} />
               </div>
 
-              <div className="col-span-1 md:col-span-2">
-                <NetworkPerformance data={metrics?.tpsHistory || []} />
+              {/* Row 3: Node Leaderboard (full width) */}
+              <div>
+                <NodeLeaderboard data={leaderboardData} />
               </div>
             </div>
           )}
 
           {/* VIEW: MAP */}
           {activeView === "map" && (
-            <div className="flex flex-col h-[750px] w-full">
+            <div className="flex-1 min-h-0 overflow-hidden">
               <GlobalMap data={countryData} />
             </div>
           )}
 
-
-
-        </div>
-
-        {/* Node Details Sheet (Global) */}
-        <Sheet open={!!selectedNode} onOpenChange={(open) => !open && setSelectedNode(null)}>
-          <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto bg-background border-l border-border text-foreground">
-            <SheetHeader className="border-b border-border pb-6">
-              <SheetTitle className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Server className="h-5 w-5 text-primary" />
-                Node Intelligence
-              </SheetTitle>
-              <SheetDescription className="text-muted-foreground font-mono text-xs">
-                IDENTITY_HASH:{" "}
-                <span className="text-secondary">{selectedNode?.pubkey}</span>
-              </SheetDescription>
-            </SheetHeader>
-
-            {(() => {
-              const ip = selectedNode?.gossip?.split(':')[0] || "";
-              const geoData = geoCache[ip];
-
-              return (
-                <div className="mt-8 space-y-6">
-                  {/* Status & Version */}
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
-                        <Wifi className="inline w-3 h-3 mr-1" /> Status
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        {selectedNode?.rpc ? (
-                          <Badge className="bg-emerald-500/20 text-emerald-400 border-none">
-                            Online
-                          </Badge>
-                        ) : (
-                          <Badge variant="destructive">Offline</Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-1 text-right">
-                      <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
-                        <Server className="inline w-3 h-3 mr-1" /> Version
-                      </Label>
-                      <div className="font-mono text-sm text-foreground">
-                        {XandeumClient.formatVersion(selectedNode?.version || "Unknown")}
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-border" />
-
-                  {/* Addresses */}
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
-                        Gossip Address
-                      </Label>
-                      <div className="font-mono text-sm bg-muted p-2 rounded border border-border mt-1 flex justify-between items-center text-foreground">
-                        {selectedNode?.gossip || "N/A"}
-                        <Copy
-                          className="h-3 w-3 text-muted-foreground cursor-pointer hover:text-foreground"
-                          onClick={() =>
-                            navigator.clipboard.writeText(selectedNode?.gossip || "")
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
-                        RPC Endpoint
-                      </Label>
-                      <div className="font-mono text-sm bg-muted p-2 rounded border border-border mt-1 flex justify-between items-center text-foreground">
-                        {selectedNode?.rpc || "N/A"}
-                        <Copy
-                          className="h-3 w-3 text-muted-foreground cursor-pointer hover:text-foreground"
-                          onClick={() =>
-                            navigator.clipboard.writeText(selectedNode?.rpc || "")
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-border" />
-
-                  {/* Geolocation Section - Enriched */}
-                  <div>
-                    <h4 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                      <Globe className="h-5 w-5 text-primary" /> Geolocation
-                    </h4>
-                    {!geoData && isGeoSyncing ? (
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-full bg-muted" />
-                        <Skeleton className="h-4 w-3/4 bg-muted" />
-                      </div>
-                    ) : geoData ? (
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-6 text-sm">
-                        <div className="overflow-hidden">
-                          <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1 tracking-wider">
-                            Country
-                          </p>
-                          <p className="font-medium text-foreground flex items-center gap-2 truncate">
-                            <span className="text-xl">
-                              {geoData.countryCode
-                                ? geoData.countryCode.toUpperCase().replace(/./g, (char: string) => String.fromCodePoint(char.charCodeAt(0) + 127397))
-                                : "🌐"}
-                            </span>
-                            <span className="truncate" title={geoData.country}>{geoData.country}</span>
-                          </p>
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1 tracking-wider">
-                            City
-                          </p>
-                          <p className="font-medium text-foreground truncate" title={geoData.city}>{geoData.city}</p>
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1 tracking-wider">
-                            Region
-                          </p>
-                          <p className="font-medium text-foreground truncate" title={geoData.regionName}>
-                            {geoData.regionName}
-                          </p>
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1 tracking-wider">
-                            Timezone
-                          </p>
-                          <p className="font-medium text-foreground truncate" title={geoData.timezone}>
-                            {geoData.timezone}
-                          </p>
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1 tracking-wider">
-                            ASN
-                          </p>
-                          <p className="font-mono text-foreground text-xs truncate" title={geoData.as}>
-                            {geoData.as}
-                          </p>
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1 tracking-wider">
-                            Organization
-                          </p>
-                          <p className="font-medium text-foreground truncate" title={geoData.org}>{geoData.org}</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-muted-foreground text-xs">No Geo Data</div>
-                    )}
-                  </div>
-
-                  <Button
-                    onClick={handleExportHtml}
-                    className="w-full bg-primary hover:bg-orange-600 text-primary-foreground font-bold h-12 mt-6"
-                  >
-                    <Download className="mr-2 h-4 w-4" /> Export as HTML
-                  </Button>
-
-                  {/* Raw Data Toggle */}
-                  <div className="bg-muted p-4 rounded-lg overflow-x-auto text-[10px] font-mono text-secondary/80 border border-border group mt-8 relative">
-                    <div className="absolute top-2 right-2 text-xs text-muted-foreground">
-                      RAW_JSON_STREAM
-                    </div>
-                    <pre>{JSON.stringify(selectedNode, null, 2)}</pre>
-                  </div>
-                </div>
-              )
-            })()}
-          </SheetContent>
-        </Sheet>
-
-        <Toaster />
-      </main>
+          <Toaster />
+        </main>
+      </div>
     </div>
   );
 }
 
 // Subcomponents
-function DashboardCard({ icon, title, value, subtext, subtextClassName }: any) {
+function DashboardCard({ icon, title, value, subtext, subtextClassName, tooltip }: any) {
   return (
-    <Card className="bg-card/40 border-border shadow-sm relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    <Card className="bg-card/40 border-border shadow-sm relative group z-10 hover:z-20 transition-all duration-200">
+      <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
       <CardHeader className="pb-2">
         <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
           {icon} {title}
+          {tooltip && <InfoTooltip content={tooltip} />}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -821,12 +1069,47 @@ function DashboardCard({ icon, title, value, subtext, subtextClassName }: any) {
   );
 }
 
-function SidebarButton({ icon, label, active, onClick }: any) {
+interface SidebarButtonProps {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  collapsed?: boolean;
+}
+
+function SidebarButton({ icon, label, active, onClick, collapsed }: SidebarButtonProps) {
+  if (collapsed) {
+    return (
+      <TooltipProvider>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              onClick={onClick}
+              className={cn(
+                "w-8 h-8 p-0 justify-center transition-all",
+                active ? "bg-primary/10 text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              {icon}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="bg-[#0d1117] border-slate-800 text-slate-300 text-[12px] z-[100]">
+            <p>{label}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
   return (
     <Button
       variant="ghost"
       onClick={onClick}
-      className={`w-full justify-start font-medium transition-all ${active ? "text-primary-foreground bg-primary/10 border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+      className={cn(
+        "w-full justify-start font-medium transition-all",
+        active ? "text-primary-foreground bg-primary/10 border-l-2 border-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+      )}
     >
       {icon}
       {label}

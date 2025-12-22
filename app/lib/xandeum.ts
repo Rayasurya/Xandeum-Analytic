@@ -35,34 +35,54 @@ export class XandeumClient {
             let allNodes: PNodeInfo[] = [...clusterNodes];
 
             // 2. Fetch rich "pNode" stats via Multi-Seed Mesh Discovery
-            // Seeds from Xandeum Discord community
-            const MESH_SEEDS = [
-                // Original Seeds
-                "173.212.203.145",
-                "173.212.220.65",
-                "161.97.97.41",
-                "192.190.136.36",
-                "192.190.136.37",
-                "192.190.136.38",
-                "192.190.136.28",
-                "192.190.136.29",
-                "207.244.255.1",
-                // Additional Seeds from Community Chat
-                "45.84.138.15",
-                "173.249.3.118",
-                "84.21.171.129",
-                "161.97.185.116",
-                "154.38.169.212",
-                "152.53.155.15",
-                "154.38.185.152",
-                "173.249.59.66",
-                "45.151.122.60",
-                "152.53.236.91",
-                "173.249.54.191",
-                "45.151.122.71"
-            ];
+            // Check if we should use external Mesh API (for Vercel environment)
+            const shouldUseExternalApi = !!XANDEUM_CONFIG.MESH_API_URL;
 
             try {
+                if (shouldUseExternalApi && XANDEUM_CONFIG.MESH_API_URL) {
+                    // Use external dedicated backend
+                    const apiUrl = `${XANDEUM_CONFIG.MESH_API_URL}/api/pnodes`;
+                    const response = await fetch(apiUrl);
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success && Array.isArray(result.data)) {
+                            console.log(`[Xandeum] Fetched ${result.data.length} nodes from external Mesh API.`);
+                            return result.data;
+                        }
+                    } else {
+                        throw new Error(`External API failed with status ${response.status}`);
+                    }
+                }
+
+                // Fallback to client-side discovery (Local/Development)
+                // Seeds from Xandeum Discord community
+                const MESH_SEEDS = [
+                    // Original Seeds
+                    "173.212.203.145",
+                    "173.212.220.65",
+                    "161.97.97.41",
+                    "192.190.136.36",
+                    "192.190.136.37",
+                    "192.190.136.38",
+                    "192.190.136.28",
+                    "192.190.136.29",
+                    "207.244.255.1",
+                    // Additional Seeds from Community Chat
+                    "45.84.138.15",
+                    "173.249.3.118",
+                    "84.21.171.129",
+                    "161.97.185.116",
+                    "154.38.169.212",
+                    "152.53.155.15",
+                    "154.38.185.152",
+                    "173.249.59.66",
+                    "45.151.122.60",
+                    "152.53.236.91",
+                    "173.249.54.191",
+                    "45.151.122.71"
+                ];
+
                 // Map to merge specific pNode data
                 const nodeMap = new Map<string, PNodeInfo>();
 
@@ -137,6 +157,7 @@ export class XandeumClient {
 
             } catch (discoveryErr) {
                 console.warn("pNode Mesh Discovery Failed:", discoveryErr);
+                // If external API fails, we fall back to cluster nodes
             }
 
             // Sort: Active nodes (with RPC/TPU APIs) first, then by pubkey

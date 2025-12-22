@@ -120,7 +120,7 @@ export class XandeumClient {
                     nodeMap.set(pod.pubkey, {
                         ...existing,
                         gossip: existing.gossip || pod.address,
-                        rpc: existing.rpc || (pod.rpc_port ? `${pod.address.split(':')[0]}:${pod.rpc_port}` : undefined),
+                        rpc: existing.rpc || (pod.rpc_port ? `${pod.address.split(':')[0]}:${pod.rpc_port}` : null),
                         version: pod.version ? `${pod.version} (Heidelberg)` : (existing.version ?? null),
                         // Overwrite with richer pNode metrics
                         storage_committed: pod.storage_committed,

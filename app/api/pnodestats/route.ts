@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import fetch from 'node-fetch';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -16,8 +15,6 @@ export async function GET(request: Request) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 10000);
 
-        // Use specific node-fetch
-        // @ts-ignore
         const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },

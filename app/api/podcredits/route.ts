@@ -1,6 +1,5 @@
 
 import { NextResponse } from 'next/server';
-import fetch from 'node-fetch';
 
 export async function GET(request: Request) {
     const url = "https://podcredits.xandeum.network/api/pods-credits";
@@ -9,8 +8,6 @@ export async function GET(request: Request) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 5000);
 
-        // Use specific node-fetch
-        // @ts-ignore
         const response = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" },

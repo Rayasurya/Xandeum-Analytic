@@ -1,0 +1,88 @@
+// Webhooks Item
+
+// Webhooks
+
+.c-webhooks {
+  &__switch {
+    display: flex;
+    align-items: flex-start;
+    gap: 17px;
+    color: #111;
+
+    .c-switch {
+      margin-top: 7px;
+    }
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    &-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &-subLabel {
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    &-label,
+    &-subLabel {
+      color: #111;
+      word-break: break-all;
+    }
+  }
+
+  &__modify {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #DEDEEC;
+    background: #FFF;
+    box-shadow: 0px 8px 16px 0px rgba(37, 37, 37, 0.10);
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    &--edit {
+      color: #FFBF0F;
+      &:hover {
+        background: #FFBF0F;
+      }
+    }
+
+    &--delete {
+      color: #F2415A;
+      &:hover {
+        background: #F2415A;
+      }
+    }
+
+    &--delete,
+    &--edit {
+      border-radius: 6px;
+      border: 1px solid #F4F5F9;
+      background: #fff;
+      outline: none;
+      box-shadow: unset;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      padding: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}

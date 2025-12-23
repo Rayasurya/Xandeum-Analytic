@@ -1,0 +1,30 @@
+{
+  "name": "blocks-box",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/box/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/box",
+        "tsConfig": "packages/blocks/community/box/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/box/package.json",
+        "main": "packages/blocks/community/box/src/index.ts",
+        "assets": ["packages/blocks/community/box/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-box {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

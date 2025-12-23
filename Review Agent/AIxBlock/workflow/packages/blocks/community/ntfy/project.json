@@ -1,0 +1,26 @@
+{
+  "name": "blocks-ntfy",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/ntfy/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/ntfy",
+        "tsConfig": "packages/blocks/community/ntfy/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/ntfy/package.json",
+        "main": "packages/blocks/community/ntfy/src/index.ts",
+        "assets": ["packages/blocks/community/ntfy/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

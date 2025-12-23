@@ -1,0 +1,17 @@
+.llm-button-outline-view {
+	display: inline-block;
+
+	&__content {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 6px;
+	}
+
+	&__info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+}

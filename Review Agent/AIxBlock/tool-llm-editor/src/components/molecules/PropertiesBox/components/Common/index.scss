@@ -1,0 +1,61 @@
+.llm-properties-common {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	&__item {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+
+		&__label {
+			font-size: 14px;
+			font-weight: 500;
+			font-stretch: normal;
+			font-style: normal;
+			line-height: 1.71;
+			letter-spacing: normal;
+			color: #40405b;
+		}
+
+		&__radio-group {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+	}
+
+	&__input-group {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		gap: 26px
+	}
+
+	&__suffix-box {
+		display: flex;
+		flex-direction: row;
+		gap: 5px;
+
+		&__btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			padding: 6px 12px;
+			cursor: pointer;
+			height: 32px;
+			border-radius: 6px;
+
+			&.active,
+			&:active,
+			&:hover {
+				background-color: #EEEEFF;
+
+				>span {
+					color: #5050FF;
+				}
+			}
+		}
+	}
+}

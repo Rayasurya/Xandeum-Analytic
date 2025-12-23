@@ -1,0 +1,43 @@
+// Organizations
+
+.p-organizations-manage {
+  padding: 27px;
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-bottom: 25px;
+
+    button {
+      flex-direction: row-reverse;
+    }
+
+    &--setting {
+      background: #061629;
+    }
+
+    &--add {
+      background: linear-gradient(90deg, #ff71e8 0.03%, #3838ff 99.8%);
+    }
+  }
+
+  &__action {
+    &--clear {
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: pointer;
+      border: none;
+      box-shadow: unset;
+    }
+  }
+  .c-table__cell--nowrap{
+    .c-select {
+      width: 220px;
+    }
+  }
+}

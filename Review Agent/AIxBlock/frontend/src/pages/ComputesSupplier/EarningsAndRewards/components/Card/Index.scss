@@ -1,0 +1,36 @@
+.p-compute-card-item {
+	border-radius: 24px;
+	border: solid 1px #dedeec;
+	padding: 24px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+
+	&__header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+
+		>b {
+			font-size: 16px;
+		}
+	}
+
+	&__title {
+		font-size: 25px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+	}
+
+	&__subtitle {
+		font-size: 12px;
+	}
+
+	&.error {
+		.p-compute-card-item__title {
+			color: #F2415A;
+		}
+	}
+}

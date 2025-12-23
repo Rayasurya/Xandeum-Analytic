@@ -1,0 +1,26 @@
+{
+    "annotations": [
+        {
+            "id": "1001",
+            "lead_time": 0,
+            "result": [
+                {
+                    "id": "123456",
+                    "from_name": "audiofile",
+                    "to_name": "audiofile",
+                    "type": "audiofile",
+                    "value": {
+                        "audiofile": {
+                            "type": "url",
+                            "data": "/files/barradeen-emotional.mp3"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "data": {
+        "text": "Sample text to create speech"
+    },
+    "id": 1
+}

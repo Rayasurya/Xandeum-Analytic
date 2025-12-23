@@ -1,0 +1,52 @@
+
+import { PlaywrightCrawler } from 'crawlee';
+import { Page } from 'playwright';
+
+export async function crawlWebsite(url: string, timeout: number): Promise<string> {
+    let data = '';
+
+    const crawler = new PlaywrightCrawler({
+        launchContext: {
+            launchOptions: {
+                channel: 'chromium',
+            },
+        },
+
+        async requestHandler({ page, request }) {
+            try {
+                await page.goto(request.url, {
+                    timeout,
+                    waitUntil: 'domcontentloaded',
+                });
+
+                await scrollToBottom(page)
+
+                data = await page.content();
+            } catch (error) {
+                console.error(`Error processing ${request.url}:`, error);
+                throw error;
+            }
+        },
+
+        failedRequestHandler({ request }) {
+            console.log(`Request ${request.url} failed after ${timeout}ms`);
+        },
+    });
+
+    await crawler.run([url]);
+    return data;
+}
+
+export async function scrollToBottom(page: Page) {
+    await page.evaluate(async () => {
+        let lastScroll = 0;
+        let currentScroll = 0;
+
+        do {
+            lastScroll = currentScroll;
+            window.scrollTo(0, document.body.scrollHeight);
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            currentScroll = window.scrollY || document.documentElement.scrollTop;
+        } while (currentScroll > lastScroll);
+    });
+}

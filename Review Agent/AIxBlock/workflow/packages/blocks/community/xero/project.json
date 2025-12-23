@@ -1,0 +1,26 @@
+{
+  "name": "blocks-xero",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/xero/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/xero",
+        "tsConfig": "packages/blocks/community/xero/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/xero/package.json",
+        "main": "packages/blocks/community/xero/src/index.ts",
+        "assets": ["packages/blocks/community/xero/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,26 @@
+{
+  "name": "blocks-todoist",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/todoist/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/todoist",
+        "tsConfig": "packages/blocks/community/todoist/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/todoist/package.json",
+        "main": "packages/blocks/community/todoist/src/index.ts",
+        "assets": ["packages/blocks/community/todoist/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

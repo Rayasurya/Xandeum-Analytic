@@ -1,0 +1,30 @@
+{
+  "name": "blocks-wootric",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/wootric/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/wootric",
+        "tsConfig": "packages/blocks/community/wootric/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/wootric/package.json",
+        "main": "packages/blocks/community/wootric/src/index.ts",
+        "assets": ["packages/blocks/community/wootric/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-community-wootric {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

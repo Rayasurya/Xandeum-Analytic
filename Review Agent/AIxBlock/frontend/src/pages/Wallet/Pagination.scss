@@ -1,0 +1,63 @@
+.wallet-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  &__page {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333350;
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    margin-top: 10px;
+    &-prev,
+    &-next {
+      border: 1px solid #dedeec;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    &-prev {
+      margin-right: 10px;
+    }
+    &-next {
+      margin-left: 10px;
+    }
+    &-active {
+      color: #fff;
+      background: #5050ff;
+    }
+  }
+  &-result {
+    color: #333350;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: 1px solid #f3f3f4;
+    height: 40px;
+    margin-top: 10px;
+    &__number {
+      border: 1px solid #ececed;
+      border-radius: 8px;
+      margin-left: 5px;
+      height: 40px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: default;
+      width: 55px;
+      svg {
+        margin-left: 25px;
+        transform: rotate(-90deg);
+      }
+    }
+  }
+}

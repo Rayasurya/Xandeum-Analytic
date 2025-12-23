@@ -1,0 +1,13 @@
+.page-admin-tutorial {
+  &-group-form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  &-article-form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+}

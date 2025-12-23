@@ -1,0 +1,62 @@
+.c-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 50px;
+	flex-wrap: wrap;
+
+	&__page {
+
+		&--prev,
+		&--next,
+		&--number {
+			font-size: 16px;
+			font-weight: 700;
+			line-height: normal;
+			color: #4e4b66;
+			border: none;
+			box-shadow: unset;
+			outline: unset;
+			background: transparent;
+			cursor: pointer;
+		}
+
+		&--prev,
+		&--next,
+		&--number {
+			display: flex;
+			width: 44px;
+			height: 44px;
+			justify-content: center;
+			align-items: center;
+			border-radius: 16px;
+			background: transparent;
+		}
+
+		&--prev,
+		&--next {
+			border: 1px solid #dedeec;
+		}
+
+		&--active {
+			color: #fff;
+			background: #2a46ff;
+		}
+
+		&--spliter {
+			border-right: 1px solid #dedeec;
+			height: 44px;
+			margin: 0px 24px;
+		}
+		&--page-select{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 8px;
+			.c-select{
+				width: 80px;
+			}
+		}
+	}
+}

@@ -1,0 +1,106 @@
+// Model
+
+.c-model-item {
+  display: flex;
+  padding: 16px 18px;
+  flex-direction: column;
+  gap: 12px;
+  border-radius: 18px;
+  border: 1px solid #d6d8e7;
+  background: #fcfdff;
+
+  &:hover {
+    border-color: #2a46ff;
+    .c-model-item__header h4,
+    .c-model-item__footer h5 {
+      color: #2a46ff;
+    }
+
+    .c-model-item__action--add {
+      background: linear-gradient(90deg, #ff71e8 0.03%, #3838ff 99.8%);
+    }
+  }
+
+  &__header {
+    h4 {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 38px;
+      letter-spacing: 0.75px;
+      text-transform: capitalize;
+      color: #111;
+      margin: 0;
+      padding-left: 29px;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: auto;
+        left: 0;
+        right: auto;
+        width: 23px;
+        height: 22px;
+        bottom: 50%;
+        transform: translate(0, 50%);
+        border-radius: 8px;
+        background: url("@/assets/images/openai.png"),
+          lightgray 50% / cover no-repeat;
+      }
+    }
+  }
+
+  &__footer {
+    h5 {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: 0.75px;
+      color: #4e4b66;
+      margin: 0;
+    }
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  &__action {
+    &--add,
+    &--free {
+      border-radius: 32px;
+      min-width: 140px;
+    }
+
+    &--add {
+      height: 44px;
+      background: #6e7191;
+    }
+
+    &--free {
+      background: #00ba88;
+    }
+  }
+
+  &__updated,
+  &__downloaded,
+  &__heart {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.75px;
+    color: #6e7191;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

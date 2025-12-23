@@ -1,0 +1,167 @@
+// Css button
+
+.btn {
+  outline: unset;
+  box-shadow: unset;
+  padding: 0 20px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: 0.75px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  // Type
+  &-primary {
+    border: none;
+    background: #2a46ff;
+    color: #fff;
+  }
+
+  &-secondary {
+    border: 2px solid #2a46ff;
+    background: #fff;
+    color: #2a46ff;
+  }
+
+  &-dark {
+    border: 2px solid #1E2031;
+    background: #1E2031;
+    color: #ffffff;
+  }
+
+  &-hot {
+    border: 2px solid #d41060;
+    background: #d41060;
+    color: #ffffff;
+  }
+
+  &-gradient {
+    background: linear-gradient(89.94deg, #ff71e8 0.03%, #3838ff 99.8%);
+    border: none;
+    color: #ffffff;
+  }
+
+  &-white {
+    border: solid 1px #dedeec;
+    color: #14142a;
+  }
+
+  &-warning {
+    border: none;
+    color: #FFFFFF;
+    background-color: #FFBF0F;
+  }
+
+  // Size
+
+  &-tiny {
+    height: 32px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 400;
+    min-width: 75px;
+  }
+
+  &-small {
+    height: 40px;
+    border-radius: 20px;
+    min-width: 120px;
+  }
+
+  &-medium {
+    height: 50px;
+    border-radius: 25px;
+  }
+
+  &-large {
+    height: 60px;
+    border-radius: 30px;
+  }
+
+  &-medium,
+  &-large {
+    min-width: 200px;
+  }
+
+  // Disabled
+
+  &.disabled {
+    pointer-events: unset;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Custom style
+
+  &-signin,
+  &-signup,
+  &-social {
+    border-radius: 16px;
+    font-size: 16px;
+    line-height: normal;
+    padding: 10px;
+  }
+
+  // Btn Social
+
+  &-social {
+    font-weight: 700;
+    width: 100%;
+    letter-spacing: -0.24px;
+    border-color: #111;
+    color: #111;
+  }
+
+  // Btn Sign In
+
+  &-signin {
+    background: linear-gradient(90deg, #ff71e8 0.03%, #3838ff 99.8%);
+    font-weight: 600;
+  }
+
+  // Btn Sign Up
+
+  &-signup {
+    background: #252525;
+    font-weight: 400;
+    font-family: 'Satoshi-Regular';
+  }
+
+  &-social,
+  &-signin {
+    font-family: 'Satoshi-Bold';
+  }
+}
+
+
+.btn-hover-text {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 100%;
+  /* Position the text just below the button */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+
+.btn-wrapper {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+}
+
+.btn-wrapper:hover .btn-hover-text {
+  visibility: visible;
+  opacity: 1;
+}

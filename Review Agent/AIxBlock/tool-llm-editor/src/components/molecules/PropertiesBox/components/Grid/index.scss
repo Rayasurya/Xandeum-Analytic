@@ -1,0 +1,87 @@
+.llm-properties-grids {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+
+	&__label {
+		font-size: 14px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: normal;
+		color: #14142A;
+	}
+
+	&__align-box {
+		display: flex;
+		flex-direction: row;
+		gap: 5px;
+
+		&__align-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			padding: 6px 12px;
+			cursor: pointer;
+			height: 32px;
+			border-radius: 6px;
+
+			&.active,
+			&:active,
+			&:hover {
+				background-color: #EEEEFF;
+
+				>span {
+					color: #5050FF;
+				}
+
+				>svg {
+					>path {
+						stroke: #5050FF;
+					}
+				}
+			}
+		}
+	}
+
+	&__option-list {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 16px;
+		gap: 8px;
+		min-height: 124px;
+	}
+
+	&__drag-row {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		border: solid 1px #dedeec;
+		border-radius: 8px;
+		padding: 8px;
+	}
+
+	&__drag-icon {
+		cursor: grab;
+    display: flex;
+    align-items: center;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	&__input {
+		flex: 1;
+	}
+
+	&__action {
+		cursor: pointer;
+    display: flex;
+    align-items: center;
+	}
+}

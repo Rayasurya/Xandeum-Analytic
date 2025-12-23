@@ -1,0 +1,31 @@
+<View>
+
+    <AudioPlus name="audio" value="$url" mode="simple" extReplacements='{"wav":"mp3"}' />
+
+    <View style="padding: 20px; margin-top: 2em; border-radius: 5px; border: solid 1px rgba(255,255,255,.1);">
+        <TextArea name="transcription" toName="audio" rows="2" editable="true" perRegion="false" required="false"/>
+    </View>
+
+    <View style="display:none" class="example">
+[
+    {
+        "data": {
+            "audio": "/static/audio/sample-15s.mp3"
+        }
+    }
+]
+    </View>
+
+    <View style="padding: 20px; margin-top: 2em; border-radius: 5px; border: solid 1px rgba(255,255,255,.1);">
+        <Header value="Review"/>
+        <Choices name="review" toName="audio" choice="single" showInLine="true">
+            <Choice value="Approve"/>
+            <Choice value="Reject"/>
+        </Choices>
+    </View>
+
+    <View style="border: solid 1px rgba(255,255,255,.1); padding: 20px; margin-top: 1em; border-radius: 5px;">
+        <Header value="Comment" style="font-size: 1.25em"/>
+        <Textarea name="comment" editable="true" rows="5" placeholder="Comment text" toName="audio"/>
+    </View>
+</View>

@@ -1,0 +1,42 @@
+{
+    "annotations": [
+        {
+            "id": "1001",
+            "lead_time": 0,
+            "result": [
+                {
+                    "type": "chat",
+                    "from_name": "chat",
+                    "to_name": "chat",
+                    "value": {
+                        "chat": [
+                            {
+                                "role": "User",
+                                "content": "Message 1"
+                            },
+                            {
+                                "role": "System",
+                                "content": "Message 2"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "data": {
+        "chat": [
+            {
+                "role": "User",
+                "content": "Obj message 1"
+            },
+            {
+                "role": "System",
+                "content": "Obj message 2"
+            }
+        ]
+    },
+    "id": 1,
+    "predictions": [],
+    "task_path": "../examples/chat/tasks.json"
+}

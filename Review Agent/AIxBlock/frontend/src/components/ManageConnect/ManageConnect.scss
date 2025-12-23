@@ -1,0 +1,379 @@
+// Manage connect
+
+.c-connect {
+  border: 1px solid #DEDEEC;
+  background: #fff;
+  box-shadow: 0 10px 20px 0 rgba(37, 37, 37, 0.10);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border-radius: 12px;
+
+  .flex {
+    display: flex;
+  }
+
+  .align-center {
+    align-items: center;
+  }
+
+  .flex-col {
+    flex-direction: column;
+  }
+
+  .justify-center {
+    justify-content: center;
+  }
+
+  .gap-4 {
+    gap: 4px;
+  }
+
+  &__install {
+    gap: 24px;
+  }
+
+  &.installing {
+    .c-connect__desc {
+      color: #D69D00;
+    }
+  }
+
+  &__endpoint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    color: #14142A;
+    .endpoint {
+      &-link {
+        color: #5050FF;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__hr {
+    width: 100%;
+    height: 2px;
+    margin: 0;
+    background: #E9E9F2;
+  }
+  
+  &__title {
+    display: flex;
+    font-weight: bold;
+    flex-direction: column;
+
+    &.master {
+      color: #5050FF;
+    }
+  }
+
+  &__desc {
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+
+    &.stop {
+      color: #E5102E;
+    }
+
+    &.working {
+      color: #1F9854;
+    }
+
+    &.network-disconnected {
+      color: #FF55AA;
+      margin-top: 5px;
+    }
+
+    &.compleated {
+
+      span,
+      button {
+        color: #1F9854;
+      }
+    }
+
+    &.failed {
+
+      span,
+      button {
+        color: #E5102E;
+      }
+    }
+
+    button {
+      font-weight: 700;
+      background: transparent;
+      box-shadow: unset;
+      outline: unset;
+      border: none;
+      padding: 0;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__badge {
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+
+    &.success {
+      background: #90c55e;
+    }
+
+    &.di {
+      background: rgb(58, 57, 57);
+    }
+
+    &.co {
+      background: #27BE69;
+    }
+
+    &.er {
+      background: red;
+    }
+
+    &.tr {
+      background: rgb(8, 32, 245);
+    }
+
+    &.pending {
+      background: yellow;
+    }
+  }
+
+  &__action {
+    display: flex;
+    gap: 12px;
+
+    &.between {
+      justify-content: space-between;
+    }
+
+    &.delete {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    &-item {
+      align-items: center;
+      cursor: pointer;
+      display: inline-flex;
+      flex-direction: column;
+      font-size: 12px;
+      gap: 8px;
+      position: relative;
+      background: transparent;
+      border: none;
+      outline: unset;
+      box-shadow: unset;
+      padding: 0;
+
+      &.installing {
+        cursor: not-allowed;
+      }
+
+      &.loading {
+        width: 42px;
+        height: 42px;
+      }
+    }
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    &-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #90c55e;
+    }
+
+    &-di {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgb(58, 57, 57);
+    }
+
+    &-er {
+      font-size: 14px;
+      font-weight: 700;
+      color: red;
+    }
+
+    &-co {
+      font-size: 14px;
+      font-weight: 700;
+      color: #27BE69;
+    }
+
+    &-tr {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgb(8, 32, 245);
+    }
+
+    &--action {
+      background: transparent;
+      border: none;
+      outline: unset;
+      box-shadow: unset;
+      transform: rotate(90deg);
+      cursor: pointer;
+      padding: 0;
+    }
+  }
+
+  &--click {
+    background: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 24px;
+    border-radius: 8px;
+    border: 1px solid;
+    height: 40px;
+    box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+    padding: 8px 12px;
+    position: relative;
+
+    &.stop {
+      color: #f2415a;
+      border-color: #f2415a;
+      background: #fff;
+    }
+
+    &.start {
+      color: #27BE69;
+      border-color: #27BE69;
+    }
+
+    &.start-training {
+      border-color: #F8F8FD;
+      background-color: #F8F8FD;
+      color: #2D2D41;
+    }
+
+    &.stop-training {
+      border-color: #F9C88C;
+      background-color: #FEF3E6;
+      color: #F28705;
+    }
+
+    &.join-master {
+      border-color: #73E2A4;
+      background-color: #E6FAEE;
+      color: #1F9854;
+    }
+
+    &.reject-master {
+      border-color: #F9C88C;
+      background-color: #FEF3E6;
+      color: #F28705;
+    }
+
+    &.dashboard {
+      color: #14142A;
+      background: white;
+      border-color: #DEDEEC;
+    }
+
+    &.delete {
+      color: #f00;
+    }
+
+    &.cancel {
+      color: black;
+    }
+
+    &.reset {
+      color: #5050ff;
+      border-color: #5050ff;
+      background: #F1F5FF;
+    }
+  }
+
+  &__node-detail {
+    min-width: 1114px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #F8F8FD;
+    padding: 7px;
+    border-radius: 6px;
+
+    &-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      &--icon {
+        border: 1px solid #E9E9F2;
+        width: 48px;
+        height: 48px;
+        background: #F0F0F6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+      }
+
+      &__content {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 24px;
+        color: #2D2D41;
+      }
+    }
+  }
+
+  &-config__tab {
+    display: grid;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+
+    .tab-config {
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #DEDEEC;
+      color: #14142A;
+      background: #fff;
+
+      &.active {
+        border-color: #5050FF;
+        color: #5050FF;
+      }
+    }
+  }
+
+  &__model-config,
+  &__args-model {
+
+    .c-modal__body,
+    .c-modal__footer {
+      margin-top: 0;
+    }
+  }
+}

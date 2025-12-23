@@ -1,0 +1,21 @@
+[
+    {
+        "data": {
+            "chat": [
+                {
+                    "role": "User",
+                    "content": "Obj message 1"
+                },
+                {
+                    "role": "System",
+                    "content": "Obj message 2"
+                }
+            ]
+        }
+    },
+    {
+        "data": {
+            "chat": "User: How are you?\nSystem: I'm fine. Thank you. And you?"
+        }
+    }
+]

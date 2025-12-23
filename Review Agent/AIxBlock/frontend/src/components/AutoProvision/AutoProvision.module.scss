@@ -1,0 +1,20 @@
+.autoProvision {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  border: 1px solid var(--main-Line);
+  background: var(--Color-base-white);
+  padding: 8px 10px;
+  width: 155px;
+
+  >div {
+    gap: unset;
+  }
+
+  &Title {
+    font-size: 14px;
+    line-height: 24px;
+    color: var(--main-Label);
+  }
+}

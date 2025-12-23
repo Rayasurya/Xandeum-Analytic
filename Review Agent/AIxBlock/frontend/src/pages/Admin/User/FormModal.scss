@@ -1,0 +1,67 @@
+.add-user-modal {
+  max-width: 675px;
+
+  &-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    &__group {
+      width: 100%;
+      margin-bottom: 12px;
+      position: relative;
+
+      &.w-half {
+        width: 49%;
+      }
+
+
+      .permissions-label {
+        display: block;
+        margin-bottom: 12px;
+        margin-top: 16px;
+      }
+
+      .permissions-row {
+        display: flex;
+        margin-bottom: 17px;
+        cursor: pointer;
+
+        &-content {
+          span:first-child {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+          }
+
+          span:last-child {
+            display: block;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .c-select {
+      &__list {
+        box-sizing: border-box;
+        left: 0;
+        right: 0;
+      }
+    }
+  }
+
+  .c-modal__footer {
+    button {
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(89.94deg, #ff71e8 0.03%, #3838ff 99.8%);
+      height: 48px;
+      display: flex;
+      flex-direction: row-reverse;
+    }
+  }
+}

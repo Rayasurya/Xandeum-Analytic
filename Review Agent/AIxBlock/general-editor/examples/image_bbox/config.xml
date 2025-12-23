@@ -1,0 +1,44 @@
+<View>
+    <Image name="img" value="$image"></Image>
+    <RectangleLabels name="tag" toName="img" fillOpacity="0.5" strokeWidth="5">
+        <Label value="Planet"></Label>
+        <Label value="Moonwalker"></Label>
+    </RectangleLabels>
+    <AIConfig task="image-bounding-box-segmentation">
+        <AIConfigFixedString key="from_name" value="img,tag"
+                             description="Name of the objects to get the data to predict"/>
+        <AIConfigFixedString key="to_name" value="tag" description="Name of the object to be set the result"/>
+        <AIConfigFixedString key="model_type" value="rectanglelabels" description="Can not be changed string"/>
+        <AIConfigFixedString key="model_id" value="facebook/opt-125m" description="Can not be changed string"/>
+        <AIConfigFixedNumber key="payload_version" value="2" description="Can not be changed number"/>
+        <AIConfigNumber key="token_length" value="50" description="Can not be changed number"/>
+        <AIConfigRange key="confidence_threshold" min="0" max="1" step="0.05" value="0.6"
+                       description="Change value by slider"/>
+        <!--
+          Payload object that built from the config above
+          {
+            command: "predict",
+            project: "<project_id>",
+            params: {
+              task: "image-bounding-box-segmentation",
+              from_name: {
+                img: {
+                  type: "image",
+                  data: "<base64 encoded string>",
+                },
+                tag: {
+                  type: "rectanglelabels",
+                  data: <array of labels of the [tag] object>, // => ["Planet", "Moonwalker"],
+                }
+              },
+              to_name: "tag",
+              model_type: "rectanglelabels",
+              model_id: "facebook/opt-125m",
+              payload_version: 2,
+              token_length: 50,
+              confidence_threshold: 0.6,
+            },
+          }
+        -->
+    </AIConfig>
+</View>

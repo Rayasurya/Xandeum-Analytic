@@ -1,0 +1,70 @@
+{
+    "annotations": [
+        {
+            "id": "1001",
+            "result": [
+                {
+                    "from_name": "label",
+                    "id": "SsGrpVgy_C",
+                    "source": "$audio",
+                    "to_name": "audio",
+                    "type": "labels",
+                    "value": {
+                        "end": 5,
+                        "labels": [
+                            "Speech"
+                        ],
+                        "start": 3
+                    }
+                },
+                {
+                    "from_name": "label",
+                    "id": "JhxupEJWlW",
+                    "source": "$audio",
+                    "to_name": "audio",
+                    "type": "labels",
+                    "value": {
+                        "end": 8,
+                        "labels": [
+                            "Noise"
+                        ],
+                        "start": 6
+                    }
+                },
+                {
+                    "from_name": "label",
+                    "id": "JhxupEJWlV",
+                    "source": "$audio",
+                    "to_name": "audio",
+                    "type": "labels",
+                    "value": {
+                        "end": 11,
+                        "labels": [
+                            "Noise"
+                        ],
+                        "start": 9
+                    }
+                },
+                {
+                    "from_name": "label",
+                    "id": "JhxupEJWlU",
+                    "source": "$audio",
+                    "to_name": "audio",
+                    "type": "labels",
+                    "value": {
+                        "end": 14,
+                        "labels": [
+                            "Noise"
+                        ],
+                        "start": 12
+                    }
+                }
+            ]
+        }
+    ],
+    "data": {
+        "audio": "https://htx-misc.s3.amazonaws.com/opensource/aixblock/examples/audio/barradeen-emotional.mp3"
+    },
+    "id": 1,
+    "task_path": "../examples/audio_regions/tasks.json"
+}

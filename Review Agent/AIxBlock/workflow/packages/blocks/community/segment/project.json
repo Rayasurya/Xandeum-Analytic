@@ -1,0 +1,38 @@
+{
+  "name": "blocks-segment",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/segment/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/segment",
+        "tsConfig": "packages/blocks/community/segment/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/segment/package.json",
+        "main": "packages/blocks/community/segment/src/index.ts",
+        "assets": [
+          "packages/blocks/community/segment/*.md"
+        ],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-segment {args.ver} {args.tag}",
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    }
+  },
+  "tags": []
+}

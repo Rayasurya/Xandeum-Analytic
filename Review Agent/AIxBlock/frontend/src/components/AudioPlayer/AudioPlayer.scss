@@ -1,0 +1,97 @@
+.c-audio {
+  padding-right: 10px;
+  padding-left: 10px;
+  min-height: 400px;
+  background-color: #090909;
+  justify-content: center;
+  border-radius: 10px;
+
+  video {
+    display: none;
+  }
+
+  &__content {
+    justify-content: center;
+
+    &-title {
+      text-align: center;
+      color: white;
+    }
+  }
+
+  &__progress {
+    max-width: 100%;
+    padding-top: 50px;
+
+
+    justify-content: center;
+
+    &-time {
+      display: flex;
+      justify-content: space-between;
+      color: white;
+    }
+
+    &-item {
+      width: 100%;
+    }
+  }
+
+  &__button {
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+
+    svg {
+      width: 80px;
+      padding: 10px;
+      height: 80px;
+    }
+
+    color: #090909;
+
+
+    &-play {
+
+      color: white;
+      background-image: linear-gradient(#8673FD, #5C42FF);
+      border-radius: 50%;
+    }
+
+    &-play:hover {
+
+      color: white;
+      background-image: linear-gradient(#5C42FF, #8673FD);
+      border-radius: 50%;
+    }
+
+    &-back {
+      margin-top: -10px;
+      max-height: 40px;
+
+    }
+
+    &-next {
+      max-height: 40px;
+    }
+
+    &-next:hover,
+    &-next:hover svg:hover {
+      color: #5C42FF;
+    }
+
+    &-back:hover,
+    &-back:hover svg:hover {
+      color: #5C42FF;
+    }
+  }
+}
+
+
+.c-audio__button-back:hover svg {
+  opacity: 0.7;
+}
+
+.c-audio__button-next:hover svg {
+  opacity: 0.7;
+}

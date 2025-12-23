@@ -1,0 +1,68 @@
+// Compute options
+
+.p-compute-opt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  max-width: 1024px;
+  margin: auto;
+
+  &__heading {
+    margin-top: 100px;
+    h2 {
+      font-size: 28px;
+      font-weight: 600;
+      line-height: normal;
+      font-style: normal;
+      letter-spacing: 1px;
+      color: #4e4b66;
+      margin: 0;
+      text-align: center;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  &__item-wrapper {
+    align-self: stretch;
+    border-radius: 16px;
+    border: 2px solid #d6d8e7;
+    position: relative;
+    padding-bottom: 86px;
+
+    &:hover {
+      border-color: #d6d8e7;
+      background: #fff;
+    }
+
+    &.active {
+      border: 2px solid #3c56ff;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    &--back {
+      background: #111;
+    }
+  }
+}
+
+.c-navbar__icon.outline {
+  &.btn-tutorial {
+    color: #14142A;
+    border: 1px solid #DEDEEC;
+  }
+}

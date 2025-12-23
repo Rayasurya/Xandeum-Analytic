@@ -1,0 +1,46 @@
+// Percents
+
+.c-percents {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    span {
+      font-size: 12px;
+      font-weight: 700;
+      color: #333350;
+    }
+
+    > div {
+      width: auto;
+      height: 32px;
+      padding: 0 7.5px;
+      border-radius: 4px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+    }
+
+    &.danger {
+      >div {
+        background: #FEECEE;
+        span {
+          color: #F2415A;
+        }
+      }
+    }
+
+    &.success {
+      >div {
+        background: #E6FAEE;
+        span {
+          color: #27BE69;
+        }
+      }
+    }
+  }
+}

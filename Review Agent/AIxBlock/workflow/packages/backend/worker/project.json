@@ -1,0 +1,23 @@
+{
+  "name": "server-worker",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/backend/worker/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/backend/worker",
+        "main": "packages/backend/worker/src/index.ts",
+        "tsConfig": "packages/backend/worker/tsconfig.lib.json",
+        "assets": ["packages/backend/worker/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

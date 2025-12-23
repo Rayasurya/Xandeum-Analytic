@@ -1,0 +1,53 @@
+// Compact user
+
+.c-compact-user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  backdrop-filter: blur(10px);
+
+  &__avatar {
+    border-radius: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.url {
+      object-fit: cover;
+      height: 35px;
+      width: 35px;
+    }
+
+    &.text {
+      background-image: linear-gradient(90deg, #ff71e8 0.03%, #3838ff 99.8%);
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      padding: 3px;
+      display: flex;
+      height: 35px;
+      width: 35px;
+      align-items: center;
+      justify-content: center;
+
+      span {
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+  }
+
+  &--me {
+    border: solid 3px #5050FF;
+    padding: 2px;
+  }
+
+  &--me &__avatar.text {
+    height: 30px;
+    width: 30px;
+  }
+}

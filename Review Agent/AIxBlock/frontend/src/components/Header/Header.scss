@@ -1,0 +1,70 @@
+.c-header {
+  &__header-block {
+    display: flex;
+    padding-top: 1rem;
+  }
+
+  &__header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__heading {
+    h4 {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: 0.75px;
+      color: #272833;
+      margin: 0;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 50%;
+
+    button {
+      border-radius: 32px;
+      font-size: 18px;
+      padding: 8px 20px;
+      margin-left: 10px;
+      min-width: 163px;
+      flex-direction: row-reverse;
+    }
+
+    &--delete {
+      background: linear-gradient(90.48deg, #475163 0.41%, #040405 106.67%);
+    }
+
+    &--add-ml {
+      background: linear-gradient(89.94deg, #ff71e8 0.03%, #3838ff 99.8%);
+    }
+
+    &--export {
+      height: 31px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    &-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+    }
+
+    &--clear,
+    &--edit {
+      border: none;
+      background: transparent;
+      padding: 0;
+      outline: unset;
+      cursor: pointer;
+    }
+  }
+}

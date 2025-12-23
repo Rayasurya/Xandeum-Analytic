@@ -1,0 +1,34 @@
+#editor-designer-toolbox {
+  box-sizing: border-box;
+  position: fixed;
+  left: 13px;
+  background-color: #fff;
+  bottom: 13px;
+  top: 83px;
+  border-bottom-left-radius: 10px;
+  width: 96px;
+  border-right: solid 1px rgba(0,0,0,.1);
+  padding: 8px;
+  display: grid;
+  align-content: flex-start;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  grid-gap: 8px;
+  z-index: 1;
+
+  .item {
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 6px;
+    transition: 250ms background-color linear;
+
+    &:hover {
+      background-color: rgba(0,0,0,.1);
+    }
+
+    svg {
+      height: auto;
+      width: 100%;
+    }
+  }
+}

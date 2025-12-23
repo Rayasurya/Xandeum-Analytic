@@ -1,0 +1,35 @@
+.main-sidebar {
+	width: 292px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 20px;
+	padding: 16px 24px;
+	border-left: solid 1px #dedeec;
+	border-right: solid 1px #dedeec;
+	transition: 0.1s;
+
+	&.collapsed {
+		width: 60px;
+		padding: 0;
+		overflow: hidden;
+
+		.main-sidebar__child {
+			display: none;
+		}
+	}
+
+	&__child {
+		display: flex;
+		min-width: 294px;
+		flex-direction: column;
+		gap: 16px;
+		overflow-y: scroll;
+		scrollbar-width: none;
+		
+		&::-webkit-scrollbar {
+			width: 0;
+		}
+	}
+}

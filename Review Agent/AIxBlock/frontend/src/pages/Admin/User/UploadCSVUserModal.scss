@@ -1,0 +1,23 @@
+.csv-modal {
+  &__upload {
+    &-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #4e4b66;
+      display: block;
+    }
+  }
+  .c-modal__footer {
+    button {
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(89.94deg, #ff71e8 0.03%, #3838ff 99.8%);
+      height: 48px;
+      display: flex;
+      flex-direction: row-reverse;
+    }
+  }
+}

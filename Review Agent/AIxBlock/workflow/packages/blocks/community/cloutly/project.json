@@ -1,0 +1,45 @@
+{
+  "name": "blocks-cloutly",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/cloutly/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/cloutly",
+        "tsConfig": "packages/blocks/community/cloutly/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/cloutly/package.json",
+        "main": "packages/blocks/community/cloutly/src/index.ts",
+        "assets": [
+          "packages/blocks/community/cloutly/*.md"
+        ],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    }
+  }
+}

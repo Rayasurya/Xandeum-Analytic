@@ -1,0 +1,67 @@
+// Main layout
+
+.layout-user {
+  &__outlet {
+    min-height: 100%;
+  }
+
+  &__split {
+    margin-top: 69px;
+    &.close {
+      .layout-user__sidebar {
+        border-right: unset;
+      }
+    }
+  }
+
+  &__sidebar,
+  &__content {
+    position: fixed;
+    transition: all 0.1s ease-out;
+    background: #fff;
+    top: 12px;
+    bottom: 12px;
+  }
+
+  &__sidebar {
+    left: 12px;
+    padding: 70px 0 0;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border: 1px solid #DEDEEC;
+  }
+
+  &__content {
+    right: 12px;
+    padding: 67px 0 0;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    border: 1px solid #DEDEEC;
+    margin-top: 3px;
+    
+    &.scrollbar {
+      overflow: hidden scroll;
+    }
+
+    &.close {
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+      left: 12px;
+    }
+
+    &.full {
+      left: 12px;
+      border-bottom-left-radius: 12px;
+      border-top-left-radius: 12px;
+    }
+  }
+}
+
+.notification {
+    position: absolute;
+    bottom: 15px;
+    right: 25px;
+    .c-alert {
+      margin-bottom: 10px;
+    }
+}

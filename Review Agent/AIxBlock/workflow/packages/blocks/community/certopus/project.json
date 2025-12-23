@@ -1,0 +1,26 @@
+{
+  "name": "blocks-certopus",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/certopus/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/certopus",
+        "tsConfig": "packages/blocks/community/certopus/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/certopus/package.json",
+        "main": "packages/blocks/community/certopus/src/index.ts",
+        "assets": ["packages/blocks/community/certopus/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

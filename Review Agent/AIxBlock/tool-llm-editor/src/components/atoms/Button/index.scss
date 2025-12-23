@@ -1,0 +1,68 @@
+.llm-button {
+	height: 40px;
+	flex-grow: 0;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+	padding: 0px 12px;
+	border-radius: 8px;
+	cursor: pointer;
+	background-color: #5050ff;
+
+	&.primary {
+
+		&:hover,
+		&:active,
+		&.active {
+			background-color: #0b2fd4;
+		}
+
+		>svg {
+			>path {
+				stroke: #fff;
+			}
+
+			>circle {
+				fill: #fff;
+			}
+		}
+	}
+
+	>span {
+		font-size: 14px;
+		font-weight: 600;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: normal;
+		text-align: left;
+		color: #fff;
+	}
+
+	&.outline {
+		background-color: #fff;
+		border: solid 1px #5050ff;
+
+		&:hover,
+		&:active,
+		&.active {
+			background-color: #EEEEFF;
+		}
+
+		>svg {
+			>path {
+				stroke: #5050ff;
+			}
+
+			>circle {
+				fill: #5050ff;
+			}
+		}
+
+		>span {
+			color: #5050ff;
+		}
+	}
+}

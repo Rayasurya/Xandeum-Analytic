@@ -1,0 +1,59 @@
+// Organizations
+
+.p-computes {
+  padding: 27px;
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-bottom: 25px;
+
+    button {
+      flex-direction: row-reverse;
+    }
+
+    &--setting {
+      background: #061629;
+    }
+
+    &--add {
+      background: linear-gradient(90deg, #ff71e8 0.03%, #3838ff 99.8%);
+    }
+  }
+
+  .c-table {
+    .status {
+      width: 20px;
+      height: 20px;
+      border-radius: 100%;
+      display: block;
+
+      &.created,
+      &.completed {
+        background: green;
+      }
+
+      &.pending {
+        background: yellow;
+      }
+
+      &.suspend,
+      &.expired,
+      &.failed {
+        background: red;
+      }
+
+      &.rented_bought,
+      &.in_marketplace {
+        background: blue;
+      }
+
+
+      &.failed {
+        background: rgb(102, 102, 102);
+      }
+
+    }
+  }
+}

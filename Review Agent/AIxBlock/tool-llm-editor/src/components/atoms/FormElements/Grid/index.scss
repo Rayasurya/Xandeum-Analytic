@@ -1,0 +1,17 @@
+.llm-grid-view {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	min-height: 86px;
+
+	&__item {
+		min-height: 86px;
+		border-radius: 8px;
+		border: dashed 1.3px #dedeec;
+		padding: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		height: auto;
+	}
+}

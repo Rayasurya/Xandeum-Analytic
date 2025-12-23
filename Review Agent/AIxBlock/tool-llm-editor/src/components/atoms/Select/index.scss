@@ -1,0 +1,44 @@
+.llm-select-view {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	&__label {
+		font-size: 14px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: normal;
+		color: #40405b;
+	}
+	&__option {
+		font-size: 14px;
+	}
+
+	.select-item {
+		height: 32px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 6px;
+		cursor: pointer;
+
+		&__icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 32px;
+
+			>svg {
+				>path {
+					stroke: #40405B;
+				}
+				>circle {
+					fill: #40405B;
+				}
+			}
+		}
+	}
+
+}

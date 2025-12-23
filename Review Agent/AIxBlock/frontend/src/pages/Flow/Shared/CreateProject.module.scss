@@ -1,0 +1,116 @@
+.createProject {
+  max-width: 680px;
+  margin: auto;
+  width: 100%;
+  border-radius: var(--Radius-rounded-xl, 12px);
+  border: 1px solid var(--main-Line);
+  background: var(--main-bg);
+  padding: 24px;
+  box-shadow: 0px 8px 16px 0px rgba(134, 93, 255, 0.08);
+}
+
+.errorNode {
+  margin-bottom: 16px;
+}
+
+.section {
+  display: flex;
+
+  &Item {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+    .c-input-base__label {
+      span {
+        font-size: 14px;
+        line-height: 24px;
+      }
+    }
+  }
+}
+
+.field {
+  width: 100%;
+
+  .c-control {
+    input {
+      height: 40px;
+    }
+  }
+}
+
+.sectionFlex {
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  margin-top: 16px;
+  @extend .section
+}
+
+.heading {
+  color: var(--Color-base-Heading);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  margin: 0 0 24px;
+}
+
+.radio {
+  &Label {
+    color: var(--main-Label);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  &List {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 6px;
+  }
+
+  &Checkmark {
+    width: 16px;
+    height: 16px;
+    border-radius: 100%;
+    display: block;
+  }
+
+  &Item {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+
+    &.white {
+      .radioCheckmark {
+        border: 1px solid #111;
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      margin: 0;
+      z-index: 9;
+
+      &:checked~.radioCheckmark {
+        border: 1px solid #111;
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+}

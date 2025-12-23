@@ -1,0 +1,26 @@
+{
+  "name": "blocks-discord",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/discord/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/discord",
+        "tsConfig": "packages/blocks/community/discord/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/discord/package.json",
+        "main": "packages/blocks/community/discord/src/index.ts",
+        "assets": ["packages/blocks/community/discord/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

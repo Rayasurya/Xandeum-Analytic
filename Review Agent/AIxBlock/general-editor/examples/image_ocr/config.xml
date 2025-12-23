@@ -1,0 +1,18 @@
+<View>
+  <Image name="image" value="$image"/>
+  <Labels name="label" toName="image" choice="multiple">
+    <Label value="Text"/>
+    <Label value="Handwriting"/>
+  </Labels>
+  <Rectangle name="bbox" toName="image" strokeWidth="3"/>
+  <Polygon name="poly" toName="image" strokeWidth="3"/>
+  <TextArea name="transcription" toName="image"
+    editable="true"
+    perRegion="false"
+    required="false"
+    maxSubmissions="1"
+    rows="5"
+    placeholder="Recognized Text"
+    displayMode="region-list"
+  />
+</View>

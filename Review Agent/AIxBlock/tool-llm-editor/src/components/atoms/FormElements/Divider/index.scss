@@ -1,0 +1,35 @@
+.llm-divider-view {
+	display: flex;
+	flex-direction: row;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	align-items: center;
+	justify-content: flex-start;
+	border-bottom: solid 1px #dedeec;
+
+	&__label__content {
+		display: flex;
+		width: 100%;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	&__label {
+		font-size: 16px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: normal;
+		color: #40405b;
+	}
+
+	&__info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+}

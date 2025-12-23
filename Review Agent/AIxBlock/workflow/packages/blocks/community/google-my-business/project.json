@@ -1,0 +1,26 @@
+{
+  "name": "blocks-google-my-business",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/google-my-business/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/google-my-business",
+        "tsConfig": "packages/blocks/community/google-my-business/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/google-my-business/package.json",
+        "main": "packages/blocks/community/google-my-business/src/index.ts",
+        "assets": ["packages/blocks/community/google-my-business/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

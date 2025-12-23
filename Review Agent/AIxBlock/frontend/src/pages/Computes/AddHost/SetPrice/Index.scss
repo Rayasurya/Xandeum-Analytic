@@ -1,0 +1,82 @@
+.c-compute-set-price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10%;
+
+  &__content {
+    border-radius: 12px;
+    border: solid 1px #dedeec;
+    width: 906px;
+    padding: 12px;
+  }
+
+  &__title {
+    font-size: 16px;
+    color: #14142A;
+    padding: 12px;
+  }
+
+  &__input-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    // width: 257px;
+    text-align: center;
+    gap: 6px;
+  }
+
+  &__input-subtitle {
+    font-size: 12px;
+    color: #14142A;
+    font-weight: 400;
+    display: inline-block;
+    b {
+      color: #27BE69;
+      font-weight: 400;
+      margin-left: 6px;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 24px 0px;
+
+    .btn-next {
+      border-radius: 8px;
+    }
+  }
+
+  .c-table td:first-child {
+    width: 115px;
+  }
+
+  .c-table td:last-child {
+    width: 257px;
+  }
+
+  .input-text {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .c-input-base__right {
+    font-size: 10px;
+    line-height: 10px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+
+  .error {
+    color: #F2415A;
+    font-size: 12px;
+  }
+  .c-input-base__error{
+    font-size: 12px;
+  }
+}

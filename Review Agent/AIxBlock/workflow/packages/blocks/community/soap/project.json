@@ -1,0 +1,30 @@
+{
+  "name": "blocks-soap",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/soap/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/soap",
+        "tsConfig": "packages/blocks/community/soap/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/soap/package.json",
+        "main": "packages/blocks/community/soap/src/index.ts",
+        "assets": ["packages/blocks/community/soap/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-soap {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

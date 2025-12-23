@@ -1,0 +1,141 @@
+.p-infrstructure-earnings {
+	display: flex;
+	flex-direction: column;
+	gap: 64px;
+
+	&__row {
+		display: flex;
+		flex-direction: row;
+		gap: 16px;
+	}
+
+	&__chart-wrapper {
+		border: solid 1px #dedeec;
+	}
+
+	&__chart-wrapper,
+	&__chart-item-list {
+		border-radius: 12px;
+		flex: 1;
+		height: 368px;
+	}
+
+	&__chart-item-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	&__chart-item-row {
+		display: flex;
+		flex-direction: row;
+		gap: 16px;
+		flex: 1;
+	}
+
+	&__chart-header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding: 24px;
+
+		.btn-primary {
+			font-weight: 600;
+			font-size: 14px;
+			border-radius: 8px;
+		}
+	}
+
+	&__chart-title {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+
+		>b {
+			font-size: 20px;
+			font-weight: 600;
+		}
+
+		>span {
+			font-size: 14px;
+			font-weight: 400;
+		}
+	}
+
+	&__chart-summary {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-end;
+		padding: 24px;
+
+		>b {
+			font-size: 40px;
+			font-weight: 600;
+		}
+
+		>span {
+			font-size: 16px;
+			font-weight: 500;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-bottom: 8px;
+		}
+	}
+
+	&__chart-view {
+		display: flex;
+		align-items: flex-end;
+		flex: 1;
+	}
+
+	&__filter-bar {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	&__filter-actions {
+		display: flex;
+		flex-direction: row;
+		gap: 8px;
+	}
+
+	&__input {
+		position: relative;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		font-size: 14px;
+		background-color: #F3F3F4;
+	}
+
+	&__float-icon {
+		position: absolute;
+		left: 10px;
+		z-index: 99;
+	}
+
+	&__c-select {
+		display: flex;
+		flex-direction: row;
+		gap: 2px;
+		align-items: center;
+		justify-content: center;
+
+		.c-select {
+			&__content {
+				border: none;
+				min-width: 110px;
+			}
+		}
+	}
+
+	&__compute-content {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+}

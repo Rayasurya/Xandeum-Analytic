@@ -1,0 +1,203 @@
+// plugin: HTTP Request, Docker, Docker Pipeline, file parameter
+
+
+def gv
+def NEW_VERSION
+def ENV
+pipeline { 
+    agent {
+        label 'jenkins-linux'
+    } 
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('jenkins-platform-wowai')
+        GITHUB_CREDENTIALS = credentials('tqphu27')
+        AIXBLOCK_CREDENTIALS = credentials('aixblock-jenkins-key')
+        BRANCH_NAME = "${GIT_BRANCH.split("/")[1]}"
+        PROD_URL = "https://app.aixblock.io"
+        STG_URL = "https://stag.aixblock.io"
+        DEV_URL = "https://dev.aixblock.io"
+    }
+    stages { 
+        
+        stage('Login'){
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+
+            }
+        }
+
+        stage('build') {
+            steps {
+                // echo 'Hello World'
+                echo 'Pulling...' + env.GIT_BRANCH
+                echo 'Pulling...' + env.BRANCH_NAME
+                echo 'Pulling...' + BRANCH_NAME
+
+                script {
+                        def tag_key
+                        def tag
+
+                        // if (env.BRANCH_NAME == 'test_prod-sang-staging') {
+                        //     tag_key = '_dev'
+                        // }
+                        tag_key = '_dev'
+
+                        // if (env.BRANCH_NAME == 'development_v2' || env.BRANCH_NAME == 'development') {
+                        //     tag_key = '_dev'
+                        // }
+
+                        // if (env.BRANCH_NAME == 'v2.2') {
+                        //     tag_key = '_stg'
+                        // }
+                        if (env.BRANCH_NAME == 'production') {
+                            tag_key = '_prod'
+                        }
+                        echo "tag_key: ${tag_key}"
+
+                        // Lấy tag có số lớn nhất chứa chuỗi 'dev'
+                        tag = sh(script: "git tag | grep '${tag_key}' | sort -rV | head -n 1", returnStdout: true).trim()
+
+                        echo "Tag: ${tag}"
+                        // determine latest tag
+                        latestTag = sh(script: "git tag | sort -V | tail -1", returnStdout: true).trim()
+
+                        print("latestTag: ${latestTag}" )
+                        if (!latestTag.contains('v')) {
+                        latestTag = "v" + latestTag
+                        }
+
+                        if (!latestTag || latestTag == "" || latestTag == "v") {
+                        patchVersion = 0
+                        minorVersion = 0
+                        majorVersion = 0
+                        updatedPatchVersion = patchVersion + 1
+                        baseversion = "v" + majorVersion + "." + minorVersion + "." + updatedPatchVersion.toString()
+                        }
+                        else {
+                        patchVersion = latestTag.tokenize('.')[-1] as Integer
+                        minorVersion = latestTag.tokenize('.')[-2]
+                        majorVersion = latestTag.tokenize('.')[-3]
+                        updatedPatchVersion = patchVersion + 1
+                        baseversion = majorVersion + "." + minorVersion + "." + updatedPatchVersion.toString()
+                        }
+                        print("patchVersion: " + patchVersion)
+                        print("minorVersion: " + minorVersion)
+                        print("majorVersion: " + majorVersion)
+                        print("baseversion: " + baseversion)
+
+
+                        def tag_num = tag.replaceAll(tag_key, '').replaceAll("\\.", '')
+                        def incremented_tag_num = tag_num.toInteger() + 1
+                        def new_tag_parts =incremented_tag_num.toString().split('').join('.')
+                        echo "new_tag_parts: ${new_tag_parts}"
+                        
+                        NEW_VERSION = baseversion//"${new_tag_parts}${tag_key}"
+                        ENV = "${tag_key.replaceAll('_','')}"
+                        echo "new_tag: ${NEW_VERSION}"
+                        sh "DOCKER_BUILDKIT=1 docker build -t aixblock/workflow:${NEW_VERSION} ."
+                }
+            }
+        }
+        
+
+        stage("Push"){ 
+            steps{
+                script { 
+                    echo "Using NEW_TAG: ${NEW_VERSION}"
+                    sh "docker push aixblock/workflow:${NEW_VERSION}"
+                    // if (env.BRANCH_NAME == 'development') {
+                        // sh "docker tag aixblock/workflow:${NEW_VERSION} aixblock/workflow:latest"
+                       // sh "docker push aixblock/workflow:latest"
+                    // }
+                    if (env.BRANCH_NAME == 'v2.2') {
+                        sh "docker tag aixblock/workflow:${NEW_VERSION} aixblock/workflow:latest"
+                        sh "docker push aixblock/workflow:latest"
+                    }
+                    if (env.BRANCH_NAME == 'main') {
+                        sh "docker tag aixblock/workflow:${NEW_VERSION} aixblock/workflow:latest"
+                        sh "docker push aixblock/workflow:latest"
+                    }
+                    sh "docker system prune --all --force"
+                    // if (env.BRANCH_NAME == 'staging') {
+                      
+                    // }
+                   
+                }
+            }
+        }
+
+        stage("Git Push") {
+            steps {
+                script {
+                    echo "Using NEW_TAG: ${NEW_VERSION}"
+                    withCredentials([usernamePassword(credentialsId: 'tqphu27', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                        sh "git config --global credential.helper store" // This line might not be necessary, depending on your Jenkins setup
+                        sh "git config --global user.email 'trn.quangph27@gmail.com'"
+                        sh "git config --global user.name 'tqphu27'"
+                        sh "git tag ${NEW_VERSION}"
+                        sh "git push origin ${NEW_VERSION}"
+                        // Get the list of images except the one just built and remove them
+                        // script {
+                        //     def images_to_remove = sh(script: "docker images --format '{{.Repository}}:{{.Tag}}' | grep -v 'aixblock/workflow:${NEW_VERSION}'", returnStdout: true).trim()
+                        //     if (images_to_remove) {
+                        //         sh "echo '${images_to_remove}' | xargs docker rmi"
+                        //     } else {
+                        //         echo "No images to remove"
+                        //     }
+                        // }
+                    }
+                }
+            }
+        }
+
+        // stage ("Update version to Aixblock ") {
+        //     steps {
+        //         script {
+        //             try {
+        //                 def url_req = env.BRANCH_NAME == 'production' ? env.PROD_URL : env.BRANCH_NAME == 'staging' ? env.STG_URL: env.DEV_URL
+        //                 echo "AIXBLOCK_CREDENTIALS: ${AIXBLOCK_CREDENTIALS}"
+        //                 def apiUrl = "${url_req}/api/settings/installation-service/update-version"
+        //                 def requestBody ="""
+        //                 {
+        //                     "key": "${AIXBLOCK_CREDENTIALS}",
+        //                     "version": "${NEW_VERSION}",
+        //                     "image": "aixblock/workflow",
+        //                     "environment": "${ENV}"
+        //                 }
+        //                 """
+        //                 echo requestBody
+
+        //                 def response = httpRequest(
+        //                     contentType: 'APPLICATION_JSON',
+        //                     httpMode: 'PATCH',
+        //                     requestBody: requestBody,
+        //                     url: apiUrl
+        //                 )
+
+        //                 if (response.status == 200) {
+        //                     echo "Update version to Aixblock successful."
+        //                 } else {
+        //                     echo "Failed to update version to Aixblock: ${response.status} - ${response.content}"
+        //                 }
+        //             } catch (Exception e) {
+        //                 echo "An error occurred: ${e.message}"
+        //             }
+        //         }
+        //     }
+        
+        // }
+    }
+
+    // post {
+    //     success {
+    //     sh "echo 'Send mail on success'"
+    //     mail to:"devoangkien@gmail.com", subject:"SUCCESS: ${currentBuild.fullDisplayName}", body: "Yay, we passed. *${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}"
+    //     }
+    //     failure {
+    //         step([$class: 'Mailer',
+    //             notifyEveryUnstableBuild: true,
+    //             recipients: "devoangkien@gmail.com",
+    //             sendToIndividuals: true])
+    //     }
+    // } 
+}

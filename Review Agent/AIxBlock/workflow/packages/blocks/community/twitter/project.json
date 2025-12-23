@@ -1,0 +1,26 @@
+{
+  "name": "blocks-twitter",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/twitter/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/twitter",
+        "tsConfig": "packages/blocks/community/twitter/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/twitter/package.json",
+        "main": "packages/blocks/community/twitter/src/index.ts",
+        "assets": ["packages/blocks/community/twitter/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

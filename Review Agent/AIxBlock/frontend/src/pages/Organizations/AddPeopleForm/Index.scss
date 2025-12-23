@@ -1,0 +1,63 @@
+// Add user
+
+.c-add-user {
+  form,
+  &.admin {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  &__select-role {
+    padding: 0;
+    .c-select__item {
+      padding: 0 16px;
+      &.last {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__link-download {
+    a {
+      color: #4DB050;
+      text-decoration: none;
+      margin-left: 5px;
+      font-weight: 600;
+    }
+  }
+
+  &__action {
+    button {
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 24px;
+      letter-spacing: 0.28px;
+      min-width: 108px;
+      box-shadow: 0px 1px 2px 0px rgba(27, 36, 44, 0.12);
+    }
+    &.invite {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+    }
+
+    &--invite {
+      color: #fff;
+    }
+
+    &--cancel {
+      border: 1px solid #cfd6dd;
+      background: #fff;
+      color: #4a545e;
+    }
+  }
+}
+
+.admin-add-user-form {
+  .c-modal__footer,
+  .c-modal__body {
+    margin-top: 0;
+  }
+}

@@ -1,0 +1,68 @@
+.preferenceModal {
+  .c-modal__content {
+    gap: 16px;
+  }
+
+  .c-modal__body {
+    padding-top: 24px;
+    border-top: solid 1px #dedeec;
+  }
+
+  .c-select {
+    margin-top: 24px;
+  }
+
+  .c-select__label {
+    font-size: 12px;
+  }
+}
+
+.inputModal {
+  .c-input-base__right {
+    width: auto;
+  }
+}
+
+.radio {
+  label {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.rangeRow {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin-bottom: 16px;
+
+  &Error {
+    input {
+      border-color: #ed2e7e;
+      background-color: #fff2f7;
+    }
+  }
+}
+
+.rangeLabel {
+  >span {
+    font-style: italic;
+  }
+}
+
+.rangeError {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  span {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.75px;
+    text-transform: capitalize;
+    margin: 8px 0 0;
+    color: #c30052;
+  }
+}

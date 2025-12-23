@@ -1,0 +1,61 @@
+{
+  "name": "blocks-assemblyai",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/assemblyai/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/assemblyai",
+        "tsConfig": "packages/blocks/community/assemblyai/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/assemblyai/package.json",
+        "main": "packages/blocks/community/assemblyai/src/index.ts",
+        "assets": ["packages/blocks/community/assemblyai/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "_generate-params": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx ./scripts/generateFromSpec.ts",
+        "cwd": "packages/blocks/community/assemblyai"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx format:write --files packages/blocks/community/assemblyai/**/*"
+      }
+    },
+    "generate-params": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx _generate-params pieces-assemblyai",
+          "nx format pieces-assemblyai"
+        ]
+      }
+    }
+  }
+}

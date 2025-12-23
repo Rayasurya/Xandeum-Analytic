@@ -1,0 +1,279 @@
+.c-filter-opt {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 15px;
+
+  &__action {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+
+    &.flex-end {
+      align-items: flex-end;
+    }
+  }
+
+  &__location {
+    min-width: 120px;
+    img {
+      width: 15px;
+      height: 15px;
+    }
+    .c-select__content {
+      height: 32px;
+    }
+    .c-select__item {
+      padding-left: 0;
+      &-value {
+        white-space: nowrap;
+      }
+    }
+    .c-select__list {
+      min-width: 120px;
+    }
+    .c-select--action {
+      flex-direction: row-reverse;
+      padding: 0 10px;
+    }
+  }
+
+  &__type {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid #dedeec;
+    border-radius: 8px;
+    position: relative;
+
+    > svg {
+      position: absolute;
+      left: 5px;
+      top: auto;
+      bottom: 50%;
+      transform: translate(0, 50%);
+    }
+
+    .c-select {
+      min-width: 150px;
+      padding: 0 10px 0 30px;
+    }
+    .c-select__content {
+      border: none;
+    }
+
+    .c-select--action {
+      padding: 0;
+    }
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.4s;
+
+    &.hide {
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+  }
+
+  & .dropdown-label {
+    gap: 4px;
+
+    &__text {
+      font-size: 14px;
+    }
+  }
+
+  &__expand-button {
+    background-color: transparent;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+
+    &.active {
+      > svg {
+        color: #5050ff;
+      }
+    }
+  }
+
+  .freetime {
+    position: relative;
+    border-radius: 8px;
+    border: 1px solid #dedeec;
+    display: flex;
+    align-items: center;
+
+    .btn-freetime {
+      background: transparent;
+      color: #40405b;
+      font-weight: 500;
+      font-size: 12px;
+      padding-left: 40px;
+      height: 32px;
+    }
+
+    svg {
+      position: absolute;
+      left: 10px;
+      top: auto;
+      bottom: 50%;
+      transform: translate(0, 50%);
+    }
+
+    .date-range-content {
+      border-radius: 12px;
+      border: 1px solid #f4f5f9;
+      background: #fff;
+      box-shadow: 0px 16px 20px -8px rgba(17, 12, 34, 0.1);
+      overflow: hidden;
+      position: absolute;
+      top: 45px;
+      left: auto;
+      right: 0;
+      z-index: 99;
+
+      .to {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 24px;
+        color: #40405b;
+      }
+
+      &__input {
+        input {
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 24px;
+          color: #40405b;
+        }
+      }
+
+      &__button {
+        border-radius: 8px;
+        box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 24px;
+
+        &.cancel {
+          background: #fff;
+          color: #14142a;
+          border: 1px solid #dedeec;
+        }
+
+        &.setdate {
+          background: #5050ff;
+          color: #fff;
+        }
+      }
+
+      .flex {
+        display: flex;
+        align-items: center;
+      }
+
+      &__action {
+        padding: 16px;
+        justify-content: space-between;
+        gap: 16px;
+        > div {
+          width: 50%;
+        }
+
+        &-right {
+          justify-content: flex-end;
+          gap: 16px;
+        }
+
+        &-left {
+          justify-content: flex-start;
+          gap: 8px;
+        }
+      }
+    }
+
+    .rdrDateRangePickerWrapper {
+      .rdrDefinedRangesWrapper,
+      .rdrDateDisplayWrapper {
+        display: none;
+      }
+
+      .rdrStartEdge {
+        border-radius: 8px 0px 0px 8px;
+      }
+
+      .rdrEndEdge {
+        border-radius: 0px 8px 8px 0px;
+      }
+
+      .rdrEndEdge,
+      .rdrStartEdge {
+        background: #5050ff;
+        box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+      }
+
+      .rdrDayNumber,
+      .rdrInRange,
+      .rdrStartEdge,
+      .rdrEndEdge {
+        top: 0;
+        bottom: 0;
+      }
+
+      .rdrDay:not(.rdrDayPassive) .rdrInRange ~ .rdrDayNumber span {
+        color: #40405b;
+      }
+
+      .rdrNextPrevButton {
+        border-radius: 8px;
+        border: 1px solid #dedeec;
+        background: #fff;
+        box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .rdrNextButton i {
+        margin: 0;
+      }
+    }
+  }
+
+  &__input {
+    width: 120px;
+
+    &--radio-group {
+      width: auto;
+    }
+
+    &__symbol {
+      font-size: 10px;
+    }
+  }
+
+  .h-32 {
+    .c-select__content {
+      height: 32px;
+    }
+
+    .input-text {
+      height: 32px;
+    }
+
+    input {
+      height: 32px;
+    }
+  }
+}

@@ -1,0 +1,47 @@
+// Option
+
+.option {
+  &Item {
+    padding: 24px;
+    cursor: pointer;
+    transition: .1s all;
+    max-width: 324px;
+  }
+
+  &Title {
+    color: var(--Grayscale-Body);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.16px;
+    margin: 0 0 8px;
+  }
+
+  &Subtitle {
+    color: var(--Grayscale-Body);
+    font-size: 12px;
+    font-weight: 400;
+    margin-bottom: 29px;
+  }
+
+  &Container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    &Button {
+      border-radius: var(--Radius-rounded-lg);
+      background: var(--Color-neutral-700);
+      color: var(--main-bg);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 24px;
+      width: 100%;
+    }
+
+    &Active {
+      @extend .optionContainerButton;
+      background: var(--Color-primary-base);
+    }
+  }
+}

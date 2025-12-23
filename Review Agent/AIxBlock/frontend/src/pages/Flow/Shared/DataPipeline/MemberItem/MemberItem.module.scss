@@ -1,0 +1,53 @@
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  gap: 24px;
+}
+
+.value {
+  align-items: center;
+  display: flex;
+  font-size: 14px;
+  font-weight: 400;
+  min-height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:first-child {
+    flex: 1;
+  }
+
+  &:nth-child(2) {
+    width: 160px;
+  }
+
+  &:last-child {
+    width: 72px;
+  }
+}
+
+.actions {
+  align-items: center;
+  display: flex;
+  gap: 24px;
+  justify-content: flex-end;
+}
+
+.you {
+  font-size: 11px;
+}
+
+.remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  border: none;
+  box-shadow: unset;
+  outline: unset;
+  background: transparent;
+}

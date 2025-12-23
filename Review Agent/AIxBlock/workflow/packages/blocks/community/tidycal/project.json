@@ -1,0 +1,30 @@
+{
+  "name": "blocks-tidycal",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/tidycal/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/tidycal",
+        "tsConfig": "packages/blocks/community/tidycal/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/tidycal/package.json",
+        "main": "packages/blocks/community/tidycal/src/index.ts",
+        "assets": ["packages/blocks/community/tidycal/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-tidycal {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

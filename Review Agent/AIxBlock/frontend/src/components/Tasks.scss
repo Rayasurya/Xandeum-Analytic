@@ -1,0 +1,128 @@
+.c-tasks {
+  overflow-x: auto;
+  width: 100%;
+
+  &__table {
+    border-spacing: 0;
+    position: relative;
+    width: 100%;
+  }
+
+  &__cell {
+    &--number {
+      text-align: right;
+
+      &-wrapper {
+        background-color: rgba(0, 0, 0, .025);
+        border: solid 1px rgba(0, 0, 0, .05);
+        border-radius: .5rem;
+        display: inline-block;
+        font-family: monospace;
+        font-size: .8em;
+        line-height: .8em;
+        padding: .5rem;
+      }
+    }
+
+    &--datetime {
+      white-space: nowrap;
+    }
+
+    &--boolean {
+      //font-family: monospace;
+      text-align: center;
+
+      span {
+        border-radius: 12px;
+        color: white;
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 6px 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      &--true span {
+        background-color: #27BE69;
+      }
+
+      &--false span {
+        background-color: #F2415A;
+      }
+    }
+
+    &--image {
+      &-wrapper {
+        border: solid 1px rgba(0, 0, 0, .05);
+        border-radius: .5rem;
+        height: 32px;
+        overflow: hidden;
+        width: 32px;
+
+        img {
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          width: 100%;
+        }
+      }
+    }
+
+    &__list {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+
+      .c-compact-user:not(:first-child) {
+        box-shadow: -4px 0 4px 0 rgba(0,0,0,.2);
+        margin-left: -16px;
+      }
+    }
+  }
+
+  &__header {
+    color: #8D8A95;
+    height: 50px;
+
+    tr {
+      th {
+        border-bottom: solid 1px #a0a3bd;
+        font-weight: 400;
+        white-space: nowrap;
+
+        &:nth-child(2) {
+          width: 100px;
+        }
+
+        &:not(:first-child) {
+          line-height: 1.25em;
+          letter-spacing: 0.75px;
+        }
+      }
+    }
+  }
+
+  &__row {
+    cursor: pointer;
+
+    td {
+      text-align: center;
+      line-height: 1.25em;
+    }
+
+    &:hover, &--selected {
+      background-color: rgba(0, 0, 0, .05);
+    }
+
+    &--locked {
+      background-color: rgba(255, 0, 0, .05);
+    }
+  }
+
+  &__header th,
+  &__row td {
+    font-size: 14px;
+    padding: 16px 16px;
+  }
+}

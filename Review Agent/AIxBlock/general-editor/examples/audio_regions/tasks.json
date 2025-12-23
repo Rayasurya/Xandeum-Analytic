@@ -1,0 +1,20 @@
+[
+    {
+        "data": {
+            "audio": "https://file-examples.com/index.php/sample-audio-files/sample-ogg-download/"
+        },
+        "predictions": [
+            {
+                "model_version": "model 1",
+                "created_ago": "4 hours",
+                "result": [
+                ]
+            }
+        ]
+    },
+    {
+        "data": {
+            "audio": "https://file-examples.com/index.php/sample-audio-files/sample-ogg-download/"
+        }
+    }
+]

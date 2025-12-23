@@ -1,0 +1,30 @@
+{
+  "name": "blocks-discourse",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/discourse/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/discourse",
+        "tsConfig": "packages/blocks/community/discourse/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/discourse/package.json",
+        "main": "packages/blocks/community/discourse/src/index.ts",
+        "assets": ["packages/blocks/community/discourse/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-discourse {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

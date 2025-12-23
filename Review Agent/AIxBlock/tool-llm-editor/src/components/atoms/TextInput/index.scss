@@ -1,0 +1,52 @@
+.llm-text-input {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	>label {
+		font-size: 14px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: normal;
+		color: #14142a;
+
+		>span {
+			color: #f2415a;
+			margin-left: 4px;
+		}
+	}
+
+	&__container {
+		position: relative;
+		display: flex;
+		>input,
+		>textarea {
+			height: 38px;
+			flex-grow: 0;
+			border-radius: 6px;
+			border: solid 1px #dedeec;
+			font-size: 14px;
+			font-weight: 500;
+			font-stretch: normal;
+			font-style: normal;
+			line-height: 1.71;
+			letter-spacing: normal;
+			color: #14142a;
+			padding: 0px 12px;
+			width: 100%;
+		}
+
+		>textarea {
+			padding: 12px 12px;
+		}
+
+		&__icon {
+			position: absolute;
+			left: 0;
+		}
+	}
+
+
+}

@@ -1,0 +1,26 @@
+{
+  "name": "blocks-woocommerce",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/woocommerce/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/woocommerce",
+        "tsConfig": "packages/blocks/community/woocommerce/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/woocommerce/package.json",
+        "main": "packages/blocks/community/woocommerce/src/index.ts",
+        "assets": ["packages/blocks/community/woocommerce/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,22 @@
+.models-seller-empty {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    width: 100%;
+    &-wrapper {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      &__title {
+        color: #14142a;
+        font-weight: 500;
+        font-size: 32px;
+        margin-bottom: 25px;
+      }
+      button {
+        border-radius: 8px;
+      }
+    }
+}

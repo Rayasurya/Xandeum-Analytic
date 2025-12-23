@@ -1,0 +1,28 @@
+.splitter
+  background-color #000
+  border-radius 2px
+  //cursor col-resize
+  opacity .2
+  user-select none
+
+  &--horizontal
+    cursor col-resize
+    width 5px
+
+  &--vertical
+    cursor row-resize
+    height 5px
+
+  &--resizing
+    &::before
+      content ""
+      position fixed
+      top 0
+      left 0
+      right 0
+      bottom 0
+      z-index 9999999
+
+  &:hover
+    opacity .5
+

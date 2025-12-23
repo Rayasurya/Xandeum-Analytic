@@ -1,0 +1,26 @@
+{
+  "name": "blocks-google-contacts",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/google-contacts/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/google-contacts",
+        "tsConfig": "packages/blocks/community/google-contacts/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/google-contacts/package.json",
+        "main": "packages/blocks/community/google-contacts/src/index.ts",
+        "assets": ["packages/blocks/community/google-contacts/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

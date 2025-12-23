@@ -1,0 +1,26 @@
+.topup {
+  p {
+    margin: 0;
+  }
+
+  &Content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: auto;
+
+    &Total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &Price {
+        color: #5050ff;
+        font-size: 18px;
+        font-style: normal;
+        line-height: normal;
+        font-family: monospace;
+      }
+    }
+  }
+}

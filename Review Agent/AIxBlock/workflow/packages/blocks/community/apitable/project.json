@@ -1,0 +1,30 @@
+{
+  "name": "blocks-apitable",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/apitable/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/apitable",
+        "tsConfig": "packages/blocks/community/apitable/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/apitable/package.json",
+        "main": "packages/blocks/community/apitable/src/index.ts",
+        "assets": ["packages/blocks/community/apitable/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-apitable {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

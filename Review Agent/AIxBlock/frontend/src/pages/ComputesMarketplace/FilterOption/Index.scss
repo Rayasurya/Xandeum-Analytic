@@ -1,0 +1,38 @@
+// Option
+
+.c-filter-opt {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  label {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 34px;
+    letter-spacing: 0.75px;
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px 15px;
+  }
+
+  &__item {
+    border-radius: 16px;
+    border: 1px solid  #D6D8E7;
+    padding: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.75px;
+    text-transform: capitalize;
+    text-align: center;
+    cursor: pointer;
+    
+    &.active {
+      border-color: #2A46FF;
+      background: #2A46FF;
+      color: #fff;
+    }
+  }
+}

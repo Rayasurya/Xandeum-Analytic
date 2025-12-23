@@ -1,0 +1,204 @@
+.flex {
+  display: flex;
+}
+
+.itemCenter {
+  align-items: center;
+}
+
+.flexEnd {
+  align-items: flex-end;
+}
+
+.flexCol {
+  flex-direction: column;
+}
+
+.justifyCenter {
+  justify-content: center;
+}
+
+.children {
+  >div {
+    width: 50%;
+  }
+}
+
+.gap12 {
+  gap: 12px;
+}
+
+.widthFull {
+  width: 55%;
+}
+
+.line {
+  width: 45%;
+  height: 1px;
+  background: #DEDEEC;
+}
+
+.groupCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.demoDeploy {
+  border-radius: var(--Radius-rounded-xl);
+  border: 1px solid var(--main-Line);
+  background: var(--main-bg);
+  box-shadow: 0px 8px 16px 0px rgba(134, 93, 255, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 912px;
+  margin: 16px;
+  height: min-content;
+}
+
+.heading {
+  color: var(--main-Title);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.16px;
+  margin: 0;
+  text-align: left;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--main-bg);
+  border-radius: 29px;
+  border: 1px solid var(--main-Line);
+  background: var(--main-bg);
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--main-Label);
+  margin: 0 0 8px;
+}
+
+.modelSelect {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tab {
+  color: var(--Color-base-Body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.tabActive {
+  @extend .tab;
+  color: var(--Color-primary-base);
+  border-radius: 35px;
+  border: 1px solid var(--Color-primary-base);
+  background: var(--Color-primary-50);
+}
+
+.tab-space {
+  flex: 1;
+  background-color: #F4F5F9;
+}
+
+.items {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.item {
+  border-radius: 10.239px;
+  border: 1px solid var(--main-Line, #DEDEEC);
+  padding: 12px;
+  color: var(--main-Label);
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+
+  &Name {
+    font-weight: 600;
+    line-height: 24px;
+    margin: 0;
+  }
+
+  &Unit {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  &Price {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    margin: 12px 0 0;
+  }
+}
+
+.itemActive {
+  border-color: var(--Color-primary-base);
+}
+
+.title {
+  color: var(--Color-base-Heading);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  margin: 0;
+}
+
+.sub {
+  color: var(--Color-neutral-700);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  margin: 0 0 6px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
+
+  button {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+}
+
+.cancel {
+  border-radius: var(--Radius-rounded-lg);
+  border: 1px solid var(--Color-neutral-900);
+  background: var(--main-bg);
+  box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+  color: var(--Color-base-black);
+}
+
+
+.deploy {
+  border-radius: 8px;
+  background: var(--Color-primary-base);
+  box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+  color: var(--Color-base-white);
+}

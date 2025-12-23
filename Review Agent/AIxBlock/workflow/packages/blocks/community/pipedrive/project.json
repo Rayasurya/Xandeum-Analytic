@@ -1,0 +1,26 @@
+{
+  "name": "blocks-pipedrive",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/pipedrive/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/pipedrive",
+        "tsConfig": "packages/blocks/community/pipedrive/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/pipedrive/package.json",
+        "main": "packages/blocks/community/pipedrive/src/index.ts",
+        "assets": ["packages/blocks/community/pipedrive/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

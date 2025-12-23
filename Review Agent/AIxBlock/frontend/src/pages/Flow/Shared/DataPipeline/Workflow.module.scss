@@ -1,0 +1,38 @@
+.workflow {
+  display: flex;
+  gap: 32px;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  color: #4e4b66;
+}
+
+.item {
+  border-radius: var(--Radius-rounded-xl);
+  border: 1px solid #dedeec;
+  background: #fff;
+  box-shadow: 0 8px 16px 0 rgba(37, 37, 37, 0.1);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+  gap: 18px;
+}
+
+.itemCompleted {
+  @extend .item;
+  border-color: var(--Color-base-Purple);
+  background: var(--Color-purple-50);
+}
+
+.itemDesc {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.16px;
+  color: #111;
+  margin: 0;
+}

@@ -1,0 +1,30 @@
+{
+  "name": "blocks-onfleet",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/onfleet/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/onfleet",
+        "tsConfig": "packages/blocks/community/onfleet/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/onfleet/package.json",
+        "main": "packages/blocks/community/onfleet/src/index.ts",
+        "assets": ["packages/blocks/community/onfleet/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-onfleet {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

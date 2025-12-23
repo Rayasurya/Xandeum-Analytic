@@ -1,0 +1,28 @@
+.block-audio-transcript {
+  background-color: #fff;
+  border: dashed 2px rgba(0,0,0,.1);
+  border-radius: 8px;
+  margin: 1rem 0;
+  padding: .5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  .text-summary-form {
+    margin-top: 35px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 0;
+    margin-top: 5px;
+  }
+
+  .ant-btn-primary {
+    cursor: default;
+    pointer-events: none;
+    &:hover {
+      background: #1890ff;
+      border-color: #1890ff;
+    }
+  }
+}

@@ -1,0 +1,36 @@
+.switch-org {
+  &-content {
+    padding-top: 15px;
+    border-top: 1px solid #d6d8e7;
+    &-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      &-title {
+        font-size: 16px;
+        font-weight: 500;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 150px;
+      }
+
+      &-status {
+        font-size: 14px;
+        text-transform: uppercase;
+
+        &.actived {
+          color: #27BE69;
+        }
+
+        &.pending {
+          color: #FFBF0F;
+        }
+      }
+    }
+  }
+}

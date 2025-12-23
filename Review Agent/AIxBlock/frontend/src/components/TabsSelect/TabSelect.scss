@@ -1,0 +1,55 @@
+$cls: ".c-tab-select";
+
+#{$cls} {
+  border-radius: 12px;
+  background-color: #F4F5F9;
+  display: flex;
+  justify-content: stretch;
+  gap: 6px;
+  overflow: hidden;
+  padding: 6px;
+
+  &--no-padding {
+    padding: 0;
+  }
+
+  &--primary-color {
+    background-color: white;
+    border: solid 1px #DEDEEC;
+  }
+
+  &__item {
+    border-radius: 8px;
+    color: #A1A3BB;
+    cursor: pointer;
+    flex: 1;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px;
+    text-align: center;
+    user-select: none;
+
+    &--selected {
+      background: #FFF;
+      color: #333350;
+    }
+  }
+
+  &--primary-color #{$cls}__item {
+    border-radius: 0;
+    color: #000000;
+
+    &:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    &:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+  }
+
+  &--primary-color #{$cls}__item--selected {
+    background-color: #5050FF;
+    color: white;
+  }
+}

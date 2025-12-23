@@ -1,0 +1,26 @@
+{
+  "name": "blocks-typeform",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/typeform/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/typeform",
+        "tsConfig": "packages/blocks/community/typeform/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/typeform/package.json",
+        "main": "packages/blocks/community/typeform/src/index.ts",
+        "assets": ["packages/blocks/community/typeform/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

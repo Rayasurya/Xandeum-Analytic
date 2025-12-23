@@ -1,0 +1,194 @@
+.c-input-base {
+  &__label {
+    span {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+      color: #40405B;
+    }
+    span.required {
+      color: red;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.disabled {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+  }
+
+  &__control {
+    position: relative;
+
+    // Hiden arrow input number
+    // Chrome, Safari, Edge, Opera
+    textarea::-webkit-outer-spin-button,
+    textarea::-webkit-inner-spin-button,
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    // Firefox
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    textarea,
+    input {
+      padding: 7px 40px 7px 12px;
+      border-radius: 8px;
+      border: 1px solid #DEDEEC;
+      opacity: 0.5;
+      background-color: #FFF;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 24px;
+      letter-spacing: 0.75px;
+      color: #111;
+
+      &::-ms-input-placeholder,
+      /* Edge 12-18 */
+      &::placeholder {
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 24PX;
+        color: #D4D4DA;
+      }
+
+      &:active,
+      &:focus {
+        border-color: #111;
+        outline-color: #111;
+        outline: unset;
+        background: #fff;
+        opacity: 1;
+      }
+    }
+  }
+
+  &__field.has-value &__control {
+    textarea, input {
+      opacity: 1;
+
+      &.loading {
+        opacity: 0.4;
+      }
+    }
+  }
+
+  &__action {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: auto;
+    bottom: 50%;
+    right: 24px;
+    transform: translate(0, 50%);
+
+    button {
+      border: none;
+      background: transparent;
+      width: 100%;
+      height: 100%;
+      color: #a0a3bd;
+      cursor: pointer;
+    }
+
+    button,
+    svg {
+      position: absolute;
+      top: auto;
+      bottom: 50%;
+      left: auto;
+      right: 50%;
+      transform: translate(50%, 50%);
+    }
+  }
+
+	&__right{
+		width: 12px;
+    height: 12px;
+    position: absolute;
+    top: auto;
+    bottom: 50%;
+    right: 12px;
+	}
+
+  // Status
+
+  &--success {
+    .c-input-base__control {
+      input {
+        border-color: #00ba88;
+        background-color: #f3fdfa;
+
+        &:active,
+        &:focus,
+        &:hover {
+          border-color: #00ba88;
+          background-color: #f3fdfa;
+          outline: unset;
+        }
+      }
+    }
+
+    .c-action {
+      button {
+        color: #00ba88;
+      }
+    }
+  }
+
+  &--error {
+    .c-input-base__control {
+      input {
+        border-color: #ed2e7e;
+        background-color: #fff2f7;
+
+        &:active,
+        &:focus,
+        &:hover {
+          border-color: #ed2e7e;
+          background-color: #fff2f7;
+          outline: unset;
+        }
+      }
+    }
+
+    .c-input-base__action {
+      button {
+        color: #ed2e7e;
+      }
+    }
+  }
+
+  // Message
+  &__error,
+  &__success {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.75px;
+    text-transform: capitalize;
+    margin: 8px 0 0;
+  }
+
+  &__error {
+    color: #c30052;
+  }
+
+  &__success {
+    color: #00966d;
+  }
+}

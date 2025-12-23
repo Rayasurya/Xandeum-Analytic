@@ -1,0 +1,26 @@
+// Notice
+
+.c-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 19px;
+
+  &.info {
+    color: #ed2e7e;
+  }
+
+  &.success {
+    color: #00ba88;
+  }
+
+  &.warning {
+    color: #f4b740;
+  }
+
+  &__title {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+  }
+}

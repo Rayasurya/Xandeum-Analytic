@@ -1,0 +1,68 @@
+// ML Models Marketplace
+
+.p-ml-marketplace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1081px;
+  margin: auto auto 30px;
+  min-height: 90vh;
+
+  &__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 24px;
+  }
+
+  &__catalog {
+    min-width: 250px;
+  }
+
+  &__filters {
+    &.c-select  {
+      min-width: 175px;
+    }
+    .c-select__item {
+      padding: 0;
+    }
+  }
+
+  &__breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -0.2px;
+    margin: 0;
+    color: #111;
+    width: calc(100% - 102px);
+  }
+
+  .c-pagination {
+    padding-bottom: 24px;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__clear {
+    background: transparent;
+    border: none;
+    outline: unset;
+    box-shadow: unset;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .c-select__placeholder {
+    text-transform: capitalize;
+  }
+}

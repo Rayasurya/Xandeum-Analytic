@@ -1,0 +1,25 @@
+{
+  "name": "blocks-notion",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/notion/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/notion",
+        "tsConfig": "packages/blocks/community/notion/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/notion/package.json",
+        "main": "packages/blocks/community/notion/src/index.ts",
+        "assets": ["packages/blocks/community/notion/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

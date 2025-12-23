@@ -1,0 +1,11 @@
+.p-admin-rewards-history {
+  &-form {
+    display: grid;
+    grid-row-gap: 1rem;
+
+    &__actions {
+      margin-top: 2rem;
+      text-align: right;
+    }
+  }
+}

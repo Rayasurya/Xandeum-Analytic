@@ -1,0 +1,26 @@
+{
+  "name": "blocks-data-mapper",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/data-mapper/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/data-mapper",
+        "tsConfig": "packages/blocks/community/data-mapper/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/data-mapper/package.json",
+        "main": "packages/blocks/community/data-mapper/src/index.ts",
+        "assets": ["packages/blocks/community/data-mapper/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

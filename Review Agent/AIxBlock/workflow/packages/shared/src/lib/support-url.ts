@@ -1,0 +1,1 @@
+export const supportUrl = 'https://workflow.aixblock.io/'

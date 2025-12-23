@@ -1,0 +1,341 @@
+:root {
+  --color-gray-200: #d9d8dc;
+  --color-gray-100: #e2e2e4;
+  --color-gray-300: #c6c5ca;
+  --color-gray-400: #b3b1b8;
+  --color-gray-500: #8d8a95;
+  --color-gray-600: #676472;
+  --color-gray-700: #4f4b5c;
+  --color-gray-800: #2e293d;
+  --color-gray-900: #110c22;
+  --color-gray-25: #f8f8f8;
+  --color-gray-50: #f3f3f4;
+  --color-gray-75: #ececed;
+  --color-neutral-black-4: rgba(0, 0, 0, 0.04);
+  --color-neutral-black-7: rgba(0, 0, 0, 0.07);
+  --color-neutral-black-12: rgba(0, 0, 0, 0.12);
+  --color-neutral-black-16: rgba(0, 0, 0, 0.16);
+  --color-neutral-black-20: rgba(0, 0, 0, 0.2);
+  --color-neutral-black-24: rgba(0, 0, 0, 0.24);
+  --color-neutral-black-32: rgba(0, 0, 0, 0.32);
+  --color-neutral-black-48: rgba(0, 0, 0, 0.48);
+  --color-neutral-black-64: rgba(0, 0, 0, 0.64);
+  --color-neutral-black-76: rgba(0, 0, 0, 0.76);
+  --color-neutral-black-88: rgba(0, 0, 0, 0.88);
+  --color-neutral-black-100: #000;
+  --color-neutral-white-4: rgba(255, 255, 255, 0.04);
+  --color-neutral-white-7: rgba(255, 255, 255, 0.07);
+  --color-neutral-white-12: rgba(255, 255, 255, 0.12);
+  --color-neutral-white-16: rgba(255, 255, 255, 0.16);
+  --color-neutral-white-20: rgba(255, 255, 255, 0.2);
+  --color-neutral-white-24: rgba(255, 255, 255, 0.24);
+  --color-neutral-white-32: rgba(255, 255, 255, 0.32);
+  --color-neutral-white-48: rgba(255, 255, 255, 0.48);
+  --color-neutral-white-64: rgba(255, 255, 255, 0.64);
+  --color-neutral-white-76: rgba(255, 255, 255, 0.76);
+  --color-neutral-white-88: rgba(255, 255, 255, 0.88);
+  --color-neutral-white-100: #fff;
+  --color-primary-25: #f9f8ff;
+  --color-primary-50: #f1eeff;
+  --color-primary-75: #e2dcff;
+  --color-primary-100: #c6bbff;
+  --color-primary-200: #bcafff;
+  --color-primary-300: #a797ff;
+  --color-primary-400: #8b75ff;
+  --color-primary-500: #7357ff;
+  --color-primary-600: #6347f4;
+  --color-primary-700: #553ade;
+  --color-primary-800: #3c28a4;
+  --color-primary-900: #21194d;
+  --color-secondary-25: #f4fff5;
+  --color-secondary-50: #e9ffea;
+  --color-secondary-75: #cfffd1;
+  --color-secondary-100: #adfcb0;
+  --color-secondary-200: #98f89c;
+  --color-secondary-300: #7ff183;
+  --color-secondary-400: #5ce762;
+  --color-secondary-500: #48d64e;
+  --color-secondary-600: #3bc641;
+  --color-secondary-700: #37b13d;
+  --color-secondary-800: #2d8331;
+  --color-secondary-900: #143e16;
+  --color-danger-25: #fff9f9;
+  --color-danger-50: #fff1f1;
+  --color-danger-75: #ffe0e0;
+  --color-danger-100: #ffc7c7;
+  --color-danger-200: #ffa7a7;
+  --color-danger-300: #ff8080;
+  --color-danger-400: #f95e5e;
+  --color-danger-500: #f03d3d;
+  --color-danger-600: #cf2a2a;
+  --color-danger-700: #a41f1f;
+  --color-danger-800: #591a1a;
+  --color-danger-900: #271111;
+  --color-info-25: #f5faff;
+  --color-info-50: #e9f4ff;
+  --color-info-75: #c2e2ff;
+  --color-info-100: #a0d2ff;
+  --color-info-200: #71bbff;
+  --color-info-300: #45a6ff;
+  --color-info-400: #1c92ff;
+  --color-info-500: #0084ff;
+  --color-info-600: #0076e2;
+  --color-info-700: #0057a7;
+  --color-info-800: #0c355a;
+  --color-info-900: #0d1c2b;
+  --color-success-25: #f3fdf8;
+  --color-success-50: #e2fcf0;
+  --color-success-75: #c6f1dd;
+  --color-success-100: #a6e9c8;
+  --color-success-200: #6fdaa6;
+  --color-success-300: #4dcc8f;
+  --color-success-400: #28c07a;
+  --color-success-500: #0baa60;
+  --color-success-600: #0a9c55;
+  --color-success-700: #0c7844;
+  --color-success-800: #104b2f;
+  --color-success-900: #0d1f11;
+  --color-warning-25: #fffaed;
+  --color-warning-50: #fff5db;
+  --color-warning-75: #ffecba;
+  --color-warning-100: #ffdd86;
+  --color-warning-200: #ffcb45;
+  --color-warning-300: #fdba0f;
+  --color-warning-400: #f2aa09;
+  --color-warning-500: #e09400;
+  --color-warning-600: #d07d00;
+  --color-warning-700: #b55e0f;
+  --color-warning-800: #5c3111;
+  --color-warning-900: #27170b;
+  --color-theme-light-surface-0: #fff;
+  --color-theme-light-surface-1: #f8f8f8;
+  --color-theme-light-surface-2: #f3f3f4;
+  --color-theme-light-surface-3: #ececed;
+  --color-theme-light-surface-high-em: #2e293d;
+  --color-theme-light-primary-accent-1: #f1eeff;
+  --color-theme-light-primary-accent-2: #e2dcff;
+  --color-theme-light-primary: #7357ff;
+  --color-theme-light-secondary-accent-1: #e9ffea;
+  --color-theme-light-secondary-accent-2: #cfffd1;
+  --color-theme-light-info-accent-1: #e9f4ff;
+  --color-theme-light-info-accent-2: #c2e2ff;
+  --color-theme-light-success-accent-1: #e2fcf0;
+  --color-theme-light-success-accent-2: #c6f1dd;
+  --color-theme-light-warning-accent-1: #fff5db;
+  --color-theme-light-warning-accent-2: #ffecba;
+  --color-theme-light-danger-accent-1: #fff1f1;
+  --color-theme-light-danger-accent-2: #ffe0e0;
+  --color-theme-light-disabled-base-em: #ececed;
+  --color-theme-light-disabled-light-em: #e2e2e4;
+  --color-theme-light-disabled-med-em: #c6c5ca;
+  --color-theme-light-disabled-high-em: #b3b1b8;
+  --color-theme-light-disabled: #d4d4da;
+  --color-theme-light-low-em: #8d8a95;
+  --color-theme-light-med-em: #d9d9d9;
+  --color-theme-light-high-em: #110c22;
+  --color-theme-light-primary-on-accent-dark: #e2dcff;
+  --color-theme-light-primary-on-medium-dark: #bcafff;
+  --color-theme-light-primary-on-base: #7357ff;
+  --color-theme-light-primary-on-accent-light: #6347f4;
+  --color-theme-light-info-on-accent-dark: #c2e2ff;
+  --color-theme-light-info-on-medium-dark: #71bbff;
+  --color-theme-light-info-on-base: #0084ff;
+  --color-theme-light-info-on-accent-light: #0076e2;
+  --color-theme-light-success-on-accent-dark: #c6f1dd;
+  --color-theme-light-success-on-medium-dark: #6fdaa6;
+  --color-theme-light-success-on-base: #0baa60;
+  --color-theme-light-success-on-accent-light: #0a9c55;
+  --color-theme-light-warning-on-accent-dark: #ffecba;
+  --color-theme-light-warning-on-medium-dark: #ffcb45;
+  --color-theme-light-warning-on-base: #e09400;
+  --color-theme-light-warning-on-accent-light: #d07d00;
+  --color-theme-light-danger-on-accent-dark: #ffe0e0;
+  --color-theme-light-danger-on-medium-dark: #ffa7a7;
+  --color-theme-light-danger-on-base: #f03d3d;
+  --color-theme-light-danger-on-accent-light: #cf2a2a;
+  --color-theme-light-white: #fff;
+  --color-theme-dark-surface-0: #0c0c0c;
+  --color-theme-dark-surface-1: #0c0c0c;
+  --color-theme-dark-surface-2: #0c0c0c;
+  --color-theme-dark-surface-3: #0c0c0c;
+  --color-theme-dark-surface-4: #0c0c0c;
+  --color-theme-dark-surface-5: #0c0c0c;
+  --color-theme-dark-surface-6: #0c0c0c;
+  --color-theme-dark-surface-high-em: #0c0c0c;
+  --color-theme-dark-primary-accent-1: rgba(188, 175, 255, 0.2);
+  --color-theme-dark-primary-accent-2: rgba(180, 144, 255, 0.28);
+  --color-theme-dark-secondary-accent-1: rgba(152, 248, 156, 0.2);
+  --color-theme-dark-secondary-accent-2: rgba(152, 248, 155, 0.28);
+  --color-theme-dark-info-accent-1: rgba(113, 187, 255, 0.2);
+  --color-theme-dark-info-accent-2: rgba(113, 187, 255, 0.28);
+  --color-theme-dark-success-accent-1: rgba(111, 218, 166, 0.2);
+  --color-theme-dark-success-accent-2: rgba(111, 218, 166, 0.28);
+  --color-theme-dark-warning-accent-1: rgba(255, 203, 69, 0.2);
+  --color-theme-dark-warning-accent-2: rgba(255, 203, 69, 0.28);
+  --color-theme-dark-danger-accent-1: rgba(255, 167, 167, 0.2);
+  --color-theme-dark-danger-accent-2: rgba(255, 167, 167, 0.28);
+  --color-theme-dark-disabled-base-em: rgba(255, 255, 255, 0.12);
+  --color-theme-dark-disabled-light-em: rgba(255, 255, 255, 0.16);
+  --color-theme-dark-disabled-med-em: rgba(255, 255, 255, 0.24);
+  --color-theme-dark-disabled-high-em: rgba(255, 255, 255, 0.32);
+  --color-theme-dark-primary: #7357ff;
+  --color-theme-dark-disabled: rgba(255, 255, 255, 0.32);
+  --color-theme-dark-low-em: rgba(255, 255, 255, 0.48);
+  --color-theme-dark-med-em: rgba(255, 255, 255, 0.76);
+  --color-theme-dark-high-em: #fff;
+  --color-theme-dark-primary-on-accent-dark: #c6bbff;
+  --color-theme-dark-primary-on-base: #bcafff;
+  --color-theme-dark-primary-on-accent-light: #553ade;
+  --color-theme-dark-info-on-accent-dark: #a0d2ff;
+  --color-theme-dark-info-on-base: #71bbff;
+  --color-theme-dark-info-on-accent-light: #0057a7;
+  --color-theme-dark-success-on-accent-dark: #a6e9c8;
+  --color-theme-dark-success-on-base: #6fdaa6;
+  --color-theme-dark-success-on-accent-light: #0c7844;
+  --color-theme-dark-warning-on-accent-dark: #ffdd86;
+  --color-theme-dark-warning-on-base: #ffcb45;
+  --color-theme-dark-warning-on-accent-light: #b55e0f;
+  --color-theme-dark-danger-on-accent-dark: #ffc7c7;
+  --color-theme-dark-danger-on-base: #ffa7a7;
+  --color-theme-dark-danger-on-accent-light: #a41f1f;
+  --color-theme-dark-dark: #000;
+  --color-outline-theme-light-base-em: #f3f3f4;
+  --color-outline-theme-light-low-em: #ececed;
+  --color-outline-theme-light-med-em: #d9d8dc;
+  --color-outline-theme-light-high-em: #c6c5ca;
+  --color-outline-theme-light-primary-high-em: #7357ff;
+  --color-outline-theme-light-primary-med-em: #c6bbff;
+  --color-outline-theme-light-primary-low-em: #e2dcff;
+  --color-outline-theme-light-info-high-em: #0084ff;
+  --color-outline-theme-light-info-med-em: #a0d2ff;
+  --color-outline-theme-light-info-low-em: #c2e2ff;
+  --color-outline-theme-light-success-high-em: #0baa60;
+  --color-outline-theme-light-success-med-em: #a6e9c8;
+  --color-outline-theme-light-success-low-em: #c6f1dd;
+  --color-outline-theme-light-warning-high-em: #e09400;
+  --color-outline-theme-light-warning-med-em: #ffdd86;
+  --color-outline-theme-light-warning-low-em: #ffecba;
+  --color-outline-theme-light-danger-high-em: #f03d3d;
+  --color-outline-theme-light-danger-med-em: #ffc7c7;
+  --color-outline-theme-light-danger-low-em: #ffe0e0;
+  --color-outline-theme-light-white: #fff;
+  --color-outline-theme-dark-base-em: rgba(255, 255, 255, 0.08);
+  --color-outline-theme-dark-low-em: rgba(255, 255, 255, 0.16);
+  --color-outline-theme-dark-med-em: rgba(255, 255, 255, 0.24);
+  --color-outline-theme-dark-high-em: rgba(255, 255, 255, 0.32);
+  --color-outline-theme-dark-primary-base-em: #a797ff;
+  --color-gray-alpha-25: rgba(17, 12, 34, 0.03);
+  --color-gray-alpha-50: rgba(17, 12, 34, 0.05);
+  --color-gray-alpha-75: rgba(17, 12, 34, 0.08);
+  --color-gray-alpha-100: rgba(17, 12, 34, 0.12);
+  --color-gray-alpha-200: rgba(17, 12, 34, 0.16);
+  --color-gray-alpha-300: rgba(17, 12, 34, 0.24);
+  --color-gray-alpha-400: rgba(17, 12, 34, 0.32);
+  --color-gray-alpha-500: rgba(17, 12, 34, 0.48);
+  --color-gray-alpha-600: rgba(17, 12, 34, 0.64);
+  --color-gray-alpha-700: rgba(17, 12, 34, 0.74);
+  --color-gray-alpha-800: rgba(17, 12, 34, 0.88);
+  --color-gray-alpha-900: #110c22;
+  --default-white: #fff;
+  --default-gray-500: #6b7280;
+  --default-gray-200: #e5e7eb;
+  --toastify-font-family: "Montserrat", sans-serif;
+}
+
+@import url('./pages/Flow/_library.scss');
+
+html, body {
+  font-family: "Montserrat", sans-serif;
+  margin: 0;
+  color: #000;
+  font-style: normal;
+  line-height: normal;
+}
+
+// Scroll Bar
+
+.scrollbar-y {
+  max-height: 86vh;
+  overflow: hidden;
+  overflow-y: scroll;
+  padding-right: 10px;
+}
+
+.scrollbar-x {
+  overflow: scroll hidden;
+}
+
+.scrollbar-x::-webkit-scrollbar {
+  height: 4px;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 12px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #6E7191;
+  border-radius: 12px;
+}
+
+// Font face
+
+// No results
+
+.no-results {
+  padding: 16px;
+  text-align: center;
+}
+
+@font-face {
+  font-family: 'Satoshi-Light';
+  src: url('./assets/fonts/Satoshi-Light.woff2') format('woff2'),
+    url('./assets/fonts/Satoshi-Light.woff') format('woff'),
+    url('./assets/fonts/Satoshi-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi-Regular';
+  src: url('./assets/fonts/Satoshi-Regular.woff2') format('woff2'),
+    url('./assets/fonts/Satoshi-Regular.woff') format('woff'),
+    url('./assets/fonts/Satoshi-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi-Medium';
+  src: url('./assets/fonts/Satoshi-Medium.woff2') format('woff2'),
+    url('./assets/fonts/Satoshi-Medium.woff') format('woff'),
+    url('./assets/fonts/Satoshi-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi-Bold';
+  src: url('./assets/fonts/Satoshi-Bold.woff2') format('woff2'),
+    url('./assets/fonts/Satoshi-Bold.woff') format('woff'),
+    url('./assets/fonts/Satoshi-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+input, button, select, label {
+  font-family: inherit;
+}
+
+.Toastify__toast-body {
+  font-size: 14px;
+}

@@ -1,0 +1,58 @@
+.form {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+
+  :global {
+    .c-input-base__field {
+      width: 100%;
+    }
+  }
+}
+
+.btnAdd {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px -1px rgba(17, 12, 34, 0.08);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  flex-direction: row-reverse;
+  background: #5050ff;
+  min-width: 107px;
+}
+
+.list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.error {
+  color: #c30052;
+}
+
+.modal {
+  :global {
+    .c-modal__footer {
+      margin-top: 0;
+
+      .c-modal--cancel {
+        .btn.btn-small {
+          background: #fff;
+          border: 1px solid #dedeec;
+          color: #4a545e;
+          min-width: auto;
+        }
+      }
+
+      > button {
+        background: #e2323a;
+        border-color: #e2323a;
+        min-width: auto;
+      }
+    }
+  }
+}

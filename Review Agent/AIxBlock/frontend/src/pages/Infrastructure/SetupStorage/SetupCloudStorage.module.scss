@@ -1,0 +1,26 @@
+.container {
+  box-sizing: border-box;
+  padding: 32px 16px;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+
+  :global {
+    .btn {
+      border-radius: 6px;
+      border: solid 1px #FF55AA;
+      background: #FFEEF7;
+      color: #FF55AA;
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+}

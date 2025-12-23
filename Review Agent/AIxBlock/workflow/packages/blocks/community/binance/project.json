@@ -1,0 +1,26 @@
+{
+  "name": "blocks-binance",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/binance/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/binance",
+        "tsConfig": "packages/blocks/community/binance/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/binance/package.json",
+        "main": "packages/blocks/community/binance/src/index.ts",
+        "assets": ["packages/blocks/community/binance/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

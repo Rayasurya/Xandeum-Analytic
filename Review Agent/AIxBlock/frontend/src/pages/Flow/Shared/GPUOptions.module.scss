@@ -1,0 +1,65 @@
+.gpuOptions {
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: fit-content;
+  width: 100%;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cpuContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.cpuItem {
+  border-radius: var(--Radius-rounded-xl);
+  border: 1.5px solid var(--main-Line);
+  background: var(--main-bg);
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-template-rows: auto 1fr auto;
+  padding: 24px;
+  cursor: pointer;
+  transition: .1s all;
+  max-width: 324px;
+}
+
+.cpuItemActive {
+  border-color: var(--Color-primary-base);
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.gpuHeading {
+  @extend .flex;
+  justify-content: space-between;
+}
+
+.emptyList {
+  @extend .flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heading {
+  color: var(--Color-base-Heading);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.rightButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}

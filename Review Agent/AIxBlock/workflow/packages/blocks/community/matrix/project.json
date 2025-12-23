@@ -1,0 +1,26 @@
+{
+  "name": "blocks-matrix",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/matrix/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/matrix",
+        "tsConfig": "packages/blocks/community/matrix/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/matrix/package.json",
+        "main": "packages/blocks/community/matrix/src/index.ts",
+        "assets": ["packages/blocks/community/matrix/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

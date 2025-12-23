@@ -1,0 +1,30 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 16px;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--Color-base-Action---info, #5050FF);
+  text-align: center;
+}
+
+.intro {
+  line-height: 1.5em;
+  max-width: 570px;
+  text-align: center;
+}
+
+.actions {
+
+}

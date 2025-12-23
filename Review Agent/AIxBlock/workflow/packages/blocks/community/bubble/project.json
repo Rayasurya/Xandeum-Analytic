@@ -1,0 +1,33 @@
+{
+  "name": "blocks-bubble",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/bubble/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/bubble",
+        "tsConfig": "packages/blocks/community/bubble/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/bubble/package.json",
+        "main": "packages/blocks/community/bubble/src/index.ts",
+        "assets": ["packages/blocks/community/bubble/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-bubble {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/blocks/community/bubble/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

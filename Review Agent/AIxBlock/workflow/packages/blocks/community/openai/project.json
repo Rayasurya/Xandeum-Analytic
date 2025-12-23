@@ -1,0 +1,26 @@
+{
+  "name": "blocks-openai",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/openai/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/openai",
+        "tsConfig": "packages/blocks/community/openai/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/openai/package.json",
+        "main": "packages/blocks/community/openai/src/index.ts",
+        "assets": ["packages/blocks/community/openai/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,71 @@
+// Image Object
+
+.c-object {
+  border-radius: 16px;
+  border: 0.5px solid #a0a3bd;
+  background: #fff;
+
+  &__thumb {
+    height: 185px;
+    border-radius: 16px 16px 0px 0px;
+    background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0) 100%
+      ),
+      url("../../assets/images/rectangle.png"),
+      lightgray 0px -35.42px / 100% 126.262% no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    background-size: cover;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 10px 20px 10px;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 38px;
+    letter-spacing: 0.75px;
+    margin: 0;
+  }
+
+  &__desc {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0.75px;
+    margin: 0;
+  }
+
+  &__price {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.75px;
+  }
+
+  &__action {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  &--add {
+    border-radius: 64px;
+    background: linear-gradient(114deg, #7433ff 0%, #ffa3fd 100%);
+    max-width: 121px;
+    border: none;
+    color: #fff;
+    display: flex;
+    flex-direction: row-reverse;
+  }
+}

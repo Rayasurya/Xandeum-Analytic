@@ -1,0 +1,196 @@
+.localUpload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  &Content {
+    position: relative;
+    border: 1px dashed #40405b;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 738px;
+    padding: 48px;
+  }
+}
+
+.dragging {
+  background-color: #f5f5f5;
+  border: 3px solid #2a46ff;
+}
+
+.supportFileType {
+  color: var(--Color-neutral-base);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+}
+
+.uploadTilte {
+  h2 {
+    color: var(--main-Label);
+    text-align: center;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    margin: 0;
+    margin-bottom: 16px;
+  }
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dNone {
+  opacity: 0;
+  font-size: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.noCursor {
+  cursor: auto;
+}
+
+.list {
+  &-list__table {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &Content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &Head {
+    &-item {
+      p {
+        margin: 0;
+        font-size: 18px;
+        color: #40405b;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &Item,
+  &HeadItem,
+  &File {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+  &FileWithProgress {
+    position: relative;
+    padding-bottom: 32px;
+  }
+
+  &Text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+
+    &Fail {
+      color: #f2415a;
+    }
+
+    &StatusFail {
+      color: #f2415a;
+    }
+
+    &StatusSuccess {
+      color: #27be69;
+    }
+  }
+}
+
+
+.textLabel {
+  color: var(--main-Label);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  //max-width: 320px;
+  word-break: break-all;
+}
+
+.spinContent {
+  position: relative;
+
+  svg {
+    animation: loading 1s linear infinite;
+  }
+}
+
+.uploadPercent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  text-shadow: 0 0 3px white;
+}
+
+.progressBar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #999;
+  margin-top: 8px;
+
+  > div {
+    background-color: #5050FF;
+    border-radius: 4px;
+    height: 4px;
+    margin-top: 8px;
+  }
+}
+
+@keyframes loading {
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.example {
+  font-size: 12px;
+  font-family: monospace;
+  line-height: 1.5em;
+  padding: 8px;
+  border: solid 1px #ddd;
+  margin: -32px 0 -40px 0;
+  border-radius: 8px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, .1);
+}
+
+.retry {
+  color: #5050FF;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.failReason {
+  font-size: 11px;
+}

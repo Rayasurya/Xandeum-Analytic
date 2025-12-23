@@ -1,0 +1,26 @@
+{
+  "name": "blocks-gcloud-pubsub",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/gcloud-pubsub/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/gcloud-pubsub",
+        "tsConfig": "packages/blocks/community/gcloud-pubsub/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/gcloud-pubsub/package.json",
+        "main": "packages/blocks/community/gcloud-pubsub/src/index.ts",
+        "assets": ["packages/blocks/community/gcloud-pubsub/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

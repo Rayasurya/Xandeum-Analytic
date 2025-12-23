@@ -1,0 +1,36 @@
+.sell-dialog__preview__flow {
+  pointer-events: auto;
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  .react-viewer-mask {
+    background-color: rgb(255 255 255 / 0.8);
+    top: 50px;
+  }
+  .react-viewer-canvas {
+    top: 50px;
+  }
+  .react-viewer-image {
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  }
+  .react-viewer-close {
+    bottom: 6px;
+    left: calc(50% + 50px);
+    top: auto;
+    border-radius: 50%;
+    height: 28px;
+    width: 28px;
+    color: hsl(var(--primary-foreground));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .react-viewer-close > i {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+}

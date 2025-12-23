@@ -1,0 +1,26 @@
+{
+  "name": "blocks-bannerbear",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/bannerbear/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/bannerbear",
+        "tsConfig": "packages/blocks/community/bannerbear/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/bannerbear/package.json",
+        "main": "packages/blocks/community/bannerbear/src/index.ts",
+        "assets": ["packages/blocks/community/bannerbear/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

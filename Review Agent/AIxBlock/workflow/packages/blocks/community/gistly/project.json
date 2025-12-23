@@ -1,0 +1,30 @@
+{
+  "name": "blocks-gistly",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/gistly/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/gistly",
+        "tsConfig": "packages/blocks/community/gistly/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/gistly/package.json",
+        "main": "packages/blocks/community/gistly/src/index.ts",
+        "assets": ["packages/blocks/community/gistly/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-gistly {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+} 

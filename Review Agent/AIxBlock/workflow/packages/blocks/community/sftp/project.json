@@ -1,0 +1,26 @@
+{
+  "name": "blocks-sftp",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/sftp/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/sftp",
+        "tsConfig": "packages/blocks/community/sftp/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/sftp/package.json",
+        "main": "packages/blocks/community/sftp/src/index.ts",
+        "assets": ["packages/blocks/community/sftp/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

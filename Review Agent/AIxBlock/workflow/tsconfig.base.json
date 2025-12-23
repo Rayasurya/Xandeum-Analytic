@@ -1,0 +1,851 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2021", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@activepieces/piece-activecampaign": [
+        "packages/blocks/community/activecampaign/src/index.ts"
+      ],
+      "@activepieces/piece-activepieces": [
+        "packages/blocks/community/activepieces/src/index.ts"
+      ],
+      "@activepieces/piece-actualbudget": [
+        "packages/blocks/community/actualbudget/src/index.ts"
+      ],
+      "@activepieces/piece-acumbamail": [
+        "packages/blocks/community/acumbamail/src/index.ts"
+      ],
+      "@activepieces/piece-afforai": [
+        "packages/blocks/community/afforai/src/index.ts"
+      ],
+      "@activepieces/piece-aianswer": [
+        "packages/blocks/community/aianswer/src/index.ts"
+      ],
+      "@activepieces/piece-airtable": [
+        "packages/blocks/community/airtable/src/index.ts"
+      ],
+      "@activepieces/piece-aixblock-dataset": [
+        "packages/blocks/community/aixblock-dataset/src/index.ts"
+      ],
+      "@activepieces/piece-amazon-s3": [
+        "packages/blocks/community/amazon-s3/src/index.ts"
+      ],
+      "@activepieces/piece-amazon-sns": [
+        "packages/blocks/community/amazon-sns/src/index.ts"
+      ],
+      "@activepieces/piece-amazon-sqs": [
+        "packages/blocks/community/amazon-sqs/src/index.ts"
+      ],
+      "@activepieces/piece-aminos": [
+        "packages/blocks/community/aminos/src/index.ts"
+      ],
+      "@activepieces/piece-anyhook-graphql": [
+        "packages/blocks/community/anyhook-graphql/src/index.ts"
+      ],
+      "@activepieces/piece-anyhook-websocket": [
+        "packages/blocks/community/anyhook-websocket/src/index.ts"
+      ],
+      "@activepieces/piece-apify": [
+        "packages/blocks/community/apify/src/index.ts"
+      ],
+      "@activepieces/piece-apitable": [
+        "packages/blocks/community/apitable/src/index.ts"
+      ],
+      "@activepieces/piece-apollo": [
+        "packages/blocks/community/apollo/src/index.ts"
+      ],
+      "@activepieces/piece-approval": [
+        "packages/blocks/community/approval/src/index.ts"
+      ],
+      "@activepieces/piece-asana": [
+        "packages/blocks/community/asana/src/index.ts"
+      ],
+      "@activepieces/piece-ashby": [
+        "packages/blocks/community/ashby/src/index.ts"
+      ],
+      "@activepieces/piece-assemblyai": [
+        "packages/blocks/community/assemblyai/src/index.ts"
+      ],
+      "@activepieces/piece-azure-communication-services": [
+        "packages/blocks/community/azure-communication-services/src/index.ts"
+      ],
+      "@activepieces/piece-azure-openai": [
+        "packages/blocks/community/azure-openai/src/index.ts"
+      ],
+      "@activepieces/piece-bamboohr": [
+        "packages/blocks/community/bamboohr/src/index.ts"
+      ],
+      "@activepieces/piece-bannerbear": [
+        "packages/blocks/community/bannerbear/src/index.ts"
+      ],
+      "@activepieces/piece-baserow": [
+        "packages/blocks/community/baserow/src/index.ts"
+      ],
+      "@activepieces/piece-beamer": [
+        "packages/blocks/community/beamer/src/index.ts"
+      ],
+      "@activepieces/piece-bettermode": [
+        "packages/blocks/community/bettermode/src/index.ts"
+      ],
+      "@activepieces/piece-binance": [
+        "packages/blocks/community/binance/src/index.ts"
+      ],
+      "@activepieces/piece-blockscout": [
+        "packages/blocks/community/blockscout/src/index.ts"
+      ],
+      "@activepieces/piece-bonjoro": [
+        "packages/blocks/community/bonjoro/src/index.ts"
+      ],
+      "@activepieces/piece-box": ["packages/blocks/community/box/src/index.ts"],
+      "@activepieces/piece-brilliant-directories": [
+        "packages/blocks/community/brilliant-directories/src/index.ts"
+      ],
+      "@activepieces/piece-bubble": [
+        "packages/blocks/community/bubble/src/index.ts"
+      ],
+      "@activepieces/piece-cal-com": [
+        "packages/blocks/community/cal-com/src/index.ts"
+      ],
+      "@activepieces/piece-calendly": [
+        "packages/blocks/community/calendly/src/index.ts"
+      ],
+      "@activepieces/piece-captain-data": [
+        "packages/blocks/community/captain-data/src/index.ts"
+      ],
+      "@activepieces/piece-cartloom": [
+        "packages/blocks/community/cartloom/src/index.ts"
+      ],
+      "@activepieces/piece-certopus": [
+        "packages/blocks/community/certopus/src/index.ts"
+      ],
+      "@activepieces/piece-chainalysis-api": [
+        "packages/blocks/community/chainalysis-api/src/index.ts"
+      ],
+      "@activepieces/piece-chargekeep": [
+        "packages/blocks/community/chargekeep/src/index.ts"
+      ],
+      "@activepieces/piece-clarifai": [
+        "packages/blocks/community/clarifai/src/index.ts"
+      ],
+      "@activepieces/piece-claude": [
+        "packages/blocks/community/claude/src/index.ts"
+      ],
+      "@activepieces/piece-clearout": [
+        "packages/blocks/community/clearout/src/index.ts"
+      ],
+      "@activepieces/piece-clickup": [
+        "packages/blocks/community/clickup/src/index.ts"
+      ],
+      "@activepieces/piece-clockodo": [
+        "packages/blocks/community/clockodo/src/index.ts"
+      ],
+      "@activepieces/piece-cloutly": [
+        "packages/blocks/community/cloutly/src/index.ts"
+      ],
+      "@activepieces/piece-confluence": [
+        "packages/blocks/community/confluence/src/index.ts"
+      ],
+      "@activepieces/piece-connections": [
+        "packages/blocks/community/connections/src/index.ts"
+      ],
+      "@activepieces/piece-constant-contact": [
+        "packages/blocks/community/constant-contact/src/index.ts"
+      ],
+      "@activepieces/piece-contentful": [
+        "packages/blocks/community/contentful/src/index.ts"
+      ],
+      "@activepieces/piece-contiguity": [
+        "packages/blocks/community/contiguity/src/index.ts"
+      ],
+      "@activepieces/piece-convertkit": [
+        "packages/blocks/community/convertkit/src/index.ts"
+      ],
+      "@activepieces/piece-crypto": [
+        "packages/blocks/community/crypto/src/index.ts"
+      ],
+      "@activepieces/piece-csv": ["packages/blocks/community/csv/src/index.ts"],
+      "@activepieces/piece-data-mapper": [
+        "packages/blocks/community/data-mapper/src/index.ts"
+      ],
+      "@activepieces/piece-data-summarizer": [
+        "packages/blocks/community/data-summarizer/src/index.ts"
+      ],
+      "@activepieces/piece-date-helper": [
+        "packages/blocks/community/date-helper/src/index.ts"
+      ],
+      "@activepieces/piece-datocms": [
+        "packages/blocks/community/datocms/src/index.ts"
+      ],
+      "@activepieces/piece-deepl": [
+        "packages/blocks/community/deepl/src/index.ts"
+      ],
+      "@activepieces/piece-deepseek": [
+        "packages/blocks/community/deepseek/src/index.ts"
+      ],
+      "@activepieces/piece-delay": [
+        "packages/blocks/community/delay/src/index.ts"
+      ],
+      "@activepieces/piece-devin": [
+        "packages/blocks/community/devin/src/index.ts"
+      ],
+      "@activepieces/piece-discord": [
+        "packages/blocks/community/discord/src/index.ts"
+      ],
+      "@activepieces/piece-discourse": [
+        "packages/blocks/community/discourse/src/index.ts"
+      ],
+      "@activepieces/piece-drip": [
+        "packages/blocks/community/drip/src/index.ts"
+      ],
+      "@activepieces/piece-dropbox": [
+        "packages/blocks/community/dropbox/src/index.ts"
+      ],
+      "@activepieces/piece-elevenlabs": [
+        "packages/blocks/community/elevenlabs/src/index.ts"
+      ],
+      "@activepieces/piece-eth-name-service": [
+        "packages/blocks/community/eth-name-service/src/index.ts"
+      ],
+      "@activepieces/piece-facebook-leads": [
+        "packages/blocks/community/facebook-leads/src/index.ts"
+      ],
+      "@activepieces/piece-facebook-pages": [
+        "packages/blocks/community/facebook-pages/src/index.ts"
+      ],
+      "@activepieces/piece-figma": [
+        "packages/blocks/community/figma/src/index.ts"
+      ],
+      "@activepieces/piece-file-helper": [
+        "packages/blocks/community/file-helper/src/index.ts"
+      ],
+      "@activepieces/piece-firecrawl": [
+        "packages/blocks/community/firecrawl/src/index.ts"
+      ],
+      "@activepieces/piece-fliqr-ai": [
+        "packages/blocks/community/fliqr-ai/src/index.ts"
+      ],
+      "@activepieces/piece-flowise": [
+        "packages/blocks/community/flowise/src/index.ts"
+      ],
+      "@activepieces/piece-flowlu": [
+        "packages/blocks/community/flowlu/src/index.ts"
+      ],
+      "@activepieces/piece-formbricks": [
+        "packages/blocks/community/formbricks/src/index.ts"
+      ],
+      "@activepieces/piece-forms": [
+        "packages/blocks/community/forms/src/index.ts"
+      ],
+      "@activepieces/piece-frame": [
+        "packages/blocks/community/frame/src/index.ts"
+      ],
+      "@activepieces/piece-freshdesk": [
+        "packages/blocks/community/freshdesk/src/index.ts"
+      ],
+      "@activepieces/piece-freshsales": [
+        "packages/blocks/community/freshsales/src/index.ts"
+      ],
+      "@activepieces/piece-gameball": [
+        "packages/blocks/community/gameball/src/index.ts"
+      ],
+      "@activepieces/piece-gcloud-pubsub": [
+        "packages/blocks/community/gcloud-pubsub/src/index.ts"
+      ],
+      "@activepieces/piece-generatebanners": [
+        "packages/blocks/community/generatebanners/src/index.ts"
+      ],
+      "@activepieces/piece-ghostcms": [
+        "packages/blocks/community/ghostcms/src/index.ts"
+      ],
+      "@activepieces/piece-github": [
+        "packages/blocks/community/github/src/index.ts"
+      ],
+      "@activepieces/piece-gitlab": [
+        "packages/blocks/community/gitlab/src/index.ts"
+      ],
+      "@activepieces/piece-gmail": [
+        "packages/blocks/community/gmail/src/index.ts"
+      ],
+      "@activepieces/piece-google-calendar": [
+        "packages/blocks/community/google-calendar/src/index.ts"
+      ],
+      "@activepieces/piece-google-contacts": [
+        "packages/blocks/community/google-contacts/src/index.ts"
+      ],
+      "@activepieces/piece-google-docs": [
+        "packages/blocks/community/google-docs/src/index.ts"
+      ],
+      "@activepieces/piece-google-drive": [
+        "packages/blocks/community/google-drive/src/index.ts"
+      ],
+      "@activepieces/piece-google-forms": [
+        "packages/blocks/community/google-forms/src/index.ts"
+      ],
+      "@activepieces/piece-google-gemini": [
+        "packages/blocks/community/google-gemini/src/index.ts"
+      ],
+      "@activepieces/piece-google-my-business": [
+        "packages/blocks/community/google-my-business/src/index.ts"
+      ],
+      "@activepieces/piece-google-search-console": [
+        "packages/blocks/community/google-search-console/src/index.ts"
+      ],
+      "@activepieces/piece-google-sheets": [
+        "packages/blocks/community/google-sheets/src/index.ts"
+      ],
+      "@activepieces/piece-google-slides": [
+        "packages/blocks/community/google-slides/src/index.ts"
+      ],
+      "@activepieces/piece-google-tasks": [
+        "packages/blocks/community/google-tasks/src/index.ts"
+      ],
+      "@activepieces/piece-gotify": [
+        "packages/blocks/community/gotify/src/index.ts"
+      ],
+      "@activepieces/piece-graphql": [
+        "packages/blocks/community/graphql/src/index.ts"
+      ],
+      "@activepieces/piece-gravityforms": [
+        "packages/blocks/community/gravityforms/src/index.ts"
+      ],
+      "@activepieces/piece-grist": [
+        "packages/blocks/community/grist/src/index.ts"
+      ],
+      "@activepieces/piece-groq": [
+        "packages/blocks/community/groq/src/index.ts"
+      ],
+      "@activepieces/piece-hackernews": [
+        "packages/blocks/community/hackernews/src/index.ts"
+      ],
+      "@activepieces/piece-harvest": [
+        "packages/blocks/community/harvest/src/index.ts"
+      ],
+      "@activepieces/piece-heartbeat": [
+        "packages/blocks/community/heartbeat/src/index.ts"
+      ],
+      "@activepieces/piece-http": [
+        "packages/blocks/community/http/src/index.ts"
+      ],
+      "@activepieces/piece-http-oauth2": [
+        "packages/blocks/community/http-oauth2/src/index.ts"
+      ],
+      "@activepieces/piece-hubspot": [
+        "packages/blocks/community/hubspot/src/index.ts"
+      ],
+      "@activepieces/piece-image-helper": [
+        "packages/blocks/community/image-helper/src/index.ts"
+      ],
+      "@activepieces/piece-imap": [
+        "packages/blocks/community/imap/src/index.ts"
+      ],
+      "@activepieces/piece-instagram-business": [
+        "packages/blocks/community/instagram-business/src/index.ts"
+      ],
+      "@activepieces/piece-instasent": [
+        "packages/blocks/community/instasent/src/index.ts"
+      ],
+      "@activepieces/piece-intercom": [
+        "packages/blocks/community/intercom/src/index.ts"
+      ],
+      "@activepieces/piece-invoiceninja": [
+        "packages/blocks/community/invoiceninja/src/index.ts"
+      ],
+      "@activepieces/piece-jira-cloud": [
+        "packages/blocks/community/jira-cloud/src/index.ts"
+      ],
+      "@activepieces/piece-jotform": [
+        "packages/blocks/community/jotform/src/index.ts"
+      ],
+      "@activepieces/piece-json": [
+        "packages/blocks/community/json/src/index.ts"
+      ],
+      "@activepieces/piece-kallabot-ai": [
+        "packages/blocks/community/kallabot-ai/src/index.ts"
+      ],
+      "@activepieces/piece-kimai": [
+        "packages/blocks/community/kimai/src/index.ts"
+      ],
+      "@activepieces/piece-kizeo-forms": [
+        "packages/blocks/community/kizeo-forms/src/index.ts"
+      ],
+      "@activepieces/piece-krisp-call": [
+        "packages/blocks/community/krisp-call/src/index.ts"
+      ],
+      "@activepieces/piece-lead-connector": [
+        "packages/blocks/community/lead-connector/src/index.ts"
+      ],
+      "@activepieces/piece-line": [
+        "packages/blocks/community/line/src/index.ts"
+      ],
+      "@activepieces/piece-linear": [
+        "packages/blocks/community/linear/src/index.ts"
+      ],
+      "@activepieces/piece-linka": [
+        "packages/blocks/community/linka/src/index.ts"
+      ],
+      "@activepieces/piece-linkedin": [
+        "packages/blocks/community/linkedin/src/index.ts"
+      ],
+      "@activepieces/piece-llmrails": [
+        "packages/blocks/community/llmrails/src/index.ts"
+      ],
+      "@activepieces/piece-localai": [
+        "packages/blocks/community/localai/src/index.ts"
+      ],
+      "@activepieces/piece-lusha": [
+        "packages/blocks/community/lusha/src/index.ts"
+      ],
+      "@activepieces/piece-mailchain": [
+        "packages/blocks/community/mailchain/src/index.ts"
+      ],
+      "@activepieces/piece-mailchimp": [
+        "packages/blocks/community/mailchimp/src/index.ts"
+      ],
+      "@activepieces/piece-mailer-lite": [
+        "packages/blocks/community/mailer-lite/src/index.ts"
+      ],
+      "@activepieces/piece-maileroo": [
+        "packages/blocks/community/maileroo/src/index.ts"
+      ],
+      "@activepieces/piece-mastodon": [
+        "packages/blocks/community/mastodon/src/index.ts"
+      ],
+      "@activepieces/piece-math-helper": [
+        "packages/blocks/community/math-helper/src/index.ts"
+      ],
+      "@activepieces/piece-matomo": [
+        "packages/blocks/community/matomo/src/index.ts"
+      ],
+      "@activepieces/piece-matrix": [
+        "packages/blocks/community/matrix/src/index.ts"
+      ],
+      "@activepieces/piece-mattermost": [
+        "packages/blocks/community/mattermost/src/index.ts"
+      ],
+      "@activepieces/piece-mautic": [
+        "packages/blocks/community/mautic/src/index.ts"
+      ],
+      "@activepieces/piece-mcp": ["packages/blocks/community/mcp/src/index.ts"],
+      "@activepieces/piece-mempool-space": [
+        "packages/blocks/community/mempool-space/src/index.ts"
+      ],
+      "@activepieces/piece-messagebird": [
+        "packages/blocks/community/messagebird/src/index.ts"
+      ],
+      "@activepieces/piece-microsoft-excel-365": [
+        "packages/blocks/community/microsoft-excel-365/src/index.ts"
+      ],
+      "@activepieces/piece-microsoft-onedrive": [
+        "packages/blocks/community/microsoft-onedrive/src/index.ts"
+      ],
+      "@activepieces/piece-microsoft-outlook-calendar": [
+        "packages/blocks/community/microsoft-outlook-calendar/src/index.ts"
+      ],
+      "@activepieces/piece-microsoft-teams": [
+        "packages/blocks/community/microsoft-teams/src/index.ts"
+      ],
+      "@activepieces/piece-mindee": [
+        "packages/blocks/community/mindee/src/index.ts"
+      ],
+      "@activepieces/piece-mixpanel": [
+        "packages/blocks/community/mixpanel/src/index.ts"
+      ],
+      "@activepieces/piece-monday": [
+        "packages/blocks/community/monday/src/index.ts"
+      ],
+      "@activepieces/piece-mongodb": [
+        "packages/blocks/community/mongodb/src/index.ts"
+      ],
+      "@activepieces/piece-moxie-crm": [
+        "packages/blocks/community/moxie-crm/src/index.ts"
+      ],
+      "@activepieces/piece-mysql": [
+        "packages/blocks/community/mysql/src/index.ts"
+      ],
+      "@activepieces/piece-nifty": [
+        "packages/blocks/community/nifty/src/index.ts"
+      ],
+      "@activepieces/piece-nocodb": [
+        "packages/blocks/community/nocodb/src/index.ts"
+      ],
+      "@activepieces/piece-notion": [
+        "packages/blocks/community/notion/src/index.ts"
+      ],
+      "@activepieces/piece-ntfy": [
+        "packages/blocks/community/ntfy/src/index.ts"
+      ],
+      "@activepieces/piece-odoo": [
+        "packages/blocks/community/odoo/src/index.ts"
+      ],
+      "@activepieces/piece-onfleet": [
+        "packages/blocks/community/onfleet/src/index.ts"
+      ],
+      "@activepieces/piece-open-router": [
+        "packages/blocks/community/open-router/src/index.ts"
+      ],
+      "@activepieces/piece-openai": [
+        "packages/blocks/community/openai/src/index.ts"
+      ],
+      "@activepieces/piece-pastebin": [
+        "packages/blocks/community/pastebin/src/index.ts"
+      ],
+      "@activepieces/piece-pastefy": [
+        "packages/blocks/community/pastefy/src/index.ts"
+      ],
+      "@activepieces/piece-pdf": ["packages/blocks/community/pdf/src/index.ts"],
+      "@activepieces/piece-perplexity-ai": [
+        "packages/blocks/community/perplexity-ai/src/index.ts"
+      ],
+      "@activepieces/piece-personal-ai": [
+        "packages/blocks/community/personal-ai/src/index.ts"
+      ],
+      "@activepieces/piece-photoroom": [
+        "packages/blocks/community/photoroom/src/index.ts"
+      ],
+      "@activepieces/piece-pipedrive": [
+        "packages/blocks/community/pipedrive/src/index.ts"
+      ],
+      "@activepieces/piece-poper": [
+        "packages/blocks/community/poper/src/index.ts"
+      ],
+      "@activepieces/piece-postgres": [
+        "packages/blocks/community/postgres/src/index.ts"
+      ],
+      "@activepieces/piece-posthog": [
+        "packages/blocks/community/posthog/src/index.ts"
+      ],
+      "@activepieces/piece-pushover": [
+        "packages/blocks/community/pushover/src/index.ts"
+      ],
+      "@activepieces/piece-pylon": [
+        "packages/blocks/community/pylon/src/index.ts"
+      ],
+      "@activepieces/piece-qdrant": [
+        "packages/blocks/community/qdrant/src/index.ts"
+      ],
+      "@activepieces/piece-qrcode": [
+        "packages/blocks/community/qrcode/src/index.ts"
+      ],
+      "@activepieces/piece-queue": [
+        "packages/blocks/community/queue/src/index.ts"
+      ],
+      "@activepieces/piece-quickzu": [
+        "packages/blocks/community/quickzu/src/index.ts"
+      ],
+      "@activepieces/piece-rabbitmq": [
+        "packages/blocks/community/rabbitmq/src/index.ts"
+      ],
+      "@activepieces/piece-razorpay": [
+        "packages/blocks/community/razorpay/src/index.ts"
+      ],
+      "@activepieces/piece-reachinbox": [
+        "packages/blocks/community/reachinbox/src/index.ts"
+      ],
+      "@activepieces/piece-read-file": [
+        "packages/blocks/read-file/src/index.ts"
+      ],
+      "@activepieces/piece-reoon-verifier": [
+        "packages/blocks/community/reoon-verifier/src/index.ts"
+      ],
+      "@activepieces/piece-resend": [
+        "packages/blocks/community/resend/src/index.ts"
+      ],
+      "@activepieces/piece-respaid": [
+        "packages/blocks/community/respaid/src/index.ts"
+      ],
+      "@activepieces/piece-retable": [
+        "packages/blocks/community/retable/src/index.ts"
+      ],
+      "@activepieces/piece-retune": [
+        "packages/blocks/community/retune/src/index.ts"
+      ],
+      "@activepieces/piece-returning-ai": [
+        "packages/blocks/community/returning-ai/src/index.ts"
+      ],
+      "@activepieces/piece-robolly": [
+        "packages/blocks/community/robolly/src/index.ts"
+      ],
+      "@activepieces/piece-rounded-studio": [
+        "packages/blocks/community/rounded-studio/src/index.ts"
+      ],
+      "@activepieces/piece-rss": ["packages/blocks/community/rss/src/index.ts"],
+      "@activepieces/piece-saastic": [
+        "packages/blocks/community/saastic/src/index.ts"
+      ],
+      "@activepieces/piece-salesforce": [
+        "packages/blocks/community/salesforce/src/index.ts"
+      ],
+      "@activepieces/piece-scenario": [
+        "packages/blocks/community/scenario/src/index.ts"
+      ],
+      "@activepieces/piece-schedule": [
+        "packages/blocks/community/schedule/src/index.ts"
+      ],
+      "@activepieces/piece-scrapegrapghai": [
+        "packages/blocks/community/scrapegrapghai/src/index.ts"
+      ],
+      "@activepieces/piece-segment": [
+        "packages/blocks/community/segment/src/index.ts"
+      ],
+      "@activepieces/piece-sendfox": [
+        "packages/blocks/community/sendfox/src/index.ts"
+      ],
+      "@activepieces/piece-sendgrid": [
+        "packages/blocks/community/sendgrid/src/index.ts"
+      ],
+      "@activepieces/piece-sendinblue": [
+        "packages/blocks/community/sendinblue/src/index.ts"
+      ],
+      "@activepieces/piece-sendy": [
+        "packages/blocks/community/sendy/src/index.ts"
+      ],
+      "@activepieces/piece-sessions-us": [
+        "packages/blocks/community/sessions-us/src/index.ts"
+      ],
+      "@activepieces/piece-seven": [
+        "packages/blocks/community/seven/src/index.ts"
+      ],
+      "@activepieces/piece-sftp": [
+        "packages/blocks/community/sftp/src/index.ts"
+      ],
+      "@activepieces/piece-shopify": [
+        "packages/blocks/community/shopify/src/index.ts"
+      ],
+      "@activepieces/piece-simplepdf": [
+        "packages/blocks/community/simplepdf/src/index.ts"
+      ],
+      "@activepieces/piece-slack": [
+        "packages/blocks/community/slack/src/index.ts"
+      ],
+      "@activepieces/piece-smaily": [
+        "packages/blocks/community/smaily/src/index.ts"
+      ],
+      "@activepieces/piece-smtp": [
+        "packages/blocks/community/smtp/src/index.ts"
+      ],
+      "@activepieces/piece-soap": [
+        "packages/blocks/community/soap/src/index.ts"
+      ],
+      "@activepieces/piece-sperse": [
+        "packages/blocks/community/sperse/src/index.ts"
+      ],
+      "@activepieces/piece-spotify": [
+        "packages/blocks/community/spotify/src/index.ts"
+      ],
+      "@activepieces/piece-square": [
+        "packages/blocks/community/square/src/index.ts"
+      ],
+      "@activepieces/piece-stability-ai": [
+        "packages/blocks/community/stability-ai/src/index.ts"
+      ],
+      "@activepieces/piece-stable-diffusion-webui": [
+        "packages/blocks/community/stable-diffusion-webui/src/index.ts"
+      ],
+      "@activepieces/piece-store": [
+        "packages/blocks/community/store/src/index.ts"
+      ],
+      "@activepieces/piece-straico": [
+        "packages/blocks/community/straico/src/index.ts"
+      ],
+      "@activepieces/piece-stripe": [
+        "packages/blocks/community/stripe/src/index.ts"
+      ],
+      "@activepieces/piece-subflows": [
+        "packages/blocks/community/subflows/src/index.ts"
+      ],
+      "@activepieces/piece-supabase": [
+        "packages/blocks/community/supabase/src/index.ts"
+      ],
+      "@activepieces/piece-supadata": [
+        "packages/blocks/community/supadata/src/index.ts"
+      ],
+      "@activepieces/piece-surrealdb": [
+        "packages/blocks/community/surrealdb/src/index.ts"
+      ],
+      "@activepieces/piece-surveymonkey": [
+        "packages/blocks/community/surveymonkey/src/index.ts"
+      ],
+      "@activepieces/piece-tables": [
+        "packages/blocks/community/tables/src/index.ts"
+      ],
+      "@activepieces/piece-tags": [
+        "packages/blocks/community/tags/src/index.ts"
+      ],
+      "@activepieces/piece-talkable": [
+        "packages/blocks/community/talkable/src/index.ts"
+      ],
+      "@activepieces/piece-tally": [
+        "packages/blocks/community/tally/src/index.ts"
+      ],
+      "@activepieces/piece-taskade": [
+        "packages/blocks/community/taskade/src/index.ts"
+      ],
+      "@activepieces/piece-tavily": [
+        "packages/blocks/community/tavily/src/index.ts"
+      ],
+      "@activepieces/piece-telegram-bot": [
+        "packages/blocks/community/telegram-bot/src/index.ts"
+      ],
+      "@activepieces/piece-text-helper": [
+        "packages/blocks/community/text-helper/src/index.ts"
+      ],
+      "@activepieces/piece-thankster": [
+        "packages/blocks/community/thankster/src/index.ts"
+      ],
+      "@activepieces/piece-tidycal": [
+        "packages/blocks/community/tidycal/src/index.ts"
+      ],
+      "@activepieces/piece-todoist": [
+        "packages/blocks/community/todoist/src/index.ts"
+      ],
+      "@activepieces/piece-todos": [
+        "packages/blocks/community/todos/src/index.ts"
+      ],
+      "@activepieces/piece-totalcms": [
+        "packages/blocks/community/totalcms/src/index.ts"
+      ],
+      "@activepieces/piece-trello": [
+        "packages/blocks/community/trello/src/index.ts"
+      ],
+      "@activepieces/piece-truelayer": [
+        "packages/blocks/community/truelayer/src/index.ts"
+      ],
+      "@activepieces/piece-twilio": [
+        "packages/blocks/community/twilio/src/index.ts"
+      ],
+      "@activepieces/piece-twin-labs": [
+        "packages/blocks/community/twin-labs/src/index.ts"
+      ],
+      "@activepieces/piece-twitter": [
+        "packages/blocks/community/twitter/src/index.ts"
+      ],
+      "@activepieces/piece-typeform": [
+        "packages/blocks/community/typeform/src/index.ts"
+      ],
+      "@activepieces/piece-upgradechat": [
+        "packages/blocks/community/upgradechat/src/index.ts"
+      ],
+      "@activepieces/piece-utility-ai": [
+        "packages/blocks/community/utility-ai/src/index.ts"
+      ],
+      "@activepieces/piece-vbout": [
+        "packages/blocks/community/vbout/src/index.ts"
+      ],
+      "@activepieces/piece-village": [
+        "packages/blocks/community/village/src/index.ts"
+      ],
+      "@activepieces/piece-vtex": [
+        "packages/blocks/community/vtex/src/index.ts"
+      ],
+      "@activepieces/piece-vtiger": [
+        "packages/blocks/community/vtiger/src/index.ts"
+      ],
+      "@activepieces/piece-webflow": [
+        "packages/blocks/community/webflow/src/index.ts"
+      ],
+      "@activepieces/piece-webhook": [
+        "packages/blocks/community/webhook/src/index.ts"
+      ],
+      "@activepieces/piece-webling": [
+        "packages/blocks/community/webling/src/index.ts"
+      ],
+      "@activepieces/piece-wedof": [
+        "packages/blocks/community/wedof/src/index.ts"
+      ],
+      "@activepieces/piece-whatsable": [
+        "packages/blocks/community/whatsable/src/index.ts"
+      ],
+      "@activepieces/piece-whatsapp": [
+        "packages/blocks/community/whatsapp/src/index.ts"
+      ],
+      "@activepieces/piece-woocommerce": [
+        "packages/blocks/community/woocommerce/src/index.ts"
+      ],
+      "@activepieces/piece-wootric": [
+        "packages/blocks/community/wootric/src/index.ts"
+      ],
+      "@activepieces/piece-wordpress": [
+        "packages/blocks/community/wordpress/src/index.ts"
+      ],
+      "@activepieces/piece-xero": [
+        "packages/blocks/community/xero/src/index.ts"
+      ],
+      "@activepieces/piece-xml": ["packages/blocks/community/xml/src/index.ts"],
+      "@activepieces/piece-youtube": [
+        "packages/blocks/community/youtube/src/index.ts"
+      ],
+      "@activepieces/piece-zalo": [
+        "packages/blocks/community/zalo/src/index.ts"
+      ],
+      "@activepieces/piece-zendesk": [
+        "packages/blocks/community/zendesk/src/index.ts"
+      ],
+      "@activepieces/piece-zerobounce": [
+        "packages/blocks/community/zerobounce/src/index.ts"
+      ],
+      "@activepieces/piece-zoho-books": [
+        "packages/blocks/community/zoho-books/src/index.ts"
+      ],
+      "@activepieces/piece-zoho-crm": [
+        "packages/blocks/community/zoho-crm/src/index.ts"
+      ],
+      "@activepieces/piece-zoho-invoice": [
+        "packages/blocks/community/zoho-invoice/src/index.ts"
+      ],
+      "@activepieces/piece-zoo": ["packages/blocks/community/zoo/src/index.ts"],
+      "@activepieces/piece-zoom": [
+        "packages/blocks/community/zoom/src/index.ts"
+      ],
+      "@axb/*": ["packages/axb/*"],
+      "Aminos": ["packages/blocks/community/Aminos/src/index.ts"],
+      "activepieces/piece-microsoft-dynamics-365-business-central": [
+        "packages/blocks/community/microsoft-dynamics-365-business-central/src/index.ts"
+      ],
+      "activepieces/piece-microsoft-dynamics-crm": [
+        "packages/blocks/community/microsoft-dynamics-crm/src/index.ts"
+      ],
+      "activepieces/piece-microsoft-sharepoint": [
+        "packages/blocks/community/microsoft-sharepoint/src/index.ts"
+      ],
+      "activepieces/piece-snowflake": [
+        "packages/blocks/community/snowflake/src/index.ts"
+      ],
+      "activepieces/piece-zuora": [
+        "packages/blocks/community/zuora/src/index.ts"
+      ],
+      "axb-embed-sdk": ["packages/axb/ui/embed-sdk/src/index.ts"],
+      "server-worker": ["packages/backend/worker/src/index.ts"],
+      "ui-feature-forms": ["packages/ui/features-forms/src/index.ts"],
+      "workflow-aixblock": ["packages/blocks/community/aixblock/src/index.ts"],
+      "workflow-audio-ai": ["packages/blocks/community/audio-ai/src/index.ts"],
+      "workflow-axb-shared": ["packages/axb/shared/src/index.ts"],
+      "workflow-blocks-common": [
+        "packages/blocks/community/common/src/index.ts"
+      ],
+      "workflow-blocks-framework": [
+        "packages/blocks/community/framework/src/index.ts"
+      ],
+      "workflow-engine": ["packages/engine/src/main.ts"],
+      "workflow-image-ai": ["packages/blocks/community/image-ai/src/index.ts"],
+      "workflow-server-shared": ["packages/backend/shared/src/index.ts"],
+      "workflow-shared": ["packages/shared/src/index.ts"],
+      "workflow-text-ai": ["packages/blocks/community/text-ai/src/index.ts"]
+    },
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules", "tmp"]
+}

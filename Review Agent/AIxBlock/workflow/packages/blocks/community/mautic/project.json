@@ -1,0 +1,26 @@
+{
+  "name": "blocks-mautic",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/mautic/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/mautic",
+        "tsConfig": "packages/blocks/community/mautic/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/mautic/package.json",
+        "main": "packages/blocks/community/mautic/src/index.ts",
+        "assets": ["packages/blocks/community/mautic/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

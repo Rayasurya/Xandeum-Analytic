@@ -1,0 +1,29 @@
+.llm-dragable-item {
+	display: flex;
+	flex-direction: row;
+	padding: 21px 21px 21px 6.5px;
+	gap: 6.5px;
+	border: solid 2px #dedeec;
+	border-radius: 8px;
+
+	&.active {
+		border-color: #afafff;
+		background-color: #fff;
+	}
+
+	&__dragger {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: grab;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	&__drag-content {
+		display: block;
+		width: 100%;
+	}
+}

@@ -1,0 +1,80 @@
+.llm-code-view {
+	min-height: 50px;
+
+	&__label__content {
+		display: flex;
+		width: 100%;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	&__label {
+		font-size: 16px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: normal;
+		color: #40405b;
+
+		>span {
+			color: #f2415a;
+			margin-left: 4px;
+		}
+	}
+
+	&__info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+}
+
+.w-tc-editor {
+	padding-left: 28px !important;
+}
+
+.w-tc-editor-text {
+	font-size: 14px !important;
+	padding-left: 38px !important;
+	line-height: 22px !important;
+}
+
+.w-tc-editor-preview {
+	>pre {
+		font-size: 14px !important;
+		line-height: 22px !important;
+
+		code {
+			white-space: pre-wrap;
+		}
+
+		code::before {
+			counter-reset: listing;
+		}
+
+		code .code-line {
+			counter-increment: listing;
+		}
+
+		code .code-line::before {
+			position: absolute;
+			left: 0;
+			content: counter(listing) "";
+			background-color: #dedeec;
+			min-width: 20px;
+			color: #40405B;
+			margin-right: 8px;
+			display: inline-block;
+			padding-left: auto;
+			margin-left: auto;
+			text-align: right;
+			padding-right: 8px;
+			line-height: 22px;
+		}
+	}
+
+
+}

@@ -1,0 +1,50 @@
+// Mode
+
+.c-mode {
+  border-radius: 8px;
+  border: 1px solid #4e4b66;
+  display: flex;
+  width: 173px;
+  height: 44px;
+  padding: 0px 4px;
+  align-items: center;
+  justify-content: space-between;
+
+  &-group {
+    &__button {
+      display: flex;
+      width: 86px;
+      height: 36px;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      border-radius: 8px;
+      border: 1px solid #fff;
+      position: relative;
+
+      &.active {
+        background: #2a46ff;
+        span {
+          color: #fff;
+        }
+      }
+
+      span {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: normal;
+        color: #4e4b66;
+      }
+    }
+
+    &__input {
+      height: 100%;
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      margin: 0;
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "blocks-brilliant-directories",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/brilliant-directories/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/brilliant-directories",
+        "tsConfig": "packages/blocks/community/brilliant-directories/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/brilliant-directories/package.json",
+        "main": "packages/blocks/community/brilliant-directories/src/index.ts",
+        "assets": ["packages/blocks/community/brilliant-directories/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-brilliant-directories {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

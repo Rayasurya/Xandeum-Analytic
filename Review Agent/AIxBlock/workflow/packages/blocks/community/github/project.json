@@ -1,0 +1,26 @@
+{
+  "name": "blocks-github",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/github/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/github",
+        "tsConfig": "packages/blocks/community/github/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/github/package.json",
+        "main": "packages/blocks/community/github/src/index.ts",
+        "assets": ["packages/blocks/community/github/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

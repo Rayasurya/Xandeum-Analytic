@@ -1,0 +1,30 @@
+{
+  "name": "blocks-clearout",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/clearout/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/clearout",
+        "tsConfig": "packages/blocks/community/clearout/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/clearout/package.json",
+        "main": "packages/blocks/community/clearout/src/index.ts",
+        "assets": ["packages/blocks/community/clearout/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-clearout {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,46 @@
+{
+  "name": "axb-embed-sdk",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/axb/ui/embed-sdk/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/axb/ui/embed-sdk",
+        "main": "packages/axb/ui/embed-sdk/src/index.ts",
+        "tsConfig": "packages/axb/ui/embed-sdk/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "bundle": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "web",
+        "compiler": "tsc",
+        "outputFileName": "bundled.js",
+        "outputPath": "dist/packages/axb/ui/embed-sdk",
+        "main": "packages/axb/ui/embed-sdk/src/index.ts",
+        "tsConfig": "packages/axb/ui/embed-sdk/tsconfig.lib.json",
+        "assets": [],
+        "webpackConfig": "packages/axb/ui/embed-sdk/webpack.config.js",
+        "generatePackageJson": true,
+        "babelUpwardRootMode": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

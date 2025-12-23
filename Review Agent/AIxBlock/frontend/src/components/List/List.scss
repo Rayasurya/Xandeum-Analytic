@@ -1,0 +1,53 @@
+.c-list {
+  user-select: none;
+
+  &__title {
+    align-items: center;
+    display: flex;
+    font-size: 18px;
+    font-weight: 600;
+    justify-content: space-between;
+    padding: 12px 0;
+    cursor: pointer;
+  }
+
+  &__items {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    cursor: pointer;
+  }
+
+  &--collapsible {
+    svg {
+      transform: rotateZ(90deg);
+    }
+  }
+
+  &--expand {
+    svg {
+      transform: rotateZ(0);
+    }
+  }
+
+  &__title + &__items {
+    margin-top: 8px;
+  }
+
+  &__item {
+    border-radius: 48px;
+    cursor: pointer;
+    padding: 12px 24px;
+
+    &--active {
+      background-color: #111111;
+      color: white;
+      text-align: center;
+    }
+  }
+
+  &__item + &__item {
+    margin-top: 4px;
+  }
+}

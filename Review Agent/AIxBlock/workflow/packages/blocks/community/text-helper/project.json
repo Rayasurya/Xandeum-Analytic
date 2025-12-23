@@ -1,0 +1,29 @@
+{
+  "name": "blocks-text-helper",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/text-helper/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/text-helper",
+        "tsConfig": "packages/blocks/community/text-helper/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/text-helper/package.json",
+        "main": "packages/blocks/community/text-helper/src/index.ts",
+        "assets": ["packages/blocks/community/text-helper/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-string-utils {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

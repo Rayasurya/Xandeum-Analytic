@@ -1,0 +1,26 @@
+{
+  "name": "blocks-localai",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/localai/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/localai",
+        "tsConfig": "packages/blocks/community/localai/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/localai/package.json",
+        "main": "packages/blocks/community/localai/src/index.ts",
+        "assets": ["packages/blocks/community/localai/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

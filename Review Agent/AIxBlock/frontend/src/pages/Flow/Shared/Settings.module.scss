@@ -1,0 +1,225 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 41px 0;
+  width: 100%;
+}
+
+.flexCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar {
+  @extend .flex;
+  max-width: 832px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.btn {
+  border-radius: var(--Radius-rounded-lg);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  flex-direction: row-reverse;
+}
+
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--Color-primary-base);
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btnImport {
+  @extend .btn;
+  border: 1px solid var(--Color-warning-base);
+  background: var(--Color-warning-50);
+  color: var(--Color-warning-base);
+}
+
+.btnContent {
+  @extend .flex;
+  border-radius: 8px;
+  border: 1px solid var(--main-Line);
+  background: var(--Color-neutral-50);
+  border-radius: var(--Radius-rounded-lg);
+}
+
+.btnContentActive {
+  @extend .btnContent;
+  color: var(--Color-primary-base);
+  background: var(--Color-primary-50);
+}
+
+.btnPipeline {
+  @extend .btn;
+  border: none;
+  background: unset;
+  color: var(--Color-base-Body);
+}
+
+.btnPipelineActive {
+  @extend .btnPipeline;
+  color: var(--Color-primary-600);
+}
+
+.heading {
+  color: var(--Color-base-Heading);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.24px;
+  margin: 0;
+}
+
+.subHeading {
+  @extend .flex;
+  gap: 25px;
+}
+
+.subHeadingTitle {
+  color: var(--Color-base-Heading);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+  margin: 0;
+}
+
+.subHeadingAction {
+  border-radius: var(--Radius-rounded-lg);
+  border: 1px solid var(--Color-primary-base);
+  background: var(--main-bg);
+  box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+  color: var(--Color-primary-base);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.section {
+  border-radius: var(--Radius-rounded-xl, 12px);
+  border: 1px solid var(--main-Line);
+  background: var(--main-bg);
+  box-shadow: 0px 8px 16px 0px rgba(134, 93, 255, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 784px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sectionChild {
+  @extend .flexCol;
+  gap: 12px;
+  position: relative;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  :global {
+    .c-switch__content {
+      display: none;
+    }
+  }
+}
+
+.absolute {
+  position: absolute;
+  top: 24px;
+  left: 0;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--main-Title);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+
+.sectionAction {
+  border-radius: 8px;
+  background: var(--Color-blue-base);
+  height: 32px;
+  box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+  min-width: auto;
+  color: var(--Color-base-white);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.sourceCode {
+  @extend .flexCol;
+  gap: 24px;
+}
+
+.fieldGroup {
+  border-radius: 8px;
+  border: 1px solid var(--main-Line);
+  background: var(--main-bg1);
+  padding: 16px;
+  @extend .flexCol;
+  gap: 12px;
+}
+
+
+.fieldItems {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  >div {
+    width: 100%;
+  }
+}
+
+.fieldItem {
+  @extend .flexCol;
+  gap: 2px;
+}
+
+.label {
+  color: var(--main-sub-Title);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.tooltip {
+  max-width: 15vw;
+  z-index: 999;
+}
+
+.checkpointConfig {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.checkpointConfigExplain {
+  font-size: 12px;
+  opacity: .7;
+  line-height: 1.35em;
+  margin-top: -12px;
+}

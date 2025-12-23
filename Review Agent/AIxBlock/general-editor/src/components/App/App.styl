@@ -1,0 +1,267 @@
+.editor
+  --main-bg-color #fff
+  --main-color-primary #111
+  --main-color-secondary #2A46FF
+  --sticky-items-offset 64px
+  --topbar-height 48px
+  color var(--main-color-primary)
+  width 100%
+  min-height 100%
+  min-width 320px
+  margin 0 auto
+  display flex
+  flex-wrap nowrap
+  align-items stretch
+  flex-direction column
+  background-color var(--main-bg-color)
+  height 100%
+  overflow-y hidden
+  position relative
+
+  &::-webkit-scrollbar
+    background-color #fff
+    width 16px
+
+  &::-webkit-scrollbar-track
+    background-color #fff
+
+  &::-webkit-scrollbar-thumb
+    background-color #babac0
+    border-radius 16px
+    border 4px solid #fff
+
+  &_description
+    color var(--main-color-primary)
+    border-bottom 1px solid var(--main-color-primary)
+    border-radius unset
+  &__auto_height
+    height: auto
+
+  &_fullscreen
+    position absolute
+    background white
+    top 0
+    left 0
+    width 100%
+    padding 2em
+
+  &_hide-topbar
+    .sticky
+      top 16px !important
+
+@include respond("phone")
+  .editor
+    width 300px
+    min-width 300px
+
+.wrapper
+  //flex 1
+  //display grid
+  //grid-template-columns calc(100% - 320px) 320px
+  //grid-template-rows 1fr
+  //align-items stretch
+  //max-width 100%
+  //height calc(100% - var(--topbar-height))
+  //background-color var(--main-bg-color)
+
+  &_viewAll
+    grid-template-columns 100% !important
+
+  &_outliner
+    grid-template-columns 100%
+
+  &_bsp
+    display block
+
+  &__sidebar-toggle
+    position absolute
+    background var(--main-color-secondary)
+    padding 8px 6px
+    border solid 1px var(--main-color-secondary)
+    border-radius 8px 0 0 8px
+    cursor pointer
+    opacity .75
+    line-height 0
+    margin-top -11px
+    right 320px
+    top 50%
+    z-index 1
+    color #fff
+
+    &:hover
+      opacity 1
+
+  &_viewAll &__sidebar-toggle
+    right 0
+
+    svg
+      transform rotateZ(180deg)
+
+.main-view
+  flex 1
+  z-index 1
+  display flex
+  position relative
+  flex-direction column
+  justify-content space-between
+
+  &__annotation
+    padding 1em
+    .object
+      margin-top 1rem
+  &__infobar
+    padding 6px 1em 7px
+    font-size 14px
+    color rgba(#111, 0.6)
+    background-color var(--main-bg-color)
+    border-top 1px solid rgba(#111, 0.1)
+    position sticky
+    bottom 0
+    z-index 5
+
+.main-content
+  //width 100%
+  //height 100%
+  display flex
+  flex-direction column
+  position absolute
+  left 0
+  right 320px
+  top var(--topbar-height)
+  bottom 0
+  overflow auto
+  .main-view
+    background-color var(--main-bg-color)
+
+  &::-webkit-scrollbar
+    background-color #fff
+    width 16px
+
+  &::-webkit-scrollbar-track
+    background-color #fff
+
+  &::-webkit-scrollbar-thumb
+    background-color #babac0
+    border-radius 16px
+    border 4px solid #fff
+
+  + .menu
+    padding 0
+
+    .sidebar-tabs
+      //&__empty,
+      //&__section
+      //  padding 8px
+
+      &__tab
+        font-size 14px
+
+.key-group
+  &__key
+    padding 0 4px
+    height 16px
+    color #fff
+    display inline-flex
+    align-items center
+    background #111
+    border-radius 2px
+    font-weight bold
+    font-size 12px
+    text-transform uppercase
+
+  &__key + &__key
+    margin-left 4px
+
+  & + &
+    margin-left 5px
+
+.sub__result
+  margin -35px 0 30px
+
+.wrapper > .menu
+  width 320px
+  min-width 320px
+  flex none
+  display flex
+  flex-flow column
+  z-index 100
+  align-self stretch
+  background-color var(--main-bg-color)
+  border-left 1px solid rgba(#111, 0.1)
+  color var(--main-color-primary)
+  position absolute
+  right 0
+  top var(--topbar-height)
+  bottom 0
+  overflow auto
+
+  @include respond("phone")
+    margin-left 0
+    margin-top 20px
+
+  &::-webkit-scrollbar
+    background-color #fff
+    width 16px
+
+  &::-webkit-scrollbar-track
+    background-color #fff
+
+  &::-webkit-scrollbar-thumb
+    background-color #babac0
+    border-radius 16px
+    border 4px solid #fff
+
+  &_bsp
+    display flex
+    flex-direction row
+    margin-top 2em
+
+    & > div
+      margin-right 2em
+      width 33.3%
+
+      &:last-child
+        margin-right 0
+
+  &:empty
+    width 0
+    min-width auto
+
+.sticky
+  background-color var(--main-bg-color)
+  color var(--main-color-primary)
+  //padding 1rem
+  box-shadow unset !important
+  position -webkit-sticky
+  position sticky
+  top 1rem
+  z-index 1
+  padding 16px
+
+  &::before
+    content ""
+    position absolute
+    top -16px
+    left 0
+    right 0
+    height 16px
+    background-color var(--main-bg-color)
+
+.editor_hide-topbar .main-content,
+.editor_hide-topbar .menu
+  top 0
+
+.wrapper_viewAll .main-content
+  right 0
+
+.dropdown .menu
+  //background-color #f0f0f0
+  //box-shadow 0 0 16px rgba(0, 0, 0, 0.3)
+  //border-radius 8px
+  margin-bottom 0
+
+  &__item
+    color var(--main-color-primary)
+
+    &:hover
+      color var(--main-color-secondary)

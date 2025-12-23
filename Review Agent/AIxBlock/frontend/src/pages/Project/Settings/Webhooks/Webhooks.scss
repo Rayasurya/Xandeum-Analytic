@@ -1,0 +1,69 @@
+// Webhooks
+
+.c-webhooks {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 770px;
+  margin: 0 auto;
+
+  &__heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 80px;
+    padding-top: 30px;
+
+    &-left {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.24px;
+      color: #40405B;
+      margin: 0;
+    }
+
+    p {
+      font-size: 12px;
+      font-weight: 400;
+      color: #ED2E7E;
+      margin: 0;
+    }
+  }
+
+  &--add,
+  &--cancel {
+    border-radius: 8px;
+    box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+    height: 40px;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 101px;
+  }
+
+  &--cancel {
+    border: 1px solid #f2415a;
+    background: #feecee;
+    color: #f2415a;
+  }
+
+  &--add {
+    background:#27BE69;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+     
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+  }
+}

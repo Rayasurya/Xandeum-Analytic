@@ -1,0 +1,14 @@
+.llm-main-body {
+	display: flex;
+	flex-direction: column;
+	padding: 16px;
+	gap: 16px;
+	width: 100%;
+	background-color: #fff;
+	overflow: hidden scroll;
+
+	&.center {
+		align-items: center;
+		padding: 20% 0;
+	}
+}

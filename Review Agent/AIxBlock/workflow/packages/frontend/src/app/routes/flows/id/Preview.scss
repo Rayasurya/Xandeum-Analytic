@@ -1,0 +1,14 @@
+.preview__flow {
+    .react-viewer-mask {
+        background-color: rgb(255 255 255 / 0.8);
+        top: 0px;
+    }
+    .react-viewer-canvas {
+        top: 0px;
+    }
+    .react-viewer-image {
+        border-radius: var(--radius);
+        border: 1px solid hsl(var(--border));
+        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    }
+}

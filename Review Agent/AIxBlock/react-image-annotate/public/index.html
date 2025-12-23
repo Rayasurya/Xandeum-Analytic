@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React Image Annotation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+      html, body {
+          margin: 0;
+          height: 100%;
+          width: 100%;
+      }
+
+      #root {
+          height: 100vh;
+          width: 100%;
+          font-family: Montserrat, sans-serif;
+          font-size: 16px
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    <script>
+      if (typeof Object.hasOwn === "undefined") {
+        Object.prototype.hasOwn = function (obj, key) {
+          return typeof obj === "object" && Object.keys(obj).indexOf(key) > -1;
+        }
+      }
+
+      const projectID = 261;
+      const taskID = 8588;
+
+      function getRandomColor() {
+        let letters = '0123456789ABCDEF';
+        let color = '#';
+
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+
+        return color;
+      }
+
+      window.APP_SETTINGS = Object.assign({
+        title: "AIxBlock",
+        debug: true,
+        hostname: location.protocol + "//" + location.host + "/",
+      }, {});
+
+      window.addEventListener("DOMContentLoaded", function () {
+        const root = document.getElementById("root");
+        const labelsCount = 20;
+        const labels = [];
+        const labelColors = {};
+        const skeletonList = {};
+
+        for (let i = 1; i <= labelsCount; i++) {
+          labels.push("Label " + i);
+          labelColors["Label " + i] = getRandomColor();
+          skeletonList["Label " + i] = {"points": [{"x": 0.5, "y": 0.1, "name": "head"}, {"x": 0.2, "y": 0.2, "name": "left-shoulder", "to": ["neck"]}, {"x": 0.5, "y": 0.2, "name": "neck", "to": ["head"]}, {"x": 0.8, "y": 0.2, "name": "right-shoulder", "to": ["neck"]}, {"x": 0.2, "y": 0.4, "name": "left-elbow", "to": ["left-shoulder"]}, {"x": 0.8, "y": 0.4, "name": "right-elbow", "to": ["right-shoulder"]}, {"x": 0.2, "y": 0.6, "name": "left-hand", "to": ["left-elbow"]}, {"x": 0.8, "y": 0.6, "name": "right-hand", "to": ["right-elbow"]}, {"x": 0.5, "y": 0.5, "name": "waist", "to": ["neck"]}, {"x": 0.2, "y": 0.7, "name": "left-knee", "to": ["waist"]}, {"x": 0.8, "y": 0.7, "name": "right-knee", "to": ["waist"]}, {"x": 0.2, "y": 0.9, "name": "left-foot", "to": ["left-knee"]}, {"x": 0.8, "y": 0.9, "name": "right-foot", "to": ["right-knee"]}]};
+        }
+
+        fetch(window.APP_SETTINGS.hostname + `api/tasks/${taskID}?project=${projectID}`, {
+          headers: {
+            "Authorization": "Token f81b54e7b72cb6dc7e0c4367de3b8d8a59b6a093",
+          },
+        })
+          .then(r => r.json())
+          .then(r => {
+            window.RIA({
+              images: [{
+                src: r.data?.image,
+                name: "Task #1",
+                regions: [],
+              }],
+              enabledTools: ['clone', 'create-box', 'create-oval', 'create-polygon', 'create-point', 'create-skeleton', 'brush-tool', 'eraser', 'create-polyline', 'create-cuboid'],
+              selectedImage: undefined,
+              showTags: false,
+              regionClsList: labels,
+              hideNext: true,
+              hidePrev: true,
+              showExpand: false,
+              clsColorsList: labelColors,
+              skeletonList: skeletonList,
+              task: r,
+              projectId: projectID,
+            }, root);
+          });
+      });
+    </script>
+  </body>
+</html>

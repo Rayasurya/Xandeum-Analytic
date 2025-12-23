@@ -1,0 +1,38 @@
+{
+  "name": "blocks-zerobounce",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/zerobounce/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/zerobounce",
+        "tsConfig": "packages/blocks/community/zerobounce/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/zerobounce/package.json",
+        "main": "packages/blocks/community/zerobounce/src/index.ts",
+        "assets": [
+          "packages/blocks/community/zerobounce/*.md"
+        ],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-zerobounce {args.ver} {args.tag}",
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    }
+  },
+  "tags": []
+}

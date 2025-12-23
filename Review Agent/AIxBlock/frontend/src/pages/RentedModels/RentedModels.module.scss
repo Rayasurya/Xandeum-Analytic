@@ -1,0 +1,59 @@
+.container {
+  max-width: 1200px;
+  padding: 32px 16px 16px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+
+  :global {
+    .c-pagination {
+      margin: 16px 0 0 0;
+    }
+  }
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+
+    .title {
+      text-align: center;
+    }
+
+    .actions {
+      width: 100%;
+
+      :global {
+        .c-input-base__field {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.2px;
+  margin: 0;
+  color: #111;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding-bottom: 16px;
+  margin-top: 32px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}

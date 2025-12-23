@@ -1,0 +1,202 @@
+/* Hide the spinners for WebKit browsers (Chrome, Safari) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide the spinners for Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.withdraw-axb {
+  min-width: 350px;
+  min-height: 400px;
+  padding: 20px;
+  overflow: unset;
+  .c-modal__content {
+    gap: 0;
+  }
+  &-content {
+    .group-field {
+      margin-top: 20px;  
+      &-title {
+        color: #40405b;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+      &-input {
+        border: 1px solid #dedeec;
+        border-radius: 8px;
+        height: 40px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        input {
+          height: 38px;
+          border: none;
+          border-radius: 8px;
+          outline: none;
+          padding-left: 10px;
+          width: calc(100% - 90px);
+          font-size: 14px;
+          font-weight: 500;
+          &::placeholder {
+            color: #a1a3bb;
+          }
+        }
+        &-prefix {
+          font-size: 12px;
+          font-weight: 600;
+          position: absolute;
+          right: 10px;
+          display: flex;
+          align-items: center;
+          span:first-child {
+            color: #40405b;
+          }
+          span:last-child {
+            color: #ff55aa;
+            margin-left: 5px;
+          }
+        }
+      }
+      &-select {
+        position: relative;
+        border: 1px solid #dedeec;
+        border-radius: 8px;
+        height: 40px;
+        padding: 0 40px 0 10px;
+        appearance: none;
+        outline: none;
+        font-weight: 500;
+        font-size: 14px;
+        span:first-child {
+          line-height: 38px;
+        }
+        .custom-arrow {
+          position: absolute;
+          right: 10px;
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          top: 5px;
+          transform: rotate(-90deg);
+        }
+      }
+      &-qr {
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
+        input {
+          height: 40px;
+          outline: none;
+          border: 1px solid #dedeec;
+          border-radius: 8px;
+          padding-left: 10px;
+          width: calc(100% - 15px);
+          font-weight: 500;
+          font-size: 14px;
+          &::placeholder {
+            color: #a1a3bb;
+          }
+        }
+      }
+    }
+    &-btn {
+      display: flex;
+      gap: 20px;
+      button {
+        height: 40px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        width: calc(50% - 10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        svg {
+          width: 18px;
+        }
+      }
+      &-back {
+        border: 1px solid #dedeec;
+        box-shadow: 0 1px 2px -1px rgba(17, 12, 34, 0.08);
+        color: #14142a;
+        background-color: #fff;
+        span {
+          margin-left: 5px;
+        }
+        svg {
+          stroke: #14142a;
+        }
+      }
+      &-buy {
+        border: 1px solid #dedeec;
+        box-shadow: 0 2px 4px -2px rgba(17, 12, 34, 0.12);
+        color: #f4f5f9;
+        background-color: #4949e8;
+        span {
+          margin-right: 5px;
+        }
+        svg {
+          transform: rotate(180deg);
+          stroke: #ffffff;
+        }
+      }
+    }
+    &-network {
+      position: relative;
+    }
+    &-box {
+      border: 1px solid #dedeec;
+      box-shadow: 0 2px 16px 4px rgba(0, 0, 0, 0.06);
+      border-radius: 12px;
+      padding: 0 24px 24px;
+      margin-top: 10px;
+      position: absolute;
+      background: #fff;
+      z-index: 100;
+      right: 0;
+      left: 0;
+      &-item {
+        color: #40405b;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dedeec;
+        cursor: pointer;
+        &-title {
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 5px;
+        }
+        &-des {
+          font-size: 12px;
+          font-weight: 400;
+        }
+        &:hover {
+          color: #5050ff;
+        }
+      }
+    }
+    &-btn {
+      margin-top: 20px;
+    }
+  }
+}
+
+.withdraw-note {
+  color: #d9534f; /* Màu đỏ cảnh báo */
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}

@@ -1,0 +1,26 @@
+{
+  "name": "blocks-stripe",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/stripe/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/stripe",
+        "tsConfig": "packages/blocks/community/stripe/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/stripe/package.json",
+        "main": "packages/blocks/community/stripe/src/index.ts",
+        "assets": ["packages/blocks/community/stripe/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

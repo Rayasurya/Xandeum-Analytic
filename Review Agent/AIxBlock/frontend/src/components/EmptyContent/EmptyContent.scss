@@ -1,0 +1,50 @@
+.c-empty-content {
+  width: 100%;
+
+  &__wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 96px 16px;
+  }
+
+  &__image {
+    //margin-bottom: 16px;
+    //width: 100%;
+    //svg {
+    //  height: auto;
+    //  max-width: 64px;
+    //  width: 80%;
+    //}
+
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 32px;
+
+    svg {
+      position: absolute;
+      left: auto;
+      right: 50%;
+      top: auto;
+      bottom: 50%;
+      transform: translate(50%,50%);
+    }
+  }
+
+  &__text {
+    color: #14142a;
+    font-weight: 700;
+    //font-size: 24px;
+    margin-bottom: 25px;
+  }
+
+  &__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+}

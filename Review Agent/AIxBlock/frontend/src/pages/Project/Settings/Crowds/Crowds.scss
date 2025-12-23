@@ -1,0 +1,116 @@
+// Crowds
+
+.c-crowds {
+  padding: 0 0 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__breadcrumbs {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: solid 1px #dedeec;
+    background-color: #f4f5f9;
+    position: sticky;
+    top: 133px;
+    z-index: 9;
+  }
+
+  &__step {
+    &--next,
+    &--prev {
+      border-radius: 100%;
+      min-width: auto;
+      width: 31px;
+      height: 31px;
+      padding: 0;
+    }
+
+    &--prev {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__bottom-bar {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f2f2f2;
+    padding: 10px;
+    width: -webkit-fill-available;
+    padding-left: 35px;
+  }
+
+  &__total-questions {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  &__add-question-button {
+    color: #fff;
+    border: none;
+    margin-left: 5px;
+    border: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    background: linear-gradient(89.94deg, #00ba88 0.03%, #00ba88 99.8%);
+    padding: 8px 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__complete-button {
+    color: #fff;
+    border: none;
+    margin-left: 5px;
+    border: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    background: linear-gradient(89.94deg, #ff71e8 0.03%, #3838ff 99.8%);
+    padding: 8px 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__add-question-button:hover,
+  &__complete-button:hover {
+    background-color: #0056b3;
+  }
+
+  &__modal-upload {
+    .c-modal__footer {
+      margin-top: 0;
+      button {
+        font-weight: 600;
+        line-height: 24px;
+        min-width: auto;
+      }
+    }
+  }
+
+  &__modal-manager {
+    max-width: 480px;
+    .c-modal__footer {
+      margin-top: 0;
+    }
+    .c-modal--cancel {
+      button {
+        background: #fff;
+      }
+    }
+  }
+}

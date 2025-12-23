@@ -1,0 +1,26 @@
+{
+  "name": "blocks-mailer-lite",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/mailer-lite/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/mailer-lite",
+        "tsConfig": "packages/blocks/community/mailer-lite/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/mailer-lite/package.json",
+        "main": "packages/blocks/community/mailer-lite/src/index.ts",
+        "assets": ["packages/blocks/community/mailer-lite/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

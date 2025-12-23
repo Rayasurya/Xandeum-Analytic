@@ -1,0 +1,26 @@
+{
+  "name": "blocks-mailchimp",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/mailchimp/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/mailchimp",
+        "tsConfig": "packages/blocks/community/mailchimp/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/mailchimp/package.json",
+        "main": "packages/blocks/community/mailchimp/src/index.ts",
+        "assets": ["packages/blocks/community/mailchimp/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

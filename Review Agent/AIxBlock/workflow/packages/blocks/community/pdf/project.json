@@ -1,0 +1,26 @@
+{
+  "name": "blocks-pdf",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/pdf/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/pdf",
+        "tsConfig": "packages/blocks/community/pdf/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/pdf/package.json",
+        "main": "packages/blocks/community/pdf/src/index.ts",
+        "assets": ["packages/blocks/community/pdf/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

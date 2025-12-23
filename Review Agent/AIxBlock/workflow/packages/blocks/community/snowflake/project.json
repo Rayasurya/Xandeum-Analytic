@@ -1,0 +1,30 @@
+{
+  "name": "blocks-snowflake",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/snowflake/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/snowflake",
+        "tsConfig": "packages/blocks/community/snowflake/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/snowflake/package.json",
+        "main": "packages/blocks/community/snowflake/src/index.ts",
+        "assets": ["packages/blocks/community/snowflake/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-snowflake {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

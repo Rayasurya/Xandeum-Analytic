@@ -1,0 +1,109 @@
+// Modal
+
+.c-modal {
+	position: fixed;
+	left: auto;
+	top: auto;
+	right: 50%;
+	bottom: 50%;
+	z-index: 999;
+	-webkit-box-pack: center;
+	overflow: hidden;
+	transform: translate(50%, 50%);
+	overscroll-behavior-y: none;
+	border: 1px solid#DEDEEC;
+	border-radius: 8px;
+	background: #fff;
+	min-width: 500px;
+	padding: 24px;
+	max-height: 91vh;
+	box-sizing: border-box;
+    box-shadow: 0 8px 28px 4px rgba(37, 37, 37, 0.33);
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	&__mask {
+		background: rgba(0, 0, 0, 0.45);
+		position: fixed;
+		inset: 0;
+		z-index: 999;
+		height: 100%;
+		backdrop-filter: blur(2px);
+	}
+
+	&__title {
+		font-size: 18px;
+		font-weight: 600;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.78;
+		letter-spacing: -0.36px;
+		text-align: left;
+		color: #40405b;
+
+	}
+
+	&__body {
+		align-self: stretch;
+		flex-grow: 0;
+		font-size: 14px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: 0.28px;
+		text-align: left;
+		color: #40405b;
+	}
+
+	&--close {
+		position: absolute;
+		left: auto;
+		right: 16px;
+		top: 16px;
+
+		button {
+			border: none;
+			background: transparent;
+			cursor: pointer;
+		}
+	}
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: flex-end;
+
+		button {
+			font-size: 14px;
+			font-weight: 500;
+			font-stretch: normal;
+			font-style: normal;
+			line-height: 1.71;
+			letter-spacing: 0.28px;
+			text-align: left;
+			padding: 0 16px;
+			border-radius: 6px;
+			box-shadow: 0 1px 2px 0 rgba(27, 36, 44, 0.12);
+		}
+  }
+
+  * + &__footer {
+    margin-top: 32px;
+  }
+
+  * + &__body {
+    margin-top: 16px;
+  }
+}

@@ -1,0 +1,49 @@
+.lastContent {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 32px;
+  position: relative;
+}
+
+.masterNodes {
+  display: block;
+  max-width: 480px;
+  width: 100%;
+  margin: auto;
+  margin-bottom: 32px;
+}
+
+.last {
+  &Text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--main-Title);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 38px;
+
+    &Endpoint {
+      font-weight: 400;
+      color: var(--Color-primary-base);
+
+      span {
+        color: var(--main-Title);
+      }
+    }
+
+    &Reset {
+      border-radius: 6px;
+      background: var(--Color-base-Warning);
+      box-shadow: 0px 1px 0px 0px rgba(17, 12, 34, 0.00);
+      min-width: auto;
+      height: 24px;
+      padding: 8px;
+      margin-left: 19px;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "blocks-resend",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/resend/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/resend",
+        "tsConfig": "packages/blocks/community/resend/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/resend/package.json",
+        "main": "packages/blocks/community/resend/src/index.ts",
+        "assets": ["packages/blocks/community/resend/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

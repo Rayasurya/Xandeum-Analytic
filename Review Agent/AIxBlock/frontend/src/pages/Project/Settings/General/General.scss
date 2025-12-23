@@ -1,0 +1,178 @@
+// General
+
+.c-general {
+  overflow: hidden;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 8px 16px 0px rgba(134, 93, 255, 0.08);
+    padding: 24px;
+    width: 671px;
+  }
+
+  .c-label span,
+  .c-select__label {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+
+  &__heading {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    margin: 0 0 8px;
+    color: #14142a;
+  }
+
+  &--create {
+    position: absolute;
+    top: 30px;
+    right: 24px;
+    left: auto;
+  }
+
+  &__btn--next {
+    background: #ed2e7e;
+  }
+
+  .flex-col {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+
+  &__section {
+    display: flex;
+
+    &-item {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .error {
+      color: #c30052;
+    }
+
+    .c-upload {
+      margin-top: 6px;
+      width: -webkit-fill-available;
+      &--action {
+        gap: 32px;
+        flex-direction: row;
+      }
+      &__label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #6e7191;
+
+        strong {
+          color: #6e7191;
+          font-weight: 400;
+        }
+      }
+    }
+
+    &.task-sampling {
+      gap: 8px;
+    }
+  }
+
+  &__field {
+    width: 100%;
+
+    .c-control {
+      input {
+        height: 40px;
+      }
+    }
+  }
+
+  &__textarea {
+    height: 124px;
+    resize: vertical;
+    width: -webkit-fill-available;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #dedeec;
+    background: #fff;
+  }
+}
+
+// Radio
+
+.c-radio {
+  &__list {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-top: 6px;
+  }
+
+  &__checkmark {
+    width: 16px;
+    height: 16px;
+    border-radius: 100%;
+    display: block;
+  }
+
+  &__item {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+
+    &.white {
+      .c-radio__checkmark {
+        border: 1px solid #111;
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      margin: 0;
+      z-index: 9;
+
+      &:checked ~ .c-radio__checkmark {
+        border: 1px solid #111;
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+}
+
+.c-task-sampling {
+  &__radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    label {
+      font-size: 12px;
+      color: #40405b;
+      font-weight: 400;
+    }
+  }
+}

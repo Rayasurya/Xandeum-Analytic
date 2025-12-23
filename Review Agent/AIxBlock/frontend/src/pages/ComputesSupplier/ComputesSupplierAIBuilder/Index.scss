@@ -1,0 +1,178 @@
+.p-computes-supplier-ai {
+	margin: 29px;
+	border: solid 1px #DEDEEC;
+	border-radius: 16px;
+
+	&__block {
+		display: flex;
+		flex-direction: row;
+		gap: 8px;
+		padding: 0px 12px;
+		align-items: center;
+		justify-content: center;
+		border: solid 1px #DEDEEC;
+		height: 38px;
+		border-radius: 8px;
+		font-size: 14px;
+
+		&__left {
+			display: flex;
+			flex-direction: row;
+			gap: 8px;
+		}
+
+		&__input {
+			position: relative;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			font-size: 14px;
+			background-color: #F3F3F4;
+		}
+
+		&__float-icon {
+			position: absolute;
+			left: 10px;
+			z-index: 99;
+		}
+
+	}
+
+	&__actions {
+		.btn-primary {
+			flex-direction: row;
+			align-items: center;
+			border-radius: 6px;
+			font-size: 14px;
+			padding: 0px 12px;
+			width: 220px;
+		}
+	}
+
+	.input-text {
+		padding-left: 40px;
+	}
+
+	&__float-icon {}
+
+	&__header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding: 24px;
+	}
+
+	&__select_wrapper {
+		width: 100px;
+	}
+
+	&__select {
+
+		// width: auto;
+		.c-select__content {
+			width: 100px;
+		}
+
+		.c-select__content.active svg {
+			transform: rotate(0deg);
+		}
+	}
+
+	&__actions {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-bottom: auto;
+		.auto-provision-switch {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			font-size: 14px;
+			gap: 6px;
+		}
+	}
+
+	&__left {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 8px;
+	}
+
+	&__tooltip{
+		max-width: 20vw;
+		z-index: 999;
+	}
+}
+
+.active-filter,
+.inactive-filter {
+	width: 8px;
+	height: 8px;
+	border-radius: 8px;
+}
+
+.active-filter {
+	background-color: #27be69;
+}
+
+.inactive-filter {
+	background-color: #fa415a;
+}
+
+.computes-list {
+	&__multiple-row {
+		display: flex;
+		flex-direction: column;
+
+		.subtitle {
+			font-size: 12px;
+			color: #A1A3BB;
+		}
+	}
+
+	&__model {
+		border-radius: 8px;
+		background-color: #F4F5F9;
+		padding: 10px
+	}
+	&__status{
+		padding: 4px 8px;
+		border-radius: 8px;
+		font-size: 12px;
+		text-wrap: nowrap;
+		
+		&.available{
+			background-color: #e6faee;
+			color: #27be69;
+		}
+		&.used{
+			background-color: #fef3e6;
+			color: #f28705;
+		}
+		&.pause{
+			background-color: #feecee;
+			color: #f2415a;
+		}
+	}
+	&__type{
+		padding: 4px 8px;
+		border-radius: 8px;
+		font-size: 12px;
+		text-wrap: nowrap;
+		
+		&.rent{
+			background-color: #eeeeff;
+			color: #5050ff
+		}
+		&.own{
+			background-color: #ffeef7;
+			color: #ff55aa;
+		}
+		&.leasing{
+			background-color: #f3efff;
+			color: #865dff;
+		}
+	}
+}

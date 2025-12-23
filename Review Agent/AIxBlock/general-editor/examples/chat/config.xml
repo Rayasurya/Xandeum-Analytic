@@ -1,0 +1,3 @@
+<View>
+    <Chat name="chat" value="$chat" style="min-height: calc(var(--main-content-height) - 2rem)" canAdd="true" />
+</View>

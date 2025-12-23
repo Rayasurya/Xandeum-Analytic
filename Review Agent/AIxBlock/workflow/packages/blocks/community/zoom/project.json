@@ -1,0 +1,26 @@
+{
+  "name": "blocks-zoom",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/zoom/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/zoom",
+        "tsConfig": "packages/blocks/community/zoom/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/zoom/package.json",
+        "main": "packages/blocks/community/zoom/src/index.ts",
+        "assets": ["packages/blocks/community/zoom/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

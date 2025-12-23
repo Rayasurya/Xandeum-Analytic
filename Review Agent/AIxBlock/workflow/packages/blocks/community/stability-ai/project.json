@@ -1,0 +1,26 @@
+{
+  "name": "blocks-stability-ai",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/stability-ai/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/stability-ai",
+        "tsConfig": "packages/blocks/community/stability-ai/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/stability-ai/package.json",
+        "main": "packages/blocks/community/stability-ai/src/index.ts",
+        "assets": ["packages/blocks/community/stability-ai/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

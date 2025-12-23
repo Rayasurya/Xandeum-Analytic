@@ -1,0 +1,30 @@
+{
+  "name": "blocks-stable-diffusion-webui",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/stable-diffusion-webui/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/stable-diffusion-webui",
+        "tsConfig": "packages/blocks/community/stable-diffusion-webui/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/stable-diffusion-webui/package.json",
+        "main": "packages/blocks/community/stable-diffusion-webui/src/index.ts",
+        "assets": ["packages/blocks/community/stable-diffusion-webui/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-stable-diffusion-webui {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

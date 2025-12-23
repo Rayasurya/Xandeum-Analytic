@@ -1,0 +1,19 @@
+// Form action webhook
+
+.c-webhook-form {
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+
+    &--cancel {
+      background: #fff;
+      color: #111;
+    }
+
+    &--submit {
+      background: #ed2e7e;
+    }
+  }
+}

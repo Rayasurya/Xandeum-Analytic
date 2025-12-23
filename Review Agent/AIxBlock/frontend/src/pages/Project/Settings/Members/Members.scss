@@ -1,0 +1,227 @@
+// Members
+
+.c-members {
+  padding: 0 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__select {
+    &-role {
+      padding-left: 0;
+      margin-bottom: 0;
+      .c-select__item.last {
+        margin-bottom: 16px;
+      }
+    }
+  }
+
+  &__invite {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+
+    .c-members__upload-label {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 16px;
+      color: #40405b;
+      margin-bottom: 8px;
+      display: block;
+    }
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    &--invite {
+      width: max-content;
+      background: #d41060;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    button {
+      border: none;
+      background: transparent;
+      outline: unset;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      flex-direction: row-reverse;
+      gap: 6px;
+    }
+  }
+
+  &__list {
+    border-radius: 12px;
+    border: 1px solid #dedeec;
+    background: #fff;
+    box-shadow: 0px 8px 16px 0px rgba(134, 93, 255, 0.08);
+    margin: 32px auto;
+    padding: 24px;
+    min-width: 548px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+
+    &-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      color: #14142a;
+      margin: 0;
+    }
+  }
+
+  &__list-table {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__head,
+  &__list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+    gap: 24px;
+  }
+
+  &__head {
+    &-name {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      color: #5050ff;
+
+      &:first-child {
+        flex: 1 0 50%;
+      }
+
+      &:nth-child(2) {
+        flex: 1 0 30%;
+      }
+
+      &:last-child {
+        flex: 1 0 auto;
+      }
+    }
+  }
+
+  &__item {
+    &-value {
+      font-size: 14px;
+      font-weight: 400;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+
+      &.actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+
+        .you {
+          font-size: 11px;
+        }
+      }
+
+      &:first-child {
+        flex: 1 0 50%;
+      }
+
+      &:nth-child(2) {
+        flex: 1 0 30%;
+      }
+
+      &:last-child {
+        flex: 1 0 auto;
+      }
+      .c-select__content {
+        height: 30p;
+        font-size: 14px;
+      }
+    }
+    &--clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: pointer;
+      border: none;
+      box-shadow: unset;
+      outline: unset;
+      background: transparent;
+    }
+  }
+
+  &__modal {
+    .c-modal__footer {
+      button {
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 24px;
+        letter-spacing: 0.28px;
+        color: #fff;
+      }
+    }
+
+    &.add {
+      .c-modal__footer {
+        button {
+          background: #5050ff;
+          border-color: #5050ff;
+        }
+      }
+    }
+
+    &.edit {
+      .c-modal__footer {
+        button {
+          background: #ffbf0f;
+          border-color: #ffbf0f;
+        }
+      }
+    }
+
+    &.confirm-delete {
+      max-width: 432px;
+      .c-modal__body {
+        font-size: 14px;
+        line-height: 24px;
+        letter-spacing: 0.28px;
+        margin: 0;
+        color: #555f6d;
+      }
+      .c-modal__footer {
+        margin-top: 0;
+
+        .c-modal--cancel {
+          button {
+            background: #fff;
+            border: 1px solid#dedeec;
+            color: #4a545e;
+            min-width: auto;
+          }
+        }
+
+        .btn-secondary {
+          background: #e2323a;
+          border-color: #e2323a;
+          box-shadow: 0px 1px 2px 0px rgba(27, 36, 44, 0.12);
+          min-width: auto;
+        }
+      }
+    }
+  }
+}

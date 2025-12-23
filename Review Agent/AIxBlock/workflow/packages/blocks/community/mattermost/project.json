@@ -1,0 +1,26 @@
+{
+  "name": "blocks-mattermost",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/mattermost/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/mattermost",
+        "tsConfig": "packages/blocks/community/mattermost/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/mattermost/package.json",
+        "main": "packages/blocks/community/mattermost/src/index.ts",
+        "assets": ["packages/blocks/community/mattermost/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

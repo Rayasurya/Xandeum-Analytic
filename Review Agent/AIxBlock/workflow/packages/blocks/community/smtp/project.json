@@ -1,0 +1,26 @@
+{
+  "name": "blocks-smtp",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/smtp/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/smtp",
+        "tsConfig": "packages/blocks/community/smtp/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/smtp/package.json",
+        "main": "packages/blocks/community/smtp/src/index.ts",
+        "assets": ["packages/blocks/community/smtp/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

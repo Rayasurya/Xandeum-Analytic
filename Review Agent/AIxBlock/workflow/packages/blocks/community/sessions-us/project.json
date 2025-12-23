@@ -1,0 +1,30 @@
+{
+  "name": "blocks-sessions-us",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/sessions-us/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/sessions-us",
+        "tsConfig": "packages/blocks/community/sessions-us/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/sessions-us/package.json",
+        "main": "packages/blocks/community/sessions-us/src/index.ts",
+        "assets": ["packages/blocks/community/sessions-us/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-sessions-us {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

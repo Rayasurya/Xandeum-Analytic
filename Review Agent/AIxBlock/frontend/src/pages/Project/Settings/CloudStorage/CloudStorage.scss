@@ -1,0 +1,114 @@
+// Cloud Storage
+
+.c-cloud {
+  padding: 0 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: 23px;
+    justify-content: center;
+
+    &--add {
+      border-radius: 8px;
+      border-color: #dedeec;
+      box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+      flex-direction: row-reverse;
+      height: 40px;
+      padding: 8px 12px;
+
+      &.source {
+        color: #14142a;
+        border-width: 1px;
+      }
+
+      &.target {
+        color: #fff;
+        background: #40405b;
+      }
+    }
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 21px;
+    padding-top: 45px;
+
+    h4 {
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.2px;
+      color: #4e4b66;
+      text-align: center;
+      margin: 0;
+    }
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  &--add {
+    background: #d41060;
+    color: #fff;
+    border: none;
+  }
+
+  &__modal {
+    &-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      .c-feild {
+        width: 100%;
+      }
+    }
+    &-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+  }
+
+  &__checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 6.5px;
+
+    &-label {
+      display: flex;
+      flex-direction: column;
+      label,
+      span {
+        font-size: 16px;
+        line-height: normal;
+      }
+
+      label {
+        font-weight: 700;
+      }
+
+      span {
+        color: #8b8f93;
+        font-weight: 500;
+      }
+    }
+  }
+
+  &__data {
+    &-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 16px;
+    }
+  }
+}

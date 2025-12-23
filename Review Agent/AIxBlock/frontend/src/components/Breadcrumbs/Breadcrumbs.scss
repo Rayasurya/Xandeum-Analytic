@@ -1,0 +1,42 @@
+// Breadcrumbs
+
+.c-navbar {
+  &__breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    &-items {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    &-item {
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 34px;
+      letter-spacing: 0.75px;
+      list-style: none;
+      position: relative;
+      text-transform: capitalize;
+
+      &:not(.last) {
+        cursor: pointer;
+
+        &::after {
+          content: "/";
+          position: absolute;
+          left: auto;
+          right: -16px;
+          top: auto;
+          bottom: 50%;
+          transform: translate(0, 50%);
+        }
+      }
+    }
+  }
+}

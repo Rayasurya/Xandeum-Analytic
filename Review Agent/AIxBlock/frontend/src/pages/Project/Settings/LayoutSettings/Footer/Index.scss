@@ -1,0 +1,46 @@
+// Footer Settings
+
+.c-footer-settings {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #dedeec;
+  background: #f4f5f9;
+  padding: 16px;
+  position: sticky;
+  bottom: 0;
+  top: auto;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+
+  &__icon {
+    border-radius: 8px;
+    border: 1px solid #dedeec;
+    box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 12px;
+    min-width: 101px;
+
+    &.back {
+      color: #14142a;
+    }
+
+    &.skip {
+      background: #f2415a;
+    }
+
+    &.back {
+      flex-direction: row-reverse;
+    }
+
+    &.next {
+      color: #fff;
+      background: #5050ff;
+      svg {
+        transform: rotate(180deg);
+        color: #fff;
+      }
+    }
+  }
+}

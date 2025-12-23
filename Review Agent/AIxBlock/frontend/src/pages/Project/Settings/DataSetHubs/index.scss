@@ -1,0 +1,108 @@
+.p-dataset-hubs {
+    &.wrapper {
+        >div {
+            padding-top: 97px;
+            padding-bottom: 16px;
+        }
+    }
+    &.form-hubs {
+        border-radius: 12px;
+        margin: auto;
+        max-width: 520px;
+        background: #fff;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+    }
+
+    &__heading {
+        margin: 0;
+        font-size: 14px;
+        line-height: 24px;
+        font-weight: 600;
+        color: #40405B;
+    }
+
+    &__tab {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        .tab-hubs {
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: 1px solid #DEDEEC;
+            color: #14142A;
+            background: #fff;
+            &.active {
+                border-color: #5050FF;
+                color: #5050FF;
+            }
+        }
+    }
+
+    &__action {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        &--import {
+            position: relative;
+            border-radius: 8px;
+            background: #5050FF;
+            max-width: 106px;
+        }
+    }
+
+    .text-error {
+        margin: 6px 0 0;
+        color: #c30052;
+        font-size: 13px;
+        font-weight: 400;
+        min-height: 16px;
+        text-transform: capitalize;
+        line-height: 18px;
+        padding: 0;
+    }
+
+    .c-input-base__label span {
+        font-size: 12px;
+        line-height: 16px;
+        color: #40405B;
+        font-weight: 600;
+    }
+}
+
+.c-modal {
+    &.form-dataset {
+        .c-modal__footer,
+        .c-modal__body {
+            margin-top: 0;
+        }
+    }
+    
+    &.mgs {
+        &-error {
+            .c-modal__body {
+                color: #c30052;
+            }
+        }
+        &-warning {
+            .c-modal__body {
+                color: #40405B;
+            }
+        }
+        &-success {
+            .c-modal__body {
+                color: #27be69;
+            }
+        }
+    }
+}

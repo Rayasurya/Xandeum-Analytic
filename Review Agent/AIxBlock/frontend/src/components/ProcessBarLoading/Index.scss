@@ -1,0 +1,20 @@
+.c-progress-bar {
+  width: 100%;
+  max-width: 339px;
+  height: 4px;
+  background-color: #EBF0FF;
+  overflow: hidden;
+  z-index: 1000;
+  transition: opacity 0.3s;
+  border-radius: 12px;
+
+  &--active {
+    opacity: 1;
+  }
+
+  &__indicator {
+    height: 100%;
+    background-color: #5050FF;
+    transition: width 0.3s ease;
+  }
+}

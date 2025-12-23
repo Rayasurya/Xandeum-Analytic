@@ -1,0 +1,30 @@
+{
+  "name": "blocks-kimai",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/kimai/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/kimai",
+        "tsConfig": "packages/blocks/community/kimai/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/kimai/package.json",
+        "main": "packages/blocks/community/kimai/src/index.ts",
+        "assets": ["packages/blocks/community/kimai/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-kimai {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

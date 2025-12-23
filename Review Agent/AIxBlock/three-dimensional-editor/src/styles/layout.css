@@ -1,0 +1,180 @@
+.tde-editor * {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.tde-editor .hflex {
+    display: flex;
+}
+
+.tde-editor .vflex {
+    display: flex;
+    flex-direction: column;
+}
+
+.tde-editor .flex-align-items-center {
+    align-items: center;
+}
+
+.tde-editor .flex-align-items-end {
+    align-items: flex-end;
+}
+
+.tde-editor .flex-justify-content-center {
+    justify-content: center;
+}
+
+.tde-editor .flex-justify-content-start {
+    justify-content: flex-start;
+}
+
+.tde-editor .flex-justify-content-end {
+    justify-content: flex-end;
+}
+
+.tde-editor .flex-justify-content-space-between {
+    justify-content: space-between;
+}
+
+.tde-editor .flex-justify-content-space-around {
+    justify-content: space-around;
+}
+
+.tde-editor .hflex.wrap, .tde-editor .vflex.wrap {
+    flex-wrap: wrap;
+}
+
+.tde-editor .grow {
+    flex: 1 1 auto;
+}
+
+.tde-editor .no-shrink {
+    flex-shrink: 0;
+}
+
+.tde-editor .table {
+    display: table;
+}
+
+.tde-editor .table-row {
+    display: table-row;
+}
+
+.tde-editor .table-row {
+    display: table-row;
+}
+
+.tde-editor .table-row > * {
+    display: table-cell;
+}
+
+.tde-editor .w100 {
+    width: 100%;
+}
+
+.tde-editor .h100 {
+    height: 100%;
+}
+
+.tde-editor .h0 {
+    height: 0;
+}
+
+.tde-editor .absolute {
+    position: absolute;
+}
+
+.tde-editor .absoluteTopLeftZeroW100H100 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.tde-editor .relative {
+    position: relative;
+}
+
+.tde-editor .display-none {
+    display: none;
+}
+
+.tde-editor .visibility-hidden {
+    visibility: hidden;
+}
+
+.tde-editor .cursor-default {
+    cursor: default;
+}
+
+.tde-editor .cursor-crosshair {
+    cursor: crosshair;
+}
+
+.tde-editor .cursor-move {
+    cursor: move;
+}
+
+.tde-editor .cursor-pointer {
+    cursor: pointer;
+}
+
+.tde-editor .cursor-grab {
+    cursor: grab;
+}
+
+.tde-editor .cursor-grabbing {
+    cursor: grabbing;
+}
+
+.tde-editor .m5 {
+    margin: 5px;
+}
+
+.tde-editor .m5-bottom {
+    margin-bottom: 5px;
+}
+
+.tde-editor .m5-top {
+    margin-top: 5px;
+}
+
+.tde-editor .p5 {
+    padding: 5px;
+}
+
+.tde-editor .ml3 {
+    margin-left: 3px;
+}
+
+.tde-editor .ml5 {
+    margin-left: 5px;
+}
+
+.tde-editor .p10 {
+    padding: 10px;
+}
+
+.tde-editor .mt3 {
+    margin-top: 3px;
+}
+
+.tde-editor .text-align-center {
+    text-align: center;
+}
+
+.tde-editor .text-align-right {
+    text-align: right;
+}
+
+.tde-editor .text-crop {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tde-editor .italic {
+    font-style: italic;
+}
+ 

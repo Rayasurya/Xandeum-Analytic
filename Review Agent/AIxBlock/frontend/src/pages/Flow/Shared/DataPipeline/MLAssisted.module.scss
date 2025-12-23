@@ -1,0 +1,32 @@
+.mlAssisted {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  :global {
+    .c-switch {
+      margin-left: auto;
+      order: 1;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.slider {
+  :global {
+    .rc-slider-track {
+      background-color: #AFAFFF;
+    }
+
+    .rc-slider-handle {
+      background-color: #5050FF;
+      border-color: #5050FF;
+    }
+  }
+}
+
+.item {
+  label {
+    font-size: 14px;
+  }
+}

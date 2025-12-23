@@ -1,0 +1,128 @@
+.withdraw-fiat {
+  min-width: 351px;
+  padding: 20px;
+  .c-modal__content {
+    gap: 0;
+  }
+  &-content {
+    padding-top: 20px;
+    .group-field {
+      &-title {
+        color: #40405b;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+      &-input {
+        border: 1px solid #dedeec;
+        border-radius: 8px;
+        height: 40px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        input {
+          height: 38px;
+          border: none;
+          border-radius: 8px;
+          outline: none;
+          padding-left: 10px;
+          width: calc(100% - 90px);
+          font-size: 14px;
+          font-weight: 500;
+          &::placeholder {
+            color: #a1a3bb;
+          }
+        }
+        &-prefix {
+          font-size: 12px;
+          font-weight: 600;
+          position: absolute;
+          right: 10px;
+          display: flex;
+          align-items: center;
+          span:first-child {
+            color: #40405b;
+          }
+          span:last-child {
+            color: #ff55aa;
+            margin-left: 5px;
+          }
+          &-icon {
+            background-color: #f6f8fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            border-radius: 6px;
+            height: 29px;
+            span {
+              margin-right: 7px;
+            }
+          }
+        }
+      }
+      &-icon {
+        width: 100%;
+        text-align: center;
+        margin: 20px 0 10px;
+        svg {
+          transform: rotate(90deg);
+        }
+      }
+      &-des {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 20px 0;
+        span:first-child {
+          color: #40405b;
+        }
+        span:last-child {
+          color: #5050ff;
+        }
+      }
+    }
+    &-btn {
+      display: flex;
+      gap: 20px;
+      button {
+        height: 40px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        width: calc(50% - 10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        svg {
+          width: 18px;
+        }
+      }
+      &-back {
+        border: 1px solid #dedeec;
+        box-shadow: 0 1px 2px -1px rgba(17, 12, 34, 0.08);
+        color: #14142a;
+        background-color: #fff;
+        span {
+          margin-left: 5px;
+        }
+        svg {
+          stroke: #14142a;
+        }
+      }
+      &-buy {
+        border: 1px solid #dedeec;
+        box-shadow: 0 2px 4px -2px rgba(17, 12, 34, 0.12);
+        color: #f4f5f9;
+        background-color: #4949e8;
+        span {
+          margin-right: 5px;
+        }
+        svg {
+          transform: rotate(180deg);
+          stroke: #ffffff;
+        }
+      }
+    }
+  }
+}

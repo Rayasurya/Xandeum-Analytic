@@ -1,0 +1,38 @@
+{
+  "name": "blocks-reoon-verifier",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/reoon-verifier/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/reoon-verifier",
+        "tsConfig": "packages/blocks/community/reoon-verifier/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/reoon-verifier/package.json",
+        "main": "packages/blocks/community/reoon-verifier/src/index.ts",
+        "assets": [
+          "packages/blocks/community/reoon-verifier/*.md"
+        ],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-reoon-verifier {args.ver} {args.tag}",
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    }
+  },
+  "tags": []
+}

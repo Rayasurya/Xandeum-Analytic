@@ -1,0 +1,30 @@
+{
+  "name": "blocks-jira-cloud",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/jira-cloud/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/jira-cloud",
+        "tsConfig": "packages/blocks/community/jira-cloud/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/jira-cloud/package.json",
+        "main": "packages/blocks/community/jira-cloud/src/index.ts",
+        "assets": ["packages/blocks/community/jira-cloud/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-jira-cloud {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

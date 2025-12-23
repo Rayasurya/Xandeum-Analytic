@@ -1,0 +1,26 @@
+{
+  "name": "blocks-gotify",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/gotify/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/gotify",
+        "tsConfig": "packages/blocks/community/gotify/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/gotify/package.json",
+        "main": "packages/blocks/community/gotify/src/index.ts",
+        "assets": ["packages/blocks/community/gotify/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

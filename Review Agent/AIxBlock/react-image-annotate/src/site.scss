@@ -1,0 +1,49 @@
+.ria {
+  height: 100%;
+  width: 100%;
+
+  .btn-drop {
+    background: transparent;
+    border: 1px solid #A0A3BD;
+    border-radius: 36px;
+    min-width: 306px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+  .left-side-tool-parent-item{
+    &:hover{
+      .left-side-tool-child-item{
+        display: block;
+      }
+    }
+
+    .left-side-tool-child-item{
+      display: none;
+      right: -74px;
+      top: -50%;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      color: white;
+      .help-text{
+        font-size: 12px;
+        margin-left: 5px;
+        margin-bottom: 0;
+      }
+    }
+
+  }
+  #brush-canvas{
+    left: 0;
+    top: 0;
+
+  }
+  #cursor-canvas {
+    pointer-events: none!important;
+    left: 0;
+    top: 0;
+  }
+}

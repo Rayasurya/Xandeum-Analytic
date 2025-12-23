@@ -1,0 +1,26 @@
+{
+  "name": "blocks-monday",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/monday/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/monday",
+        "tsConfig": "packages/blocks/community/monday/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/monday/package.json",
+        "main": "packages/blocks/community/monday/src/index.ts",
+        "assets": ["packages/blocks/community/monday/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

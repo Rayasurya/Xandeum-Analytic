@@ -1,0 +1,26 @@
+{
+  "name": "blocks-kizeo-forms",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/kizeo-forms/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/kizeo-forms",
+        "tsConfig": "packages/blocks/community/kizeo-forms/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/kizeo-forms/package.json",
+        "main": "packages/blocks/community/kizeo-forms/src/index.ts",
+        "assets": ["packages/blocks/community/kizeo-forms/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

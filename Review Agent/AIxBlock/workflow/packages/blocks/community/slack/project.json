@@ -1,0 +1,26 @@
+{
+  "name": "blocks-slack",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/slack/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/slack",
+        "tsConfig": "packages/blocks/community/slack/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/slack/package.json",
+        "main": "packages/blocks/community/slack/src/index.ts",
+        "assets": ["packages/blocks/community/slack/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    }
+  },
+  "tags": []
+}

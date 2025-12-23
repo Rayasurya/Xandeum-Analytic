@@ -1,0 +1,93 @@
+.openButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.modal {
+  background: white;
+  width: calc(100vw - 54px);
+  max-width: 480px;
+  position: fixed;
+  right: 27px;
+  bottom: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--main-Line);
+  box-shadow: 0 0 16px 8px rgba(17, 12, 34, 0.06);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-radius: 8px 8px 0 0;
+  background: var(--Color-neutral-50);
+  padding: 16px;
+
+  &Action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.modalTitle {
+  color: var(--Color-base-Heading);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  margin: 0;
+}
+
+.btnClose {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+}
+
+.btnCollapse,
+.btnClose {
+  cursor: pointer;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modalContent {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.section {
+  margin-bottom: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: #f0f0f0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.arrow {
+  font-size: 12px;
+}
+
+.content {
+  padding: 10px;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+

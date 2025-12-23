@@ -1,0 +1,30 @@
+{
+  "name": "blocks-quickzu",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/quickzu/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/quickzu",
+        "tsConfig": "packages/blocks/community/quickzu/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/quickzu/package.json",
+        "main": "packages/blocks/community/quickzu/src/index.ts",
+        "assets": ["packages/blocks/community/quickzu/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-quickzu {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

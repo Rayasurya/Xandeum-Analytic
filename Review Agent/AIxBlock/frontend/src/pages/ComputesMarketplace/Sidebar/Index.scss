@@ -1,0 +1,90 @@
+// Sidebar marketplace
+
+.c-sidebar-mkp {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 33px;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 1px;
+    left: auto;
+    min-height: calc(100vh - 70px);
+    width: 1px;
+    background: #d6d8e7;
+    top: 0;
+  }
+
+  &__filters {
+    display: flex;
+    align-content: center;
+    gap: 16px;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: 43px;
+  }
+
+  &__all {
+    max-width: 129px;
+    .c-select--action {
+      gap: 16px;
+    }
+    .c-select__content {
+      border: 1px solid #d6d8e7;
+    }
+  }
+
+  &__search {
+    position: relative;
+
+    &-input {
+      .c-control input {
+        height: 44px;
+        border-radius: 100px;
+        border: 1px solid #d6d8e7;
+        padding: 11px 22px 11px 50px;
+      }
+    }
+
+    form {
+      > button {
+        position: absolute;
+        top: auto;
+        bottom: 50%;
+        transform: translate(0, 50%);
+        left: 22px;
+        right: auto;
+        width: 24px;
+        height: 24px;
+        border: none;
+        box-shadow: unset;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        color: #d6d8e7;
+        &:hover {
+          color: #2a46ff;
+        }
+      }
+    }
+  }
+
+  &__select {
+    padding: 0;
+    .c-select__item.last {
+      margin-bottom: 0;
+    }
+    .c-select__item {
+      padding: 0 0 0 20px;
+    }
+    .c-select__content  {
+      height: 52px;
+    }
+  }
+}

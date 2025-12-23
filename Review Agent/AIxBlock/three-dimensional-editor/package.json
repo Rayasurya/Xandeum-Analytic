@@ -1,0 +1,53 @@
+{
+  "name": "three-dimensional-editor",
+  "version": "2.0.0",
+  "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@craco/craco": "^7.1.0",
+    "@material-ui/core": "^4.12.4",
+    "@tweenjs/tween.js": "17.2.0",
+    "color": "3.0.0",
+    "cross-env": "^7.0.3",
+    "fastintcompression": "0.0.2",
+    "hull.js": "0.2.10",
+    "jquery": "3.5.1",
+    "lineclip": "1.1.5",
+    "mdi-material-ui": "^6.30.0",
+    "mousetrap": "1.6.2",
+    "path-browserify": "^1.0.1",
+    "point-in-polygon-extended": "0.0.1",
+    "polybooljs": "1.2.0",
+    "postal": "2.0.5",
+    "rc-slider": "8.6.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-script": "^2.0.5",
+    "react-scripts": "^5.0.1",
+    "three": "0.112.1",
+    "tippy.js": "2.5.2"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
+  },
+  "homepage": "/tde",
+  "scripts": {
+    "start": "GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true BROWSER=none craco start",
+    "test": "craco test",
+    "eject": "react-scripts eject",
+    "build": "cross-env GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true NODE_ENV=production craco build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {},
+  "prettier": {
+    "semi": false
+  }
+}

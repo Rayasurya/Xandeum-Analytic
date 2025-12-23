@@ -1,0 +1,40 @@
+.crowdsource {
+  display: flex;
+  align-items: center;
+}
+
+.form {
+  border-radius: var(--Radius-rounded-xl);
+  border: 1px solid var(--main-Line);
+  background: #FFF;
+  box-shadow: 0px 8px 16px 0px rgba(134, 93, 255, 0.08);
+  width: 531px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.heading {
+  color: var(--main-Title);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.16px;
+  margin: 0 0 8px;
+}
+
+
+.send {
+  width: 100%;
+  margin: 0;
+  border-radius: var(--Radius-rounded-lg);
+  box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+  color: var(--Color-neutral-50);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+  margin-top: 8px;
+}

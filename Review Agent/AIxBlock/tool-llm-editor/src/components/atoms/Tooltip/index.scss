@@ -1,0 +1,38 @@
+.llm-tooltip {
+	position: relative;
+
+	&__icon {
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	&__content {
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+		transform: translate(-50%, 0);
+		margin-bottom: 12px;
+		background-color: #fff;
+		padding: 8px;
+		box-shadow: 0 5px 15px 1px rgba(0, 0, 0, 0.28);
+		border-radius: 6px;
+		min-width: 120px;
+		
+		&:after {
+			border-left: solid transparent 8px;
+			border-right: solid transparent 8px;
+			border-top: solid #fff 8px;
+			bottom: -8px;
+			content: " ";
+			height: 0;
+			left: 50%;
+			margin-left: -10px;
+			position: absolute;
+			width: 0;
+		}
+
+	}
+}

@@ -1,0 +1,20 @@
+.nx
+node_modules
+.husky/
+
+cache/
+.env
+.idea
+.verdaccio
+tmp/
+temp
+# packages/frontend/public/llm-editor
+
+llm-editor/node_modules
+llm-editor/package-lock.json
+# packages/frontend/public/general-editor
+storage
+.DS_Store
+dist/
+!package-lock.json
+packages/frontend/public/embed-sdk/main.js

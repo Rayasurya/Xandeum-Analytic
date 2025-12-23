@@ -1,0 +1,35 @@
+.p-compute-mini-card-item {
+	border-radius: 24px;
+	border: solid 1px #dedeec;
+	padding: 24px;
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	&__title {
+		font-size: 16px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+	}
+
+	&__subtitle {
+		font-size: 14px;
+		color: #40405B;
+	}
+
+	&.error {
+		.p-compute-mini-card-item__title {
+			color: #F2415A;
+		}
+	}
+}

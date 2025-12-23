@@ -1,0 +1,64 @@
+.DatasetHubs {
+    &Form {
+        border-radius: 12px;
+        margin: auto;
+        max-width: 520px;
+        background: #fff;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+    }
+
+    &Heading {
+        margin: 0;
+        color: var(--main-Title);
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: -0.16px;
+    }
+
+    &Tab {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    &Action {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        &Import {
+            position: relative;
+            min-width: -webkit-fill-available;
+            margin-top: 8px;
+            border-radius: 8px;
+            background: var(--Color-primary-500, #5050FF);
+            font-size: 14px;
+            line-height: 24px;
+        }
+    }
+}
+
+.tabHubs {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid #DEDEEC;
+    color: #14142A;
+    background: #fff;
+}
+
+.tabHubsActive {
+    @extend .tabHubs;
+    border-color: #5050FF;
+    color: #5050FF;
+}

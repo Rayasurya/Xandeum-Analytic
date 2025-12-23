@@ -1,0 +1,26 @@
+{
+  "name": "blocks-square",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/square/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/square",
+        "tsConfig": "packages/blocks/community/square/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/square/package.json",
+        "main": "packages/blocks/community/square/src/index.ts",
+        "assets": ["packages/blocks/community/square/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

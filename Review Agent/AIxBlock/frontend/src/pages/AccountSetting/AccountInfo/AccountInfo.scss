@@ -1,0 +1,376 @@
+.c-account-setting__left {
+  display: flex;
+  flex: 1;
+  width: 50%;
+  padding: 16px 32px 16px 0;
+  box-sizing: border-box;
+}
+
+.c-account-setting-wrapper {
+  display: flex;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  flex-wrap: wrap;
+  padding: 24px 16px;
+}
+
+.c-account-setting__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.c-account-setting__title {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  color: #4e4b66;
+}
+
+.c-account-setting__back-icon {
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: unset;
+  box-shadow: unset;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.c-account-setting__avatar-upload-input {
+  display: none;
+}
+
+.c-account-info {
+  display: flex;
+}
+
+.c-account-setting__content {
+  width: 60%;
+  padding: 24px;
+  flex: 1;
+}
+
+.c-account-setting__form-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.c-account-setting__form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.c-account-setting__input-group {
+  margin-bottom: 24px;
+}
+
+.c-account-setting__avatar-group {
+  padding-bottom: 32px;
+  margin-bottom: 16px;
+  flex-basis: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 32px;
+}
+
+.c-account-setting__label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #4e4b66;
+}
+
+.c-account-setting__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #111;
+  background-color: #fff;
+  margin-top: 10px;
+  outline: none;
+  border-radius: 8px;
+  border: 1px solid var(--main-Line, #DEDEEC);
+  background: var(--Color-neutral-0, #FFF);
+  box-sizing: border-box;
+
+  &[readonly] {
+    background-color: #EFF0F6;
+  }
+}
+
+.c-account-setting__input:focus {
+  border-color: #2a46ff;
+}
+
+.c-account-setting__avatar-container {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+
+  .c-account-setting__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 100%;
+  }
+
+  svg {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    box-shadow: 0 6px 12px 0 rgba(37, 37, 37, 0.10);
+    cursor: pointer;
+  }
+}
+
+.c-account-setting__button-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .label-btn {
+    color: #F2415A;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -0.16px;
+  }
+  &.btn-save {
+    justify-content: flex-end;
+  }
+}
+
+.c-account-setting__button {
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(90.48deg, #475163 0.41%, #040405 106.67%);
+  padding: 12px 20px;
+  cursor: pointer;
+  min-width: 100px;
+  width: auto;
+
+  &.btn-renew {
+    border-radius: 8px;
+    background: var(--Color-blue-base, #386AFF);
+    box-shadow: 0 1px 2px -1px rgba(17, 12, 34, 0.08);
+    margin-top: 15px;
+    padding: 8px 20px;
+  }
+}
+
+.c-account-setting__button-save {
+  background: var(--Color-primary-base, #5050FF);
+}
+
+.c-account-setting__button-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.c-account-setting__avatar-input-upload {
+  width: 60%;
+  height: 100%;
+  margin-left: 10px;
+  border: 1px dashed var(--grayscale-title-active, #111);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex: auto;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  margin-left: 35px;
+  color: #4e4b66;
+  padding: 0 15px 0 15px;
+
+  p {
+    margin-left: 25px;
+  }
+}
+.c-account-setting__button-cancel {
+  color: #4e4b66;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.c-account-setting__access-token {
+  background-color: #fff;
+
+  & + * {
+    margin-top: 32px;
+  }
+}
+
+.c-account-setting__avatar-upload-text {
+  color: #4e4b66;
+}
+
+.c-account-setting__access-token-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.c-account-setting__access-token-description {
+  font-size: 12px;
+  color: #4e4b66;
+  margin-bottom: 8px;
+}
+
+.c-account-setting__access-token-input {
+  width: -webkit-fill-available;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  background-color: #EFF0F6;
+  color: #4e4b66;
+  outline: none;
+}
+
+.c-account-setting__access-token-button {
+  margin-left: 12px;
+  padding: 8px 16px;
+  border: 1px solid #2a46ff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #2a46ff;
+  cursor: pointer;
+}
+
+.c-account-setting__right {
+  flex: 1;
+  width: 50%;
+  background-color: #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 16px 0 16px 32px;
+  box-sizing: border-box;
+}
+
+.c-account-setting__access-token-title {
+  font-size: 20px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.c-account-setting__access-token-button {
+  border: none;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(89.94deg, #FF71E8 0.03%, #3838FF 99.8%);
+  margin-top: 15px;
+  width: 100px;
+  cursor: pointer;
+}
+
+.c-account-setting__access-token-button-black {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5050FF;
+  margin-top: 15px;
+  width: 100px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid #5050FF;
+  box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+  background-color: #fff;
+  height: 32px;
+}
+
+.c-account-setting__notifications-title {
+  font-size: 20px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.c-account-setting__notifications-description {
+  font-size: 14px;
+  color: #4e4b66;
+  margin-bottom: 24px;
+}
+
+.c-account-setting__notifications-settings {
+  display: flex;
+  flex-direction: column;
+}
+
+.c-account-setting__notifications-setting {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  margin-left: -5px;
+}
+
+.c-account-setting__notifications-setting-checkbox {
+  margin-right: 12px;
+  margin-top: 0;
+}
+
+.c-account-setting__notifications-setting-label {
+  font-size: 14px;
+  color: #4e4b66;
+}
+
+.textarea {
+  resize: none;
+}
+
+.dragging {
+  background-color: #f5f5f5;
+  border: 3px solid #2a46ff;
+}
+
+.c-account-setting__info {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+
+  &-username {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--Button-normal, #5050FF);
+  }
+
+  &-email {
+    font-size: 14px;
+  }
+}
+
+.c-account-setting__buttons-split {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+.c-account-setting__button-reset,
+.c-account-setting__button-delete {
+  cursor: pointer;
+}
+
+.c-account-setting__button-delete {
+  color: var(--Color-base-Dangerous, #F2415A);
+}

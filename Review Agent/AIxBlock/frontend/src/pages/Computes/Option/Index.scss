@@ -1,0 +1,65 @@
+// Option
+
+.c-option {
+  &__item {
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    cursor: pointer;
+    transition: .1s all;
+    max-width: 324px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    color: #4e4b66;
+    margin: 0;
+    line-height: 19.5px;
+  }
+
+  &__subtitle {
+    font-size: 12px;
+    line-height: 14.63px;
+    letter-spacing: 0.75px;
+    color: #4e4b66;
+    margin: 0;
+  }
+  &__button__container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: flex-end;
+    position: absolute;
+    bottom: 36px;
+    top: auto;
+    left: auto;
+    right: 24px;
+
+    &__button {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      &.btn-white {
+        background: #fff;
+      }
+    }
+  }
+}

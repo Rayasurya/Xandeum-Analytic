@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload {
+  height: 48px;
+}
+
+.modal {
+  :global {
+    .c-modal__content {
+      gap: 8px;
+    }
+
+    .scrollbar-y {
+      max-height: 80vh;
+    }
+  }
+}

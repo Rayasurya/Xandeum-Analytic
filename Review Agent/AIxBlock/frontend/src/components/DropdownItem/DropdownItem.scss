@@ -1,0 +1,46 @@
+.c-dropdown-item {
+  color: #111111;
+
+  button {
+    font-size: 14px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 24px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  &:not(&-not-radius):first-child {
+    border-radius: 16px 16px 0 0;
+  }
+
+  &:not(&-not-radius):last-child {
+    border-radius: 0 0 16px 16px;
+  }
+
+  &:not(&__disabled):hover {
+    background-color: #3c56ff;
+
+    button {
+      color: #ffffff;
+    }
+  }
+
+  &__disabled {
+    background-color: #d6d8e7;
+
+    &:hover button {
+      cursor: default;
+    }
+  }
+
+  &-not-radius {
+    display: flex;
+
+    button {
+      padding-left: 10px;
+    }
+  }
+}

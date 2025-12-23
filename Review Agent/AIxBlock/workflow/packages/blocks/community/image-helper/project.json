@@ -1,0 +1,30 @@
+{
+  "name": "blocks-image-helper",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/image-helper/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/image-helper",
+        "tsConfig": "packages/blocks/community/image-helper/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/image-helper/package.json",
+        "main": "packages/blocks/community/image-helper/src/index.ts",
+        "assets": ["packages/blocks/community/image-helper/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-image-helper {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,23 @@
+{
+  "name": "axb-shared",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/axb/shared/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/axb/shared",
+        "main": "packages/axb/shared/src/index.ts",
+        "tsConfig": "packages/axb/shared/tsconfig.lib.json",
+        "assets": ["packages/axb/shared/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

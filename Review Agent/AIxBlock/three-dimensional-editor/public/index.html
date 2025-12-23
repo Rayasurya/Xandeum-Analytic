@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Three Dimensional Editor</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            min-height: 100vh;
+        }
+
+        #root {
+            height: 100%;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+<noscript>
+    You need to enable JavaScript to run this app.
+</noscript>
+<div id="root"></div>
+<!--
+  This HTML file is a template.
+  If you open it directly in the browser, you will see an empty page.
+
+  You can add webfonts, meta tags, or analytics to this file.
+  The build step will place the bundled scripts into the <body> tag.
+
+  To begin the development, run `npm start` or `yarn start`.
+  To create a production bundle, use `npm run build` or `yarn build`.
+-->
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    window.TDE(
+      {
+        classes: [
+          { label: "Test", color: "#FF0000" }
+        ],
+        imageUrl: "sample.pcd",
+        task: {
+          "id": 38,
+          "predictions": [],
+          "annotations": [],
+          "drafts": [],
+          "annotators": [
+            1
+          ],
+          "inner_id": 1,
+          "cancelled_annotations": 0,
+          "total_annotations": 5,
+          "total_predictions": 0,
+          "completed_at": null,
+          "annotations_results": "",
+          "predictions_results": "",
+          "predictions_score": null,
+          "file_upload": "c8ee69b9-pointcloud_labeling.pcd",
+          "storage_filename": null,
+          "annotations_ids": "125,123,124,126,122",
+          "predictions_model_versions": "",
+          "avg_lead_time": null,
+          "updated_by": [
+            {
+              "user_id": 1
+            }
+          ],
+          "reviewed_by": [
+            {
+              "user_id": 1
+            }
+          ],
+          "reviewed_result": null,
+          "qualified_by": [],
+          "qualified_result": null,
+          "data": {
+            "pcd": "/data/upload/19/c8ee69b9-pointcloud_labeling.pcd"
+          },
+          "meta": {},
+          "created_at": "2023-08-07T08:19:30.465619Z",
+          "updated_at": "2023-08-18T08:54:53.068435Z",
+          "is_labeled": false,
+          "overlap": 1,
+          "comment_count": 0,
+          "unresolved_comment_count": 0,
+          "last_comment_updated_at": null,
+          "is_in_review": false,
+          "is_in_qc": false,
+          "project": 19,
+          "comment_authors": []
+        }
+      },
+      document.getElementById("root"),
+    );
+  });
+</script>
+</body>
+</html>

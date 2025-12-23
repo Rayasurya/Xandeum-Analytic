@@ -1,0 +1,119 @@
+.c-crawldata {
+  padding: 0 32px;
+
+  &__toolbar {
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: 2fr 2fr 2fr 2fr 1fr;
+    max-width: 1120px;
+    margin: auto;
+    padding-top: 16px;
+
+    .c-control {
+      input {
+        background-color: #ffffff;
+        border: 1px solid #dedeec;
+        box-sizing: border-box;
+        height: 56px;
+        opacity: 1;
+      }
+
+      .input-text::placeholder {
+        color: #14142a;
+      }
+    }
+  }
+
+  &__modal {
+    max-width: 700px;
+
+    &-item {
+      display: block;
+      padding-top: 5px;
+      margin-bottom: 8px;
+    }
+
+    &-img {
+      width: 100%;
+      height: auto;
+      justify-self: center;
+      justify-content: center;
+    }
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-gap: 16px;
+    margin-top: 32px;
+    position: relative;
+
+    &-search-all {
+      align-items: center;
+      background-image: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(255, 255, 255, 1) 90%
+      );
+      bottom: 0;
+      display: flex;
+      height: 700px;
+      justify-content: center;
+      left: 0;
+      position: absolute;
+      right: 0;
+    }
+
+    &-hidden {
+      height: calc(100vh - 500px);
+    }
+  }
+
+  &__item {
+    &-image {
+      border-radius: 8px;
+      height: 150px;
+      overflow: hidden;
+      width: 100%;
+
+      img {
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        width: 100%;
+      }
+    }
+
+    &-name {
+      margin-top: 16px;
+    }
+  }
+
+  &__action {
+    &--search {
+      border-radius: 8px;
+      box-shadow: 0px 1px 2px -1px rgba(17, 12, 34, 0.08);
+      flex-direction: row-reverse;
+      padding: 0;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px
+    }
+  }
+}
+
+.search-all {
+  background: linear-gradient(90deg, #FF71E8 0.03%, #3838FF 99.8%);
+  height: 56px;
+}
+
+.search-all:hover {
+  background: linear-gradient(90deg, #3838FF 0.03%, #FF71E8 99.8%);
+  height: 56px;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}

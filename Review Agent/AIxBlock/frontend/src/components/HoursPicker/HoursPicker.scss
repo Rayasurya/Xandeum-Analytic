@@ -1,0 +1,99 @@
+// Hours picker
+
+.c-hours-picker {
+  display: grid;
+  grid-template-columns: 128px 128px auto;
+  gap: 16px;
+  align-items: flex-end;
+
+  &__list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  &__item {
+    background-color: #EBEFFB;
+    border: solid 1px #10284817;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+    padding: 8px 16px;
+
+    &-start,
+    &-end {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    button {
+      margin-left: 8px;
+      margin-right: -8px;
+    }
+  }
+
+  &__action {
+    &--clear {
+      display: flex;
+      align-items: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+
+      svg {
+        height: 16px;
+        width: 16px;
+      }
+    }
+  }
+
+  &__start,
+  &__end {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      color: #252525;
+      font-size: 14px;
+      font-style: normal;
+      line-height: normal;
+    }
+
+    &-select {
+      .c-select__content {
+        height: 44px;
+      }
+      .c-select__item {
+        padding: 0 20px;
+      }
+      .c-select__item.last {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__action {
+    &--add {
+      height: 44px;
+    }
+  }
+}
+
+.c-select__list {
+  .c-hours-picker {
+    &__start,
+    &__end {
+      &-select {
+        margin: 0;
+        padding: 0;
+        max-height: 300px;
+        overflow-y: scroll;
+      }
+    }
+  }
+}

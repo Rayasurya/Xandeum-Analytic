@@ -1,0 +1,22 @@
+.container {
+  line-height: 1.5em;
+  margin: -32px 0 -40px 0;
+
+  ol {
+    margin: 12px 0;
+    padding-left: 32px;
+
+    li + li {
+      margin-top: 8px;
+    }
+  }
+}
+
+.important {
+  margin: 16px 0;
+  font-size: 12px;
+}
+
+.h1 {
+  font-weight: 700;
+}

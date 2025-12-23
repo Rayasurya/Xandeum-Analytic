@@ -1,0 +1,15 @@
+{
+    "annotations": [
+        {
+            "id": "1001",
+            "lead_time": 0,
+            "result": []
+        }
+    ],
+    "data": {
+        "text": "In a little while you will have forgotten everything; in a little while everything will have forgotten you."
+    },
+    "id": 1,
+    "predictions": [],
+    "task_path": "../examples/machine_translation/tasks.json"
+}

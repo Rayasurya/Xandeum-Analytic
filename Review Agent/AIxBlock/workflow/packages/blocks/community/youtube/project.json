@@ -1,0 +1,26 @@
+{
+  "name": "blocks-youtube",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/youtube/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/youtube",
+        "tsConfig": "packages/blocks/community/youtube/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/youtube/package.json",
+        "main": "packages/blocks/community/youtube/src/index.ts",
+        "assets": ["packages/blocks/community/youtube/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

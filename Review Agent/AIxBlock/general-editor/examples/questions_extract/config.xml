@@ -1,0 +1,17 @@
+<View>
+  <View style="display:flex; flex-direction:row; justify-content:stretch; gap:16px">
+    <View style="flex:1">
+      <Labels name="labels" toName="transcripts" choice="multiple">
+        <Label value="billing_device" background="#FF0000" />
+        <Label value="billing_credits" background="#00FF00" />
+        <Label value="billing_upcoming" background="#0000FF" />
+      </Labels>
+      <Transcripts name="transcripts" value="$transcripts" transcriptStyle="height: 200px" />
+      <Questions name="questions" toName="transcripts" style="margin-top: 8px; height: 400px" />
+    </View>
+    <Splitter />
+    <View style="flex:1.2">
+      <IFrame src="$pdf" style="width:100%; border:none; height:100%; resize:horizontal" />
+    </View>
+  </View>
+</View>

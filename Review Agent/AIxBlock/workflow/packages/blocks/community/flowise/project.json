@@ -1,0 +1,30 @@
+{
+  "name": "blocks-flowise",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/flowise/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/flowise",
+        "tsConfig": "packages/blocks/community/flowise/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/flowise/package.json",
+        "main": "packages/blocks/community/flowise/src/index.ts",
+        "assets": ["packages/blocks/community/flowise/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-flowise {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

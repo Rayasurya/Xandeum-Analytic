@@ -1,0 +1,30 @@
+{
+  "name": "blocks-activepieces",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/activepieces/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/activepieces",
+        "tsConfig": "packages/blocks/community/activepieces/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/activepieces/package.json",
+        "main": "packages/blocks/community/activepieces/src/index.ts",
+        "assets": ["packages/blocks/community/activepieces/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-activepieces {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

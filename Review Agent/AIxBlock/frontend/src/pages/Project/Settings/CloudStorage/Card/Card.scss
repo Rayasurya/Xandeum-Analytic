@@ -1,0 +1,121 @@
+// Card
+
+.c {
+  &-card {
+    border-radius: 12px;
+    border: 1.5px solid #d6d8e7;
+    background: #fff;
+    box-shadow: 0px 8px 16px 0px rgba(17, 17, 17, 0.04);
+    padding: 24px 24px 96px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-bottom: 16px;
+
+    &__summary {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      &-type {
+        &.source {
+          background: #865dff;
+        }
+        &.target {
+          background: #f5a;
+        }
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 16px;
+      }
+
+      &-action {
+        background: transparent;
+        border: none;
+        outline: unset;
+        box-shadow: unset;
+        padding: 0;
+        transform: rotate(90deg);
+        cursor: pointer;
+      }
+    }
+  }
+
+  &-dl {
+    grid-row-gap: 16px;
+    display: grid;
+    font-size: 16px;
+    grid-template-columns: 30% 70%;
+    line-height: 22px;
+    margin: 0;
+
+    &__dt,
+    &__dd {
+      font-size: 16px;
+      letter-spacing: -0.16px;
+    }
+
+    &__dd {
+      font-weight: 400;
+    }
+
+    &__dt {
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+  }
+
+  &-card__action {
+    position: absolute;
+    bottom: 24px;
+    left: auto;
+    right: 24px;
+
+    button {
+      border-radius: 12px;
+      border-color: #000;
+      background: #fff;
+      height: 44px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 24px;
+      color: #000;
+      min-width: 180px;
+    }
+
+    .syncing {
+      animation: syncing 2s linear infinite;
+      background-color: #fff;
+      background-image: repeating-linear-gradient(
+        -63.43deg,
+        hsla(0, 0%, 100%, 0.2) 1px,
+        #efefef 2px,
+        #efefef 6px,
+        hsla(0, 0%, 100%, 0.2) 7px,
+        hsla(0, 0%, 100%, 0.2) 12px
+      );
+      background-position: 40px;
+      background-repeat: repeat;
+      background-size: 37px 100%;
+      pointer-events: none;
+      color: black;
+    }
+
+    @keyframes syncing {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 100% 0;
+      }
+    }
+  }
+}

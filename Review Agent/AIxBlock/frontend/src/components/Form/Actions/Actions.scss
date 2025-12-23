@@ -1,0 +1,9 @@
+// Form actions
+
+.c-form {
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}

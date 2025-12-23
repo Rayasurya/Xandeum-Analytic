@@ -1,0 +1,38 @@
+.llm-slider-view {
+	min-height: 80px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	&__label__content {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	&__label,
+	&__value {
+		display: flex;
+		flex-direction: row;
+		gap: 6px;
+		font-size: 14px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: 1.71;
+		letter-spacing: normal;
+		color: #40405b;
+	}
+
+	&__info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	&__slide_content {
+		padding: 0 16px;
+	}
+}

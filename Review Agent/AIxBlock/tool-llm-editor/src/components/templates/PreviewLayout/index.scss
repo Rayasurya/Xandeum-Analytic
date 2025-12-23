@@ -1,0 +1,259 @@
+.llm-preview-layout {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	background-color: #fff;
+	border: solid 1px #dedeec;
+	border-bottom-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+
+	.w-split {
+		width: 100%;
+	}
+
+	&__split-indicator {
+		width: 10px;
+		height: 26px;
+		position: absolute;
+		top: 50% !important;
+		left: 50% !important;
+		translate: -50% -50%;
+		border-left: 2px solid #dedeec;
+		border-right: 2px solid #dedeec;
+	}
+
+	&__form {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 21px 28px;
+		width: 50%;
+		gap: 12px;
+		min-width: 30%;
+
+		&__header {
+			display: flex;
+			flex-direction: row;
+		}
+
+		&__action {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 6px;
+			border: solid 1px #dedeec;
+			border-radius: 6px;
+			padding: 6px;
+
+			.llm-button {
+				&.outline {
+					border: none;
+					background-color: #fff;
+
+					>span {
+						color: #000;
+					}
+
+					&:hover,
+					&:active,
+					&.active {
+						background-color: #EEEEFF;
+
+						>span {
+							color: #5050FF;
+						}
+					}
+				}
+			}
+		}
+
+		&__content {
+			display: flex;
+			overflow-y: scroll;
+		}
+
+		&__variables-box {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			width: 100%;
+
+			.llm-button {
+				width: 150px;
+			}
+
+			&__placeholder {
+				min-height: 120px;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				border: solid 1px #dedeec;
+				border-radius: 8px;
+				width: 100%;
+
+				>span {
+					font-size: 14px;
+					color: #000;
+					padding: 16px;
+					text-align: center;
+				}
+			}
+		}
+	}
+
+	&__code-view {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding: 28px;
+		width: 50%;
+		min-width: 30%;
+
+		&__header {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			background-color: #F4F5F9;
+			padding: 12px 21px;
+		}
+
+		&__title {
+			font-size: 16px;
+			color: #000;
+		}
+
+		&__action {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 16px
+		}
+
+		&__content {
+			overflow: scroll;
+		}
+
+		&__console {
+			&__header {
+				padding: 6px 16px;
+				background-color: #dedeec;
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+
+				>span {
+					font-size: 14px;
+					color: #000;
+				}
+			}
+
+			&__close {
+				width: 32px;
+				height: 32px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				cursor: pointer;
+
+				>svg {
+					>path {
+						fill: #000;
+					}
+				}
+			}
+
+			&__content {
+				padding: 6px 16px;
+				height: 86px;
+				overflow: scroll;
+			}
+		}
+	}
+
+	&__variable-item {
+		display: flex;
+		flex-direction: column;
+		padding: 18px 22px;
+		border: solid 1px #dedeec;
+		border-radius: 8px;
+		position: relative;
+		flex: 1;
+
+		&__remove {
+			position: absolute;
+			right: 8px;
+			top: 8px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 32px;
+			height: 32px;
+			cursor: pointer;
+		}
+	}
+
+	&__variable-row {
+		display: flex;
+		flex-direction: row;
+		gap: 8px;
+		flex: 1;
+	}
+
+	&__variable-column {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		flex: 1;
+	}
+
+	&__modal-overlay {
+		position: fixed;
+		z-index: 99;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: rgba($color: #000000, $alpha: .5);
+	}
+
+	&__modal-view {
+		background-color: #fff;
+		border-radius: 8px;
+		padding: 16px;
+		display: flex;
+		flex-direction: column;
+		width: 50%;
+		max-width: 500px;
+		gap: 16px;
+	}
+
+	&__modal-header {
+		position: relative;
+		font-size: 16px;
+		font-weight: bold;
+	}
+
+	&__modal-content {
+		color: #000;
+		border: solid 1px #ffbb54;
+		background-color: #fff7e6;
+		padding: 16px;
+		border-radius: 8px;
+	}
+
+	&__modal-action {
+		display: flex;
+		flex-direction: row;
+		gap: 8px;
+		align-items: center;
+		justify-content: flex-end;
+	}
+}

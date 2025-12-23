@@ -1,0 +1,74 @@
+.c-radio-group-base {
+	&__label {
+		span {
+			font-size: 12px;
+			font-weight: 500;
+			line-height: 16px;
+			color: #40405B;
+		}
+
+		span.required {
+			color: red;
+		}
+	}
+
+	&__field {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+
+		&.disabled {
+			opacity: 0.2;
+			pointer-events: none;
+		}
+	}
+
+	&__control {
+		position: relative;
+		border-radius: 8px;
+		border: 1px solid #DEDEEC;
+		background-color: #FFF;
+		width: 100%;
+		box-sizing: border-box;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 24px;
+		letter-spacing: 0.75px;
+		color: #111;
+
+		> button {
+			height: 31px;
+			padding: 8px 12px;
+			border-radius: 8px;
+			background-color: #FFFFFF;
+			color: #333350;
+			border: none;
+			cursor: pointer;
+			
+			&.active {
+				background-color: #5050FF;
+				color: #F4F5F9;
+			}
+		}
+	}
+
+	// Message
+	&__error,
+	&__success {
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 24px;
+		letter-spacing: 0.75px;
+		text-transform: capitalize;
+		margin: 8px 0 0;
+	}
+
+	&__error {
+		color: #c30052;
+	}
+
+	&__success {
+		color: #00966d;
+	}
+}

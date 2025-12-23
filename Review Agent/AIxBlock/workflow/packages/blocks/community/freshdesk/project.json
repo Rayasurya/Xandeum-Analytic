@@ -1,0 +1,26 @@
+{
+  "name": "blocks-freshdesk",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/freshdesk/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/freshdesk",
+        "tsConfig": "packages/blocks/community/freshdesk/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/freshdesk/package.json",
+        "main": "packages/blocks/community/freshdesk/src/index.ts",
+        "assets": ["packages/blocks/community/freshdesk/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

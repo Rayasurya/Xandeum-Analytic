@@ -1,0 +1,84 @@
+{
+    "annotations": [
+        {
+            "result": [
+                {
+                    "id": "1qI949lEoK",
+                    "from_name": "questions",
+                    "to_name": "transcripts",
+                    "type": "question",
+                    "value": {
+                        "question": {
+                            "question": "Can you check if the bills are due on the 18th and if there are any discrepancies?",
+                            "answer": "",
+                            "trans_id": ""
+                        }
+                    }
+                },
+                {
+                    "id": "1qI949lEoK",
+                    "from_name": "labels",
+                    "to_name": "transcripts",
+                    "type": "labels",
+                    "value": {
+                        "labels": ["billing_upcoming"]
+                    }
+                },
+                {
+                    "id": "iu9778U9HU",
+                    "from_name": "questions",
+                    "to_name": "transcripts",
+                    "type": "question",
+                    "value": {
+                        "question": {
+                            "type": "billing_device",
+                            "question": "Can you provide the remaining balance on Pat Haybroom's iPhone 13?",
+                            "answer": "",
+                            "trans_id": ""
+                        }
+                    }
+                },
+                {
+                    "id": "iu9778U9HU",
+                    "from_name": "labels",
+                    "to_name": "transcripts",
+                    "type": "labels",
+                    "value": {
+                        "labels": ["billing_device"]
+                    }
+                },
+                {
+                    "id": "BeYSAMlcU0",
+                    "from_name": "questions",
+                    "to_name": "transcripts",
+                    "type": "question",
+                    "value": {
+                        "question": {
+                            "type": "billing_credits",
+                            "question": "What was the additional charge for a bill paid around <DATE_TIME>? Specifically, the amount was $208.",
+                            "answer": "",
+                            "trans_id": ""
+                        }
+                    }
+                },
+                {
+                    "id": "BeYSAMlcU0",
+                    "from_name": "labels",
+                    "to_name": "transcripts",
+                    "type": "labels",
+                    "value": {
+                        "labels": [
+                            "billing_credits"
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "data": {
+        "pdf": "https://docs.google.com/document/d/1uQ_eg5MnjkLptdzP5xzscgmjMfi7ADE0gG7Z7lT6X24/edit",
+        "transcripts": "speaker 1 : hi this is <PERSON> i'll be helping you <DATE_TIME> and reviewing your account for personalized offers who am i speaking with <DATE_TIME>\nspeaker 2 : my name's dian miller i'm calling for my aah cell my wireless phone <sil> i you know you talking about other services you can't get this one right\nspeaker 1 : we used to have a standardized greeting ma'am and all of our to be able to try and give a unified experience for our customers\nspeaker 2 : you call me this <babble> i am not <babble> i'm not screening you haven't heard any screen this is irritating i don't feel well\nspeaker 1 : what\nspeaker 2 : you called me <DATE_TIME> i've had a part night you telling me about screaming\nspeaker 1 : i didn't say screaming ma'am\nspeaker 2 : the bill\nspeaker 1 : i didn't i didn't say that II should we have a\nspeaker 2 : the bill is due they tell me that the\nspeaker 1 : unified\nspeaker 2 : <babble> they call me verizon been turn they turned my phone off before when i was driving they called me saying the bill isn't due they call and say that i owe 400 dollars the bills are due on the 18 they've been posted <DATE_TIME>\nspeaker 2 : yes\nspeaker 1 : oh okay ma'am well II you know aah what i was trying to say earlier and i apologize for the miscommunication there for us but i was trying to say that we we have a unified greeting aah for all of our customers to be able to try and you know create AA unified experience for our customers so it's it's not that i'm trying to sell you something or anything like that it's just that that's what verizon is chosen for all of us to greed our customers with\nspeaker 1 : but regardless II don't have your account in front of us so let's start with that at this point aah let me get your 10 digit telephone number please\nspeaker 2 : <babble> <DATE_TIME> aah what is the number call <DATE_TIME> it ending 2625I have 2 wireless phones\nspeaker 1 : aah <DATE_TIME> you said\nspeaker 2 : yeah\nspeaker 1 : okay let's see\nspeaker 1 : is it a business account\nspeaker 2 : yes\nspeaker 1 : okay i'm gonna have to get you over to our business teams with <DATE_TIME> right\nspeaker 2 : yeah\nspeaker 1 : okay hold for me please <babble>\nspeaker 2 : yeah they have that they have that little crazy music which you don't really need <sil> in the morning it's going <babble> their information the bills aren't even due\nspeaker 1 : yeah i can't even\nspeaker 2 : but yes <babble> and the next thing they gonna do is threaten me look i have a lot on my plate you know and i don't need this <babble> the t vs don't work you know and look in a lot of this stuff i have all kinds of phones i pay for this one just happened to be on the business line\nspeaker 1 : right\nspeaker 2 : i have a\nspeaker 1 : but\nspeaker 2 : <babble> business a graphics business at home i have a lot on my plate\nspeaker 1 : so i mean just to make sure are we getting this alert about your cellular service with us or your landline services or us\nspeaker 2 : this the the cell phone i\nspeaker 1 : okay alright aah let me get you over to our business team 'cause i can't even see your account 'cause i'm on the consumer side\nspeaker 2 : no\nspeaker 1 : and they're gonna help you <DATE_TIME> okay\nspeaker 2 : yeah\nspeaker 1 : <babble> hold for me please\nspeaker 2 : i do\nspeaker 1 : okay that's not working\nspeaker 1 : <babble> my system's not working correctly uh are we speaking on this number now that i can call you back on or is there another number that i can call you back on\nspeaker 2 : yeah that's exactly what i'm saying you can't even get it and they gonna call me <DATE_TIME> i have a home base business so i can look when i get ready to work but to call and threaten somebody because threaten somebody anyway nobody answer the phone it's ridiculous and you can't even\nspeaker 1 : aah\nspeaker 2 : aah send over there telling me that something's due i have it online posted to be paid\nspeaker 1 : and i hear you ma'am and i'm sorry i know it's frustrating to be able to get something like this first thing in the <DATE_TIME> i'd love to be able to help you i just i just don't have the ability to do so cause i don't have access to business accounts so i mean i\nspeaker 2 : i tried i\nspeaker 1 : i hear you by man's\nspeaker 2 : yeah i won't aah okay i'll call later <sil> that's alright you have <DATE_TIME>\nspeaker 1 : you too ma'am thank you bye"
+    },
+    "id": 1,
+    "task_path": "../examples/questions_extract_single_script/tasks.json"
+}

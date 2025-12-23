@@ -1,0 +1,37 @@
+.labels
+  margin 1em 0
+  display grid
+  //justify-content flex-start
+  //align-items center
+  //flex-flow wrap
+  grid-template-columns repeat(auto-fit, minmax(0, 200px))
+  //align-items flex-start
+  //grid-auto-rows min-content
+  overflow-y auto
+  resize vertical
+
+  &::-webkit-scrollbar
+    background-color #fff
+    width 16px
+
+  &::-webkit-scrollbar-track
+    background-color #fff
+
+  &::-webkit-scrollbar-thumb
+    background-color #babac0
+    border-radius 16px
+    border 4px solid #fff
+
+  /* set button(top and bottom of the scrollbar) */
+  body::-webkit-scrollbar-button {
+      display:none;
+  }
+
+  &_hidden
+    display none
+
+  &:not(&_inline)
+    margin 0
+    flex-direction column
+    align-items flex-start
+

@@ -1,0 +1,128 @@
+// Use Our
+
+.c-useour {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: center;
+  padding-top: 64px;
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #00BA88;
+    > svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    span {
+      font-size: 24px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      text-align: left;
+      color: #00ba88;
+    }
+  }
+
+  &__wrapper {
+    border-radius: 24px;
+    border: 1px solid #A0A3BD;
+    background: #FFF;
+    box-shadow: 0px 8px 16px 0px rgba(17, 17, 17, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    overflow: hidden;
+
+    > div {
+      padding: 0 24px;
+
+      &.c-useour__head,
+      &.c-useour__action {
+        padding: 24px;
+      }
+    }
+  }
+
+  &__head {
+    border-bottom: 1px solid transparent;
+    h4 {
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: -0.2px;
+      color: #14142a;
+      text-align: center;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: 117px 1fr;
+    gap: 32px;
+
+    &-value,
+    &-title {
+      font-size: 18px;
+      line-height: 34px;
+      letter-spacing: 0.75px;
+    }
+
+    &-title {
+      font-weight: 700;
+      font-size: 14px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+    }
+
+    &-value {
+      font-weight: 400;
+      font-size: 14px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: left;
+      color: #5050ff;
+    }
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    > button {
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    &--setup {
+      background: #ED05C7;
+    }
+  }
+}

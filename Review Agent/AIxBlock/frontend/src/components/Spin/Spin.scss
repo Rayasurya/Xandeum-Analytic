@@ -1,0 +1,45 @@
+// Spin
+
+.c-spin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &--inline {
+    display: inline-flex;
+    position: static;
+  }
+
+  &__content {
+    border-radius: 50%;
+    border: 3px solid #DEDEEC;
+    border-top-color: #40405B;
+    animation: loading 1s linear infinite;
+    &.lg {
+      width: 35px;
+      height: 35px;
+    }
+
+    &.md {
+      width: 25px;
+      height: 25px;
+    }
+
+    &.sm {
+      width: 10px;
+      height: 10px;
+    }
+  }
+}
+
+@keyframes loading {
+  to {
+    transform: rotate(360deg);
+  }
+}

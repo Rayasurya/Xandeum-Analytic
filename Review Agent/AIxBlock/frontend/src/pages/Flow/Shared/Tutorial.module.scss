@@ -1,0 +1,38 @@
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,.8);
+}
+
+.content {
+  background: white;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.close {
+  appearance: none;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  svg {
+    height: 32px;
+    width: 32px;
+  }
+}

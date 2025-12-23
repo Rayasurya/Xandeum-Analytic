@@ -1,0 +1,20 @@
+<View>
+  <Labels name="videoLabels" toName="video" allowEmpty="true">
+    <Label value="Man" background="blue"/>
+    <Label value="Woman" background="red"/>
+    <Label value="Other" background="green"/>
+  </Labels>
+
+  <!-- Please specify FPS carefully, it will be used for all project videos -->
+  <Video name="video" value="$video" framerate="25.0"/>
+  <VideoRectangle name="box" toName="video" />
+  <View style="display:none" class="example">
+[
+  {
+    "data": {
+      "video": "/static/samples/opossum_snow.mp4"
+    }
+  }
+]
+  </View>
+</View>

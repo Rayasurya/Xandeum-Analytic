@@ -1,0 +1,26 @@
+{
+  "name": "blocks-hubspot",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/hubspot/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/hubspot",
+        "tsConfig": "packages/blocks/community/hubspot/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/hubspot/package.json",
+        "main": "packages/blocks/community/hubspot/src/index.ts",
+        "assets": ["packages/blocks/community/hubspot/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

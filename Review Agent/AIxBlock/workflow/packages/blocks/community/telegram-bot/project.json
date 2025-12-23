@@ -1,0 +1,26 @@
+{
+  "name": "blocks-telegram-bot",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/telegram-bot/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/telegram-bot",
+        "tsConfig": "packages/blocks/community/telegram-bot/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/telegram-bot/package.json",
+        "main": "packages/blocks/community/telegram-bot/src/index.ts",
+        "assets": ["packages/blocks/community/telegram-bot/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

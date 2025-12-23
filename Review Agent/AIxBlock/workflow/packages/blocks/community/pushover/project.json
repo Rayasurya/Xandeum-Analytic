@@ -1,0 +1,26 @@
+{
+  "name": "blocks-pushover",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/pushover/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/pushover",
+        "tsConfig": "packages/blocks/community/pushover/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/pushover/package.json",
+        "main": "packages/blocks/community/pushover/src/index.ts",
+        "assets": ["packages/blocks/community/pushover/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

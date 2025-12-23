@@ -1,0 +1,7 @@
+<View>
+  <Image name="img" value="$image" zoom="true"></Image>
+  <KeyPointLabels name="tag" toName="img" fillcolor="red">
+    <Label value="Hello"></Label>
+    <Label value="World"></Label>
+  </KeyPointLabels>
+</View>

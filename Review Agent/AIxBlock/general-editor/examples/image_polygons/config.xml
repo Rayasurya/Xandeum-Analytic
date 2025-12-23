@@ -1,0 +1,7 @@
+<View>
+  <Image name="img" value="$image" showMousePos="true" zoom="true"></Image>
+  <PolygonLabels name="tag" toName="img" strokewidth="5" pointstyle="circle" pointsize="small">
+    <Label value="Hello"></Label>
+    <Label value="World"></Label>
+  </PolygonLabels>
+</View>

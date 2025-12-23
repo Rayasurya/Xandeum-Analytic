@@ -1,0 +1,223 @@
+.topup {
+  p {
+    margin: 0;
+  }
+
+  &Content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: auto;
+
+    &.height-custom {
+      max-height: 150px;
+    }
+
+    &Title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+
+      p {
+        color: rgba(27, 36, 44, 1);
+
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: -0.16px;
+      }
+    }
+
+    &Notice {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      &Title {
+        font-size: 12px;
+        color: #f2415a;
+        font-style: italic;
+      }
+
+      &Content {
+        font-size: 12px;
+        font-style: italic;
+      }
+    }
+
+    &Line {
+      display: flex;
+      flex-direction: column;
+
+      &Solid {
+        width: 100%;
+        border: solid 1px rgba(234, 237, 240, 1);
+      }
+
+      &Dotted {
+        width: 100%;
+        border: dotted 1px rgba(234, 237, 240, 1);
+      }
+    }
+
+    &Hours {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      p {
+        &.txt {
+          color: #40405B;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: 24px;
+        }
+
+        &.number {
+          color: rgba(85, 95, 109, 1);
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: normal;
+          letter-spacing: -0.16px;
+        }
+      }
+    }
+
+    &TotalHours {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      p {
+        &.txt {
+          color: #40405B;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
+        }
+
+        &.number {
+          color: rgba(85, 95, 109, 1);
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: normal;
+          letter-spacing: -0.16px;
+        }
+      }
+    }
+
+    &Total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &Amount {
+        color: rgba(27, 36, 44, 1);
+        font-size: 16px;
+        font-style: normal;
+        //font-weight: 600;
+        line-height: 24px;
+      }
+
+      &Price {
+        color: #5050ff;
+        font-size: 18px;
+        font-style: normal;
+        line-height: normal;
+        font-family: monospace;
+      }
+    }
+
+    &Action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+
+      :global {
+        .btn {
+          border-radius: 8px;
+          background: #4949E8;
+          box-shadow: 0 1px 2px 0 rgba(17, 12, 34, 0.08);
+          color: #F4F5F9;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: 24px;
+        }
+      }
+    }
+  }
+
+  &Card {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .input-card-custom {
+      input {
+        padding: 7px 20px 7px 12px
+      }
+    }
+
+    &Header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &Title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      &Action {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 8px;
+        border: 1px solid #dedeec;
+        background: #fff;
+        box-shadow: 0 1px 2px -1px rgba(17, 12, 34, 0.08);
+        cursor: pointer;
+      }
+    }
+
+    &Content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-height: 65vh;
+      //overflow:scroll
+    }
+
+    .c-select {
+      &.disabled {
+        opacity: 1;
+      }
+
+      svg {
+        display: none
+      }
+    }
+  }
+
+  &Tip {
+    font-size: .8em;
+    opacity: .5;
+    line-height: 1.5em;
+  }
+}
+
+.customTopup {
+  min-width: auto;
+  max-width: 360px;
+}

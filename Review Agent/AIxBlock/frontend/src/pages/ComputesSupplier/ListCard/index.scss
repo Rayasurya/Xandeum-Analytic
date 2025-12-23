@@ -1,0 +1,128 @@
+.list-card {
+  border: 1px solid #dedeec;
+  border-radius: 16px;
+  padding: 15px;
+  margin-top: 20px;
+  &-title {
+    color: #14142a;
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 15px;
+  }
+  &-btn-next {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    button {
+      border-radius: 8px;
+      font-size: 14px;
+      svg {
+        width: 18px;
+      }
+    }
+  }
+  &-infor {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    background: #f7f7f7;
+    padding: 10px 10px 0;
+    &-item {
+      width: 32%;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+  }
+  .table-list-card {
+    .price {
+      width: 175px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #dedeec;
+      padding: 0 10px;
+      border-radius: 8px;
+      background-color: #fff;
+      input {
+        border: none;
+        outline: none;
+        width: 145px;
+        text-align: center;
+        &::placeholder {
+          color: #a1a3bb;
+        }
+      }
+      .prefix {
+        color: #40405b;
+        font-size: 10px;
+        font-weight: 600;
+      }
+    }
+    th {
+      color: #8d8a95;
+      text-transform: capitalize;
+    }
+    td:last-child {
+      display: flex;
+      justify-content: center;
+    }
+    .input-checkbox {
+      position: relative;
+      border-radius: 6px;
+      width: 18px;
+      &:before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        top: 0;
+        left: 0;
+        border: 2px solid #40405b;
+        border-radius: 6px;
+        background-color: white;
+      }
+      &:checked:after {
+        content: "";
+        display: block;
+        width: 4px;
+        height: 9px;
+        border: solid black;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        position: absolute;
+        top: 2px;
+        left: 6px;
+      }
+    }
+  }
+  &__input-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+  }
+
+  &__input-subtitle {
+    font-size: 12px;
+    color: #14142A;
+    font-weight: 400;
+    display: inline-block;
+    b {
+      color: #27BE69;
+      font-weight: 400;
+      margin-left: 6px;
+    }
+  }
+  .c-table th:first-child, .c-table td:first-child {
+    width: 115px;
+  }
+
+  .c-table th:last-child, .c-table td:last-child {
+    width: 280px;
+  }
+}

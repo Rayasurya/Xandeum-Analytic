@@ -1,0 +1,67 @@
+.topbar
+  height var(--topbar-height)
+  width 100%
+  z-index 101
+  flex none
+  display flex
+  align-items stretch
+  justify-content space-between
+  background-color #fff
+  color #fff
+  border-bottom 1px solid rgba(#111, 0.1)
+  user-select none
+  position sticky
+  top 0
+  overflow-y visible
+
+  &_invisible
+    height 0
+    border-bottom none
+
+  &__group
+    display flex
+    align-items stretch
+    color: var(--main-color-primary)
+
+  &__section
+    display flex
+    padding 0 8px
+    align-items center
+    box-sizing border-box
+
+    &_flat
+      padding 0
+
+    & + &
+      border-left 1px solid rgba(#fff, 0.1)
+
+  &__toggle
+    position absolute
+    left 50%
+    background var(--main-color-secondary)
+    padding 6px 8px
+    border solid 1px var(--main-color-secondary)
+    border-radius 0 0 8px 8px
+    cursor pointer
+    opacity .75
+    line-height 0
+    margin-left -11px
+
+    &:hover
+      opacity 1
+
+  &_visible &__toggle
+    top 48px
+
+  &_invisible &__toggle
+    top 0
+
+    svg
+      transform rotateZ(180deg)
+  &_button-color
+    color: #111
+    &.button_look_primary
+      color var(--main-bg-color)
+  &_dynamic-preannotations
+    > div
+      background var(--main-bg-color)

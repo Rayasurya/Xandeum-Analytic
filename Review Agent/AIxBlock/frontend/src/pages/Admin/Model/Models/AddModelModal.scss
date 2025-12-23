@@ -1,0 +1,93 @@
+.add-model-modal {
+  max-width: 800px;
+  width: calc(100vw - 32px);
+
+  &-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-top: 1px solid #d6d8e7;
+    padding-top: 20px;
+    &__group {
+      width: 100%;
+      margin-bottom: 12px;
+      &.w-half {
+        width: 49%;
+      }
+      .c-model__label {
+        font-weight: 600;
+      }
+      input {
+        width: calc(100% - 32px);
+        height: 70px;
+      }
+      .permissions-label {
+        display: block;
+        margin-bottom: 20px;
+      }
+      .permissions-row {
+        display: flex;
+        margin-bottom: 17px;
+        &-content {
+          span:first-child {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+          }
+          span:last-child {
+            display: block;
+            font-size: 16px;
+            font-size: 16px;
+          }
+        }
+        .c-switch {
+          input:checked + .slider {
+            background-color: #ffffff;
+            &::before {
+              background-color: #2a46ff;
+            }
+          }
+          .slider {
+            border: 0.5px solid #111;
+          }
+        }
+      }
+      .error {
+        color: red;
+        font-size: 14px;
+      }
+    }
+    .c-select {
+      margin-top: 10px;
+      position: relative;
+      &__list {
+        width: 100%;
+        top: 0;
+        left: 0;
+      }
+      ul {
+        padding-left: 24px;
+      }
+      &__item {
+        padding: 0;
+        &.last {
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+  .c-modal__footer {
+    button {
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(89.94deg, #ff71e8 0.03%, #3838ff 99.8%);
+      height: 52px;
+      width: 187px;
+      display: flex;
+      flex-direction: row-reverse;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "blocks-connections",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/connections/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/connections",
+        "tsConfig": "packages/blocks/community/connections/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/connections/package.json",
+        "main": "packages/blocks/community/connections/src/index.ts",
+        "assets": ["packages/blocks/community/connections/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

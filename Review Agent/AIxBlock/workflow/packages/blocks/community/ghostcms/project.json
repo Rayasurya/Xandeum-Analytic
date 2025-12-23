@@ -1,0 +1,30 @@
+{
+  "name": "blocks-ghostcms",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/ghostcms/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/ghostcms",
+        "tsConfig": "packages/blocks/community/ghostcms/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/ghostcms/package.json",
+        "main": "packages/blocks/community/ghostcms/src/index.ts",
+        "assets": ["packages/blocks/community/ghostcms/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-ghostcms {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

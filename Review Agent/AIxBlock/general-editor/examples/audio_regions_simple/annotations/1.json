@@ -1,0 +1,56 @@
+{
+  "annotations": [
+    {
+      "id": "1001",
+      "result": [
+        {
+          "id": "test-1",
+          "meta": {
+            "text": [
+              "stereo"
+            ]
+          },
+          "type": "labels",
+          "value": {
+            "end": 4.8,
+            "start": 0,
+            "labels": [
+              "speech",
+              "noise"
+            ]
+          },
+          "origin": "manual",
+          "to_name": "audio",
+          "from_name": "labels",
+          "original_length": 5250.91410430839
+        },
+        {
+          "id": "test-1",
+          "meta": {
+            "text": [
+              "stereo"
+            ]
+          },
+          "type": "textarea",
+          "value": {
+            "end": 4.8,
+            "text": [
+              " Why does in Facebook do this? I know that Zuckerberg has said and I take him in face value that he..."
+            ],
+            "start": 0
+          },
+          "origin": "manual",
+          "to_name": "audio",
+          "from_name": "transcription",
+          "original_length": 5250.91410430839
+        }
+      ],
+      "type": "annotation"
+    }
+  ],
+  "data": {
+    "url": "/files/2h-audio.wav"
+  },
+  "id": 1,
+  "task_path": "../examples/audio_regions/tasks.json"
+}

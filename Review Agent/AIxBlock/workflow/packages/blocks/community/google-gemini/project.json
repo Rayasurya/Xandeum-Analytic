@@ -1,0 +1,30 @@
+{
+  "name": "blocks-google-gemini",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/google-gemini/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/google-gemini",
+        "tsConfig": "packages/blocks/community/google-gemini/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/google-gemini/package.json",
+        "main": "packages/blocks/community/google-gemini/src/index.ts",
+        "assets": ["packages/blocks/community/google-gemini/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-google-gemini {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

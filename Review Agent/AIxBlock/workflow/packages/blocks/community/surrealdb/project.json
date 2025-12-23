@@ -1,0 +1,30 @@
+{
+  "name": "blocks-surrealdb",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/surrealdb/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/surrealdb",
+        "tsConfig": "packages/blocks/community/surrealdb/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/surrealdb/package.json",
+        "main": "packages/blocks/community/surrealdb/src/index.ts",
+        "assets": ["packages/blocks/community/surrealdb/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs pieces-surrealdb {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

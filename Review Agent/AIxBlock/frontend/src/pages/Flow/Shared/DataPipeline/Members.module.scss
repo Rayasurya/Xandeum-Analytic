@@ -1,0 +1,93 @@
+.list {
+  min-width: 548px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  button {
+    border: none;
+    background: transparent;
+    outline: unset;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: 6px;
+  }
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  gap: 12px;
+
+  button {
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    flex-direction: row-reverse;
+  }
+}
+
+.add {
+  background: var(--Color-primary-base);
+  color: var(--Color-base-white);
+}
+
+.csv {
+  color: var(--Color-primary-base);
+  border: 1px solid var(--Color-blue-base);
+  background: var(--Color-primary-50);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #14142a;
+  margin: 0;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.thead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+
+.theadName {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.16px;
+  color: #5050ff;
+
+  &:first-child {
+    flex: 1;
+  }
+
+  &:nth-child(2) {
+    width: 160px;
+  }
+
+  &:last-child {
+    text-align: right;
+    width: 72px;
+  }
+}

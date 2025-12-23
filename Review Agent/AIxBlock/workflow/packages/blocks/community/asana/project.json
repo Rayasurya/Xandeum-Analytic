@@ -1,0 +1,26 @@
+{
+  "name": "blocks-asana",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/blocks/community/asana/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/blocks/community/asana",
+        "tsConfig": "packages/blocks/community/asana/tsconfig.lib.json",
+        "packageJson": "packages/blocks/community/asana/package.json",
+        "main": "packages/blocks/community/asana/src/index.ts",
+        "assets": ["packages/blocks/community/asana/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,143 @@
+.c-editor {
+	background-color: white;
+	border-radius: 0 0 12px 0;
+  box-shadow: -8px 0 8px 0 rgba(0, 0, 0, .1);
+	bottom: 13px;
+	left: 13px;
+  overflow-y: auto;
+	position: fixed;
+	right: 13px;
+	top: 83px;
+	height: calc(100vh - (71px + 25px));
+  z-index: 1;
+
+  &__resizer {
+    background: rgba(0, 0, 0, .55);
+    //border-radius: 0 4px 4px 0;
+    //bottom: 0;
+    cursor: col-resize;
+	  height: calc(100vh - (71px + 25px));
+    opacity: 0.4;
+    position: fixed;
+    right: 13px;
+    top: 83px;
+    width: 4px;
+    z-index: 2;
+    transition: opacity 250ms linear;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .lsf-editor {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+  }
+}
+
+.c-footer-container {
+	overflow: auto;
+	white-space: nowrap;
+	padding: 15px;
+	border-top: 0.5px solid rgba(20, 20, 43, 0.4);
+	position: fixed;
+	bottom: 10px;
+	width: calc(100vw - 56px);
+	border-bottom: 0.5px solid rgba(20, 20, 43, 0.4);
+	border-bottom-right-radius: 12px;
+	border-bottom-left-radius: 12px;
+	background-color: var(--color-neutral-white-100);
+
+	// Nesting for .footer-item
+	.footer-item {
+		width: 368px;
+		height: 104px;
+		display: inline-block;
+		padding: 16px;
+		border-radius: 8px;
+		box-shadow: 0 10px 20px 0 rgba(37, 37, 37, 0.1);
+		border: solid 1px #dedeec;
+		background-color: #fff;
+		margin-right: 16px;
+
+		font-size: 14px;
+		font-weight: 500;
+		font-stretch: normal;
+		font-style: normal;
+		line-height: normal;
+		letter-spacing: normal;
+		text-align: left;
+		color: #40405b;
+
+		&.active {
+			border-color: #5050FF;
+
+			.img-tag {
+				background-color: #5050FF;
+				color: var(--color-neutral-white-100);
+			}
+
+			.task-info * {
+				color: #5050FF;
+			}
+		}
+	}
+
+	// Nesting for utility classes for flexbox
+	.flex-content {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.flex-row {
+		display: flex;
+		flex-direction: row;
+		gap: 16px;
+	}
+
+	// Nesting for styling img-tag
+	.img-tag {
+		width: 80px;
+		height: 32px;
+		flex-grow: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 10px;
+		padding: 0px 10px;
+		border-radius: 8px;
+		border: solid 1px #dedeec;
+		background-color: #f4f5f9;
+	}
+
+	// Nesting for task related styles
+	.task-content {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.task-info {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.task-info-item {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 8px;
+		font-size: 16px;
+		font-weight: bold;
+		color: #40405b;
+	}
+}

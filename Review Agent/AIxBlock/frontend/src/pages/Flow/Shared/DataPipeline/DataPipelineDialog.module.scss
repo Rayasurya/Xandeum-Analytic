@@ -1,0 +1,70 @@
+.dialog {
+  :global {
+    .c-modal__body {
+      margin: -24px;
+    }
+  }
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  max-width: 1200px;
+  width: calc(100vw - 48px);
+}
+
+.left {
+  padding: 24px;
+  border-right: solid 1px #BBBBD5;
+}
+
+.leftTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.leftList {
+  margin-top: 24px;
+}
+
+.leftItem, .leftItemActive {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: 700;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 16px 8px 16px 12px;
+  user-select: none;
+}
+
+.leftItemActive {
+  border-radius: var(--Radius-rounded-lg, 8px);
+  background: var(--Color-primary-50, #EEF);
+  color: var(--Color-primary-base, #5050FF);
+}
+
+.leftItemDisable {
+  color: var(--Color-neutral-400, #BBBBD5);
+}
+
+.leftItemLabel {
+  display: inline-flex;
+  gap: 8px;
+
+  svg {
+    transform: translateY(2px);
+  }
+}
+
+.right {
+  padding: 24px;
+}
+
+.rightTitle {
+  color: var(--Color-base-Body, #454550);
+}
+
+.rightContent {
+  margin-top: 32px;
+}

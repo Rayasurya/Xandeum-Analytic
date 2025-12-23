@@ -1,0 +1,98 @@
+.c-video {
+  width: 100%;
+
+  video {
+    border-radius: 10px;
+  }
+
+  &__progress {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+
+    //&-item {
+    //  padding-left: 10px;
+    //  padding-right: 10px;
+    //}
+  }
+
+  &__button {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+
+    svg {
+      width: 43px;
+      height: 26px;
+    }
+
+    color: #090909;
+
+
+    &-play {
+      //padding: 15px;
+      color: white;
+      background-image: linear-gradient(#8673FD, #5C42FF);
+      border-radius: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      cursor: pointer;
+
+      svg {
+        transform: translateX(-2px) translateY(-2px);
+      }
+    }
+
+    &-play:hover {
+      color: white;
+      background-image: linear-gradient(#5C42FF, #8673FD);
+      border-radius: 50%;
+    }
+
+    &-back {
+      padding-top: 20px;
+      max-height: 40px;
+      cursor: pointer;
+    }
+
+    &-next {
+      max-height: 40px;
+      padding-top: 20px;
+      cursor: pointer;
+    }
+
+    &-next:hover,
+    &-next:hover svg:hover {
+      color: #5C42FF;
+    }
+
+    &-back:hover,
+    &-back:hover svg:hover {
+      color: #5C42FF;
+    }
+  }
+}
+
+
+.c-video__button-back:hover svg {
+  opacity: 0.7;
+}
+
+.c-video__button-next:hover svg {
+  opacity: 0.7;
+}
+
+.player-wrapper {
+  position: relative;
+  padding-top: 56.25%;
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

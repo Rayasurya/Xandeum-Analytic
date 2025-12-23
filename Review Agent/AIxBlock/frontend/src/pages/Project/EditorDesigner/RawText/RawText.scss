@@ -1,0 +1,13 @@
+.block-raw-text {
+  background-color: #fff;
+  border: dashed 2px rgba(0,0,0,.1);
+  border-radius: 8px;
+  margin: 1rem 0;
+  padding: .5rem;
+
+  .lsf-richtext__line {
+    &::before {
+      border-right: none;
+    }
+  }
+}

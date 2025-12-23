@@ -40,12 +40,22 @@ export class XandeumClient {
                         const data = await res.json();
                         // The scraper saves as { nodes: [...] }, so we return data.nodes
                         if (data.nodes && Array.isArray(data.nodes)) {
-                            // Map raw JSON to PNodeInfo structure, ensuring 'rpc' and 'gossip' fields exist
-                            return data.nodes.map((n: any) => ({
+                            // Map raw JSON to PNodeInfo structure and deduplicate by pubkey
+                            const mappedNodes = data.nodes.map((n: any) => ({
                                 ...n,
                                 rpc: n.rpc || (n.rpc_port && n.address ? `${n.address.split(':')[0]}:${n.rpc_port}` : null),
                                 gossip: n.gossip || n.address
                             }));
+
+                            // Deduplicate using a Map
+                            const uniqueNodes = new Map();
+                            mappedNodes.forEach((n: any) => {
+                                if (n.pubkey && !uniqueNodes.has(n.pubkey)) {
+                                    uniqueNodes.set(n.pubkey, n);
+                                }
+                            });
+
+                            return Array.from(uniqueNodes.values());
                         }
                     }
                 } catch (e) {

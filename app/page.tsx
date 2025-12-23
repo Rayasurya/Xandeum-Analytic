@@ -693,15 +693,28 @@ function HomeContent() {
               {/* Table Section with padding */}
               <div className={cn("flex-1 min-w-0 px-8 py-6 space-y-4 overflow-y-auto", selectedNode && "hidden md:block")}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card/50 p-4 rounded-xl border border-border">
-                  <div className="relative w-full sm:w-80">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      placeholder="Search Node ID..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 bg-background border-input focus:border-primary text-foreground placeholder:text-muted-foreground font-mono text-sm"
-                    />
+                  {/* Left side: Search + Node Count */}
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <div className="relative w-full sm:w-80">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Input
+                        placeholder="Search Node ID..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 bg-background border-input focus:border-primary text-foreground placeholder:text-muted-foreground font-mono text-sm"
+                      />
+                    </div>
+
+                    {/* Node Count Indicator */}
+                    <div className="hidden sm:flex items-center gap-1.5 text-sm whitespace-nowrap">
+                      <span className="text-muted-foreground">Showing</span>
+                      <span className="font-mono font-bold text-foreground">{filteredNodes.length}</span>
+                      <span className="text-muted-foreground">/</span>
+                      <span className="font-mono font-bold text-primary">{nodes.length}</span>
+                    </div>
                   </div>
+
+                  {/* Right side: Actions */}
                   <div className="flex items-center gap-2">
                     <Button className="bg-primary hover:bg-orange-600 text-primary-foreground font-bold" onClick={handleExport}>
                       <Download className="mr-2 h-4 w-4" /> EXPORT ENRICHED CSV

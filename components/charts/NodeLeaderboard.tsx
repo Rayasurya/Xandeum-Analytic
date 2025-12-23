@@ -84,7 +84,6 @@ export function NodeLeaderboard({ data }: NodeLeaderboardProps) {
                         <Treemap
                             data={data}
                             dataKey="value"
-                            scroll={{ x: 0, y: 0 }}
                             stroke="#fff"
                             fill="#8884d8"
                             content={<CustomizedContent />}

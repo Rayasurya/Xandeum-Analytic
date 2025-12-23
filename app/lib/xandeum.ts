@@ -30,146 +30,106 @@ export class XandeumClient {
      */
     async getPNodes(): Promise<PNodeInfo[]> {
         try {
-            // 1. Get bootstrap list from standard RPC
-            const clusterNodes = await this.connection.getClusterNodes();
-            let allNodes: PNodeInfo[] = [...clusterNodes];
-
-            // 2. Fetch rich "pNode" stats via Multi-Seed Mesh Discovery
-            // Check if we should use external Mesh API (for Vercel environment)
-            const shouldUseExternalApi = !!XANDEUM_CONFIG.MESH_API_URL;
-
-            try {
-                if (shouldUseExternalApi && XANDEUM_CONFIG.MESH_API_URL) {
-                    // Use external dedicated backend
-                    const apiUrl = `${XANDEUM_CONFIG.MESH_API_URL}/api/pnodes`;
-                    const response = await fetch(apiUrl);
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        if (result.success && Array.isArray(result.data)) {
-                            console.log(`[Xandeum] Fetched ${result.data.length} nodes from external Mesh API.`);
-                            return result.data;
-                        }
-                    } else {
-                        throw new Error(`External API failed with status ${response.status}`);
-                    }
-                }
-
-                // Fallback to client-side discovery (Local/Development)
-                // Seeds from Xandeum Discord community
-                const MESH_SEEDS = [
-                    // Original Seeds
-                    "173.212.203.145",
-                    "173.212.220.65",
-                    "161.97.97.41",
-                    "192.190.136.36",
-                    "192.190.136.37",
-                    "192.190.136.38",
-                    "192.190.136.28",
-                    "192.190.136.29",
-                    "207.244.255.1",
-                    // Additional Seeds from Community Chat
-                    "45.84.138.15",
-                    "173.249.3.118",
-                    "84.21.171.129",
-                    "161.97.185.116",
-                    "154.38.169.212",
-                    "152.53.155.15",
-                    "154.38.185.152",
-                    "173.249.59.66",
-                    "45.151.122.60",
-                    "152.53.236.91",
-                    "173.249.54.191",
-                    "45.151.122.71"
-                ];
-
-                // Map to merge specific pNode data
-                const nodeMap = new Map<string, PNodeInfo>();
-
-                // Initialize with cluster nodes to ensure we have the base set
-                clusterNodes.forEach(n => nodeMap.set(n.pubkey, n));
-
-                // Query all seeds in parallel via our proxy
-                const seedPromises = MESH_SEEDS.map(async (seedIp) => {
-                    try {
-                        // Use local proxy to bypass browser restriction on port 6000
-                        const url = `/api/pnodestats?ip=${seedIp}`;
-                        const response = await fetch(url, { headers: { "Content-Type": "application/json" } });
-                        const data = await response.json();
-
-                        if (data.result && Array.isArray(data.result.pods)) {
-                            return data.result.pods;
-                        }
-                    } catch (e) {
-                        // console.warn(`Failed to query seed ${seedIp}`);
-                    }
-                    return [];
-                });
-
-                const allSeedResults = await Promise.all(seedPromises);
-
-                // Fetch Pod Credits (external source)
-                let creditMap = new Map<string, number>();
+            // 1. Static Dataset (GitHub Actions / "Serverless" Approach)
+            // If the URL points to a JSON file, we treat it as a static snapshot.
+            if (XANDEUM_CONFIG.MESH_API_URL && XANDEUM_CONFIG.MESH_API_URL.endsWith('.json')) {
+                console.log('Fetching pNodes from static dataset:', XANDEUM_CONFIG.MESH_API_URL);
                 try {
-                    const creditRes = await fetch("/api/podcredits");
-                    if (creditRes.ok) {
-                        const creditData = await creditRes.json();
-                        // API returns { credits: [...], status: "success" }
-                        const creditList = Array.isArray(creditData) ? creditData : (creditData.credits || []);
-
-                        if (Array.isArray(creditList)) {
-                            creditList.forEach((c: any) => {
-                                const key = c.pod_id || c.pubkey;
-                                const score = c.credits || c.total_credits || 0;
-                                if (key) creditMap.set(key, score);
-                            });
-                            console.log(`[Debug] Loaded ${creditMap.size} credit entries.`);
+                    const res = await fetch(XANDEUM_CONFIG.MESH_API_URL, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        // The scraper saves as { nodes: [...] }, so we return data.nodes
+                        if (data.nodes && Array.isArray(data.nodes)) {
+                            return data.nodes;
                         }
                     }
                 } catch (e) {
-                    console.warn("Failed to fetch pod credits:", e);
+                    console.warn('Failed to fetch from static dataset, falling back...', e);
                 }
-
-                // Merge results
-                let matchCount = 0;
-                allSeedResults.flat().forEach((pod: any) => {
-                    const existing = nodeMap.get(pod.pubkey) || { pubkey: pod.pubkey } as PNodeInfo;
-                    const creditScore = creditMap.get(pod.pubkey) || 0;
-                    if (creditScore > 0) matchCount++;
-
-                    nodeMap.set(pod.pubkey, {
-                        ...existing,
-                        gossip: existing.gossip || pod.address,
-                        rpc: existing.rpc || (pod.rpc_port ? `${pod.address.split(':')[0]}:${pod.rpc_port}` : null),
-                        version: pod.version ? `${pod.version} (Heidelberg)` : (existing.version ?? null),
-                        // Overwrite with richer pNode metrics
-                        storage_committed: pod.storage_committed,
-                        storage_used: pod.storage_used,
-                        storage_usage_percent: pod.storage_usage_percent,
-                        uptime: pod.uptime,
-                        credits: creditScore
-                    });
-                });
-                console.log(`[Debug] Merged credits. Total nodes: ${nodeMap.size}. Matches with credits: ${matchCount}`);
-
-                allNodes = Array.from(nodeMap.values());
-                console.log(`[Xandeum] Mesh Discovery complete. Total Unique Nodes: ${allNodes.length}`);
-
-            } catch (discoveryErr) {
-                console.warn("pNode Mesh Discovery Failed:", discoveryErr);
-                // If external API fails, we fall back to cluster nodes
             }
 
-            // Sort: Active nodes (with RPC/TPU APIs) first, then by pubkey
-            return allNodes.sort((a, b) => {
-                const aActive = a.rpc || a.tpu ? 1 : 0;
-                const bActive = b.rpc || b.tpu ? 1 : 0;
-                if (aActive !== bActive) return bActive - aActive; // Descending
-                return a.pubkey.localeCompare(b.pubkey);
-            });
+            // 2. Dedicated Backend API (VPS Approach)
+            // If text is set but not a .json file, assume it's an API endpoint
+            if (XANDEUM_CONFIG.MESH_API_URL && !XANDEUM_CONFIG.MESH_API_URL.endsWith('.json')) {
+                console.log('Fetching pNodes from Mesh Backend:', XANDEUM_CONFIG.MESH_API_URL);
+                try {
+                    const res = await fetch(`${XANDEUM_CONFIG.MESH_API_URL}/api/pnodes`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        return Array.isArray(data) ? data : (data.nodes || []);
+                    }
+                } catch (e) {
+                    console.warn('Failed to fetch from Mesh Backend, falling back...', e);
+                }
+            }
+
+            // 3. Fallback: Client-Side Discovery (Limited on Vercel)
+            console.log('Performing client-side pNode discovery (fallback)...');
+
+            // Initial cluster nodes from RPC
+            const clusterNodes = await this.connection.getClusterNodes();
+            let allNodes: PNodeInfo[] = [...clusterNodes];
+            const nodeMap = new Map<string, PNodeInfo>();
+            clusterNodes.forEach(n => nodeMap.set(n.pubkey, n));
+
+            // Seeds to query
+            const MESH_SEEDS = [
+                "173.212.203.145", "173.212.220.65", "161.97.97.41",
+                "192.190.136.36", "192.190.136.37", "192.190.136.38",
+                "45.84.138.15", "173.249.3.118"
+            ];
+
+            // Fetch Pod Credits first
+            let creditMap = new Map<string, number>();
+            try {
+                const creditRes = await fetch("/api/podcredits");
+                if (creditRes.ok) {
+                    const creditData = await creditRes.json();
+                    const creditList = Array.isArray(creditData) ? creditData : (creditData.credits || []);
+                    if (Array.isArray(creditList)) {
+                        creditList.forEach((c: any) => {
+                            const key = c.pod_id || c.pubkey;
+                            if (key) creditMap.set(key, c.credits || c.total_credits || 0);
+                        });
+                    }
+                }
+            } catch (e) { console.warn("Failed to fetch credits:", e); }
+
+            // Query seeds (limited parallelism to avoid timeouts)
+            // We only need ONE good seed to get the mesh, but we query a few to be safe
+            for (const seedIp of MESH_SEEDS.slice(0, 3)) {
+                try {
+                    const url = `/api/pnodestats?ip=${seedIp}`;
+                    const response = await fetch(url, { headers: { "Content-Type": "application/json" } });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.result && Array.isArray(data.result.pods)) {
+                            data.result.pods.forEach((pod: any) => {
+                                const existing = nodeMap.get(pod.pubkey) || { pubkey: pod.pubkey } as PNodeInfo;
+                                nodeMap.set(pod.pubkey, {
+                                    ...existing,
+                                    gossip: existing.gossip || pod.address,
+                                    rpc: existing.rpc || (pod.rpc_port ? `${pod.address.split(':')[0]}:${pod.rpc_port}` : null),
+                                    version: pod.version ? `${pod.version} (Heidelberg)` : (existing.version ?? null),
+                                    storage_committed: pod.storage_committed,
+                                    storage_used: pod.storage_used,
+                                    storage_usage_percent: pod.storage_usage_percent,
+                                    uptime: pod.uptime,
+                                    credits: creditMap.get(pod.pubkey) || 0
+                                });
+                            });
+                            // If we successfully got data, we can likely stop or just continue to merge more
+                            break;
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+            }
+
+            return Array.from(nodeMap.values());
+
         } catch (error) {
             console.error("Failed to fetch pNodes:", error);
-            throw new Error("Failed to retrieve pNodes from Xandeum network.");
+            return [];
         }
     }
 

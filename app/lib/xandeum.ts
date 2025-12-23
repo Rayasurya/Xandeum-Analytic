@@ -37,15 +37,12 @@ export class XandeumClient {
                 try {
                     const res = await fetch(XANDEUM_CONFIG.MESH_API_URL, { cache: 'no-store' });
                     if (res.ok) {
-                        const data = await res.json();
-                        // The scraper saves as { nodes: [...] }, so we return data.nodes
-                        if (data.nodes && Array.isArray(data.nodes)) {
-                            // Map raw JSON to PNodeInfo structure, ensuring 'rpc' field exists
-                            return data.nodes.map((n: any) => ({
-                                ...n,
-                                rpc: n.rpc || (n.rpc_port && n.address ? `${n.address.split(':')[0]}:${n.rpc_port}` : null)
-                            }));
-                        }
+                        // Map raw JSON to PNodeInfo structure, ensuring 'rpc' and 'gossip' fields exist
+                        return data.nodes.map((n: any) => ({
+                            ...n,
+                            rpc: n.rpc || (n.rpc_port && n.address ? `${n.address.split(':')[0]}:${n.rpc_port}` : null),
+                            gossip: n.gossip || n.address
+                        }));
                     }
                 } catch (e) {
                     console.warn('Failed to fetch from static dataset, falling back...', e);

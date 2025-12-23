@@ -140,10 +140,11 @@ export default function Home() {
 
       if (uniqueIps.length === 0) return;
 
-      // 2. Batch Request
-      const response = await fetch("http://ip-api.com/batch", {
+      // 2. Batch Request (via internal proxy to avoid Mixed Content / HTTPS issues)
+      const response = await fetch("/api/geo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // Body is already the array of objects { query: ip } expected by the proxy/ip-api
         body: JSON.stringify(uniqueIps.map(ip => ({ query: ip })))
       });
 

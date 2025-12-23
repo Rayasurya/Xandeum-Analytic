@@ -43,10 +43,20 @@ export function GlobalMap({ data }: GlobalMapProps) {
         });
     }
 
-    function handleMove(newPosition: { coordinates: [number, number]; zoom: number }) {
-        // Calculate pan limits based on zoom level
-        const panLimit = Math.max(0, (newPosition.zoom - 1) * 60);
-        const latLimit = Math.max(0, (newPosition.zoom - 1) * 40);
+    function handleMove(position: { coordinates: [number, number]; zoom: number }) {
+        if (!position || !position.coordinates) return;
+
+        // Strict center lock at low zoom
+        if (position.zoom < 1.1) {
+            setPosition({ coordinates: [0, 0], zoom: 1 });
+            return;
+        }
+
+        const newPosition = position;
+
+        // Tighter pan limits to keep map in frame
+        const panLimit = Math.max(0, (newPosition.zoom - 1) * 30);
+        const latLimit = Math.max(0, (newPosition.zoom - 1) * 20);
 
         const constrainedCoords: [number, number] = [
             Math.max(-panLimit, Math.min(panLimit, newPosition.coordinates[0])),

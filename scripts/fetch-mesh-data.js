@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
+const https = require('https');
 
 // Seed nodes to query (port 6000)
 const SEED_NODES = [
@@ -31,26 +33,56 @@ const MESH_RPC_PORT = 6000;
 const CREDITS_API_URL = 'https://podcredits.xandeum.network/api/pods-credits';
 const OUTPUT_FILE = path.join(__dirname, '../pnodes.json');
 
-async function fetchWithTimeout(url, options = {}, timeout = 5000) {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-    try {
-        const response = await fetch(url, { ...options, signal: controller.signal });
-        clearTimeout(id);
-        return response;
-    } catch (error) {
-        clearTimeout(id);
-        throw error;
-    }
+// Helper to make HTTP/HTTPS requests (bypassing fetch restrictions)
+function makeRequest(urlStr, options = {}, body = null, timeout = 8000) {
+    return new Promise((resolve, reject) => {
+        const url = new URL(urlStr);
+        const lib = url.protocol === 'https:' ? https : http;
+
+        const reqOpts = {
+            method: options.method || 'GET',
+            headers: options.headers || {},
+            hostname: url.hostname,
+            port: url.port || (url.protocol === 'https:' ? 443 : 80),
+            path: url.pathname + url.search,
+            timeout: timeout
+        };
+
+        const req = lib.request(reqOpts, (res) => {
+            let data = '';
+            res.on('data', (chunk) => data += chunk);
+            res.on('end', () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(json);
+                    } catch (e) {
+                        reject(new Error(`Invalid JSON response: ${e.message}`));
+                    }
+                } else {
+                    reject(new Error(`Status ${res.statusCode}: ${data}`));
+                }
+            });
+        });
+
+        req.on('error', (err) => reject(err));
+        req.on('timeout', () => {
+            req.destroy();
+            reject(new Error('Request timed out'));
+        });
+
+        if (body) {
+            req.write(typeof body === 'string' ? body : JSON.stringify(body));
+        }
+        req.end();
+    });
 }
 
 async function getCredits() {
     try {
         console.log(`Fetching credits from ${CREDITS_API_URL}...`);
-        const res = await fetchWithTimeout(CREDITS_API_URL);
-        if (!res.ok) throw new Error(`Credits API error: ${res.status}`);
-        const data = await res.json();
-        return data.credits || {}; // returns { "ip": creditAmount, ... }
+        const data = await makeRequest(CREDITS_API_URL);
+        return data.credits || {};
     } catch (err) {
         console.warn('Failed to fetch credits:', err.message);
         return {};
@@ -60,20 +92,29 @@ async function getCredits() {
 async function getMeshNodes() {
     // Try seeds until one works
     for (const ip of SEED_NODES) {
-        const url = `http://${ip}:${MESH_RPC_PORT}/pnodes`;
+        const url = `http://${ip}:${MESH_RPC_PORT}/rpc`;
         try {
             console.log(`Querying seed ${ip}...`);
-            const res = await fetchWithTimeout(url, {}, 8000);
-            if (!res.ok) throw new Error(`Seed ${ip} returned ${res.status}`);
-            const data = await res.json();
+            const data = await makeRequest(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }, JSON.stringify({
+                jsonrpc: "2.0",
+                id: 1,
+                method: "get-pods-with-stats",
+                params: []
+            }), 8000);
 
-            // Data format check
-            if (!data || !data.nodes) {
+            // Check for RPC error or valid result
+            if (data.error) throw new Error(`RPC Error: ${data.error.message}`);
+
+            const pods = data.result?.pods;
+            if (!pods || !Array.isArray(pods)) {
                 throw new Error('Invalid data format from seed');
             }
 
-            console.log(`Successfully fetched ${data.nodes.length} nodes from ${ip}`);
-            return data.nodes;
+            console.log(`Successfully fetched ${pods.length} nodes from ${ip}`);
+            return pods;
         } catch (err) {
             console.warn(`Failed to query seed ${ip}:`, err.message);
             // Continue to next seed
@@ -91,10 +132,7 @@ async function main() {
 
         // Merge credits into nodes
         const enrichedNodes = nodes.map(node => {
-            // Find credit for this node's IP
-            // API returns credits keyed by IP string
             const podCredits = creditsMap[node.ip] || 0;
-
             return {
                 ...node,
                 pod_credits: podCredits

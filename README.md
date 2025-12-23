@@ -2,6 +2,8 @@
 
 This is a dashboard I built to monitor Xandeum pNodes. It fetches live data explicitly using the `getClusterNodes` method from the Solana/Xandeum RPC.
 
+**Live Demo:** [https://xandeum-analytic.vercel.app/](https://xandeum-analytic.vercel.app/)
+
 ![Dashboard Preview](https://github.com/Rayasurya/Xandeum-Analytic/blob/main/public/demo.gif?raw=true)
 
 ## What it does

@@ -40,7 +40,11 @@ export class XandeumClient {
                         const data = await res.json();
                         // The scraper saves as { nodes: [...] }, so we return data.nodes
                         if (data.nodes && Array.isArray(data.nodes)) {
-                            return data.nodes;
+                            // Map raw JSON to PNodeInfo structure, ensuring 'rpc' field exists
+                            return data.nodes.map((n: any) => ({
+                                ...n,
+                                rpc: n.rpc || (n.rpc_port && n.address ? `${n.address.split(':')[0]}:${n.rpc_port}` : null)
+                            }));
                         }
                     }
                 } catch (e) {

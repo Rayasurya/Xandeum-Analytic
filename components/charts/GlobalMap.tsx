@@ -43,10 +43,8 @@ export function GlobalMap({ data }: GlobalMapProps) {
         });
     }
 
-    function handleMoveEnd(newPosition: { coordinates: [number, number]; zoom: number }) {
+    function handleMove(newPosition: { coordinates: [number, number]; zoom: number }) {
         // Calculate pan limits based on zoom level
-        // At zoom 1, no panning allowed (centered)
-        // At higher zoom, allow more panning
         const panLimit = Math.max(0, (newPosition.zoom - 1) * 60);
         const latLimit = Math.max(0, (newPosition.zoom - 1) * 40);
 
@@ -118,7 +116,7 @@ export function GlobalMap({ data }: GlobalMapProps) {
                     <ZoomableGroup
                         zoom={position.zoom}
                         center={position.coordinates}
-                        onMoveEnd={handleMoveEnd}
+                        onMove={handleMove}
                         minZoom={minZoom}
                         maxZoom={maxZoom}
                         filterZoomEvent={(evt: { type: string }) => !evt.type.includes('wheel')}

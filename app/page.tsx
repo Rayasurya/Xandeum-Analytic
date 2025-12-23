@@ -183,8 +183,8 @@ export default function Home() {
       fetchGeoBatch(nodeList);
 
       toast({
-        title: "System Synced",
-        description: `Connected to Epoch ${networkMetrics?.epoch || 'Unknown'}`,
+        title: "Dashboard Synchronized",
+        description: `Connected to latest epoch ${networkMetrics?.epoch || 'Unknown'}`,
       })
     } catch (err: any) {
       toast({
@@ -530,7 +530,7 @@ export default function Home() {
                     value={stats.total}
                     subtext="Global Network"
                     subtextClassName="text-secondary/80"
-                    tooltip="Total number of nodes discovered in the network gossip mesh."
+                    tooltip="Count of all unique nodes discovered in the global gossip mesh."
                   />
                   <DashboardCard
                     icon={<Zap className="w-3 h-3 text-primary" />}
@@ -538,7 +538,7 @@ export default function Home() {
                     value={stats.active}
                     subtext="RPC/TPU Responding"
                     subtextClassName="text-emerald-500"
-                    tooltip="Nodes actively participating in consensus and responding to RPC requests."
+                    tooltip="Nodes currently online and responding to RPC/TPU requests."
                   />
                   <DashboardCard
                     icon={<Database className="w-3 h-3 text-blue-400" />}
@@ -550,11 +550,11 @@ export default function Home() {
                     })()}
                     subtext="Network Capacity"
                     subtextClassName="text-blue-400"
-                    tooltip="Aggregate storage capacity committed by all nodes securely."
+                    tooltip="Total verified storage capacity committed to the network."
                   />
                   <DashboardCard
                     icon={<Activity className="w-3 h-3 text-muted-foreground" />}
-                    title="Active Versions"
+                    title="Software Distribution"
                     value={activeVersionsCount}
                     subtext="Unique Versions"
                     subtextClassName="text-muted-foreground"

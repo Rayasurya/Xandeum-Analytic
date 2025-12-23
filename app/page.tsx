@@ -576,16 +576,20 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Row 2: Country Chart (2 cols) + Version Chart (1 col) + Storage Distribution (1 col) */}
+                {/* Row 2: Version Chart (2 cols) + Node Leaderboard (1 col) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
-                    <CountryChart data={countryData} />
+                    <VersionChart data={versionData} />
                   </div>
                   <div className="lg:col-span-1">
                     <NodeLeaderboard data={leaderboardData} />
                   </div>
-                  <div className="lg:col-span-3">
-                    <VersionChart data={versionData} />
+                </div>
+
+                {/* Row 3: Global Distribution (Full Width) */}
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="w-full">
+                    <CountryChart data={countryData} />
                   </div>
                 </div>
 
@@ -977,8 +981,7 @@ export default function Home() {
 // Subcomponents
 function DashboardCard({ icon, title, value, subtext, subtextClassName, tooltip }: any) {
   return (
-    <Card className="bg-card/40 border-border shadow-sm relative group z-10 hover:z-20 transition-all duration-200">
-      <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+    <Card className="bg-card/40 border-border shadow-sm hover:bg-muted/50 transition-colors duration-200">
       <CardHeader className="pb-2">
         <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
           {icon} {title}

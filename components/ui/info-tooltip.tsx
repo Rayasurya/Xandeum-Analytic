@@ -17,20 +17,18 @@ export function InfoTooltip({ content }: { content: string }) {
     if (!content) return null;
 
     return (
-        <TooltipProvider>
-            <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                    <div className="inline-flex items-center ml-1.5 cursor-help align-middle">
-                        <Info className="w-3.5 h-3.5 text-muted-foreground/50 hover:text-[#3178c6] transition-colors duration-300" />
-                    </div>
-                </TooltipTrigger>
-                <TooltipContent
-                    className="bg-[#0d1117] text-gray-200 text-[12px] normal-case rounded-lg shadow-xl shadow-black/50 border border-gray-800 break-words max-w-[250px]"
-                    side="top"
-                >
-                    <p>{content}</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild>
+                <button type="button" className="inline-flex items-center ml-1.5 cursor-help align-middle focus:outline-none">
+                    <Info className="w-3.5 h-3.5 text-muted-foreground/50 hover:text-[#3178c6] transition-colors duration-300" />
+                </button>
+            </TooltipTrigger>
+            <TooltipContent
+                className="bg-[#0d1117] text-gray-200 text-[12px] normal-case rounded-lg shadow-xl shadow-black/50 border border-gray-800 break-words max-w-[250px]"
+                side="top"
+            >
+                <p>{content}</p>
+            </TooltipContent>
+        </Tooltip>
     );
 }

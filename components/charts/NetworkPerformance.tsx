@@ -2,6 +2,7 @@
 
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Area, AreaChart } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 interface NetworkPerformanceProps {
     data: { time: string; tps: number }[]
@@ -24,6 +25,12 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
         )
     }
 
+    // Calculate exactly 8 evenly spaced ticks to prevent shifting/jumping
+    const customTicks = data.length > 0 ? Array.from({ length: 8 }, (_, i) => {
+        const index = Math.floor(i * (data.length - 1) / 7);
+        return data[index]?.time;
+    }).filter(Boolean) : [];
+
     return (
         <Card className="bg-card/50 border-primary/20 shadow-sm col-span-1 lg:col-span-2 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent skew-x-12 translate-x-[-150%] animate-shimmer group-hover:animate-none opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -31,6 +38,7 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
                 <CardTitle className="text-sm font-medium text-muted-foreground tracking-wider uppercase flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
                     Real-Time Network Performance
+                    <InfoTooltip content="Real-time Transactions Per Second (TPS) processed by the network." />
                 </CardTitle>
                 <div className="text-xs font-mono text-cyan-500">Live TPS History</div>
             </CardHeader>
@@ -47,13 +55,13 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
                             <XAxis
                                 dataKey="time"
+                                ticks={customTicks}
                                 tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
                                 tickLine={false}
                                 axisLine={false}
-                                interval="preserveStartEnd"
-                                tickCount={8}
+                                interval={0}
                                 tickFormatter={(time: string) => {
-                                    // Show only HH:MM, remove seconds
+                                    // Show only HH:MM
                                     const parts = time.split(':');
                                     return parts.length >= 2 ? `${parts[0]}:${parts[1]}` : time;
                                 }}

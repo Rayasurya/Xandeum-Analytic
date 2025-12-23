@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, CartesianGrid } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 interface CountryChartProps {
     data: { name: string; value: number }[]
@@ -14,11 +15,12 @@ export function CountryChart({ data }: CountryChartProps) {
     const chartData = [...data].sort((a, b) => b.value - a.value).slice(0, 5);
 
     return (
-        <Card className="bg-card/50 border-primary/20 shadow-sm overflow-hidden hover:bg-card/60 transition-colors">
+        <Card className="bg-card/50 border-primary/20 shadow-sm overflow-hidden hover:bg-card/60 transition-colors h-full">
             <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground tracking-wider uppercase flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500/50" />
                     Global Distribution
+                    <InfoTooltip content="Geographic location of active nodes based on their IP addresses." />
                 </CardTitle>
             </CardHeader>
             <CardContent>

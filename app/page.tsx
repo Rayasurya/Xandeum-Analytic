@@ -397,39 +397,7 @@ export default function Home() {
     // ... basic HTML generation ...
   };
 
-  // Sidebar State - custom resizable
-  const [sidebarWidth, setSidebarWidth] = useState(256);
-  const [isDragging, setIsDragging] = useState(false);
-  const isCollapsed = sidebarWidth < 80;
-  const minWidth = 60;
-  const maxWidth = 400;
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const newWidth = Math.max(minWidth, Math.min(maxWidth, e.clientX));
-      setSidebarWidth(newWidth);
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
 
   // Right Sidebar State - for pNodes detail panel
   const [rightSidebarWidth, setRightSidebarWidth] = useState(420);
@@ -471,92 +439,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans transition-colors duration-300 h-screen overflow-hidden">
 
-      {/* Desktop Sidebar (Custom Resizable) */}
-      <div className="hidden md:flex h-full relative" style={{ width: sidebarWidth }}>
-        <aside
-          className={cn(
-            "h-full flex flex-col w-full border-r border-border bg-card overflow-hidden",
-            isCollapsed && "items-center"
-          )}
-          style={{ width: sidebarWidth }}
-        >
-          <div className={cn("flex-shrink-0 p-6 px-4", isCollapsed && "p-2 py-4 flex flex-col items-center")}>
-            <div className={cn("flex items-center gap-3 mb-10", isCollapsed && "mb-4 justify-center")}>
-              <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                <Database className="text-primary h-6 w-6" />
-              </div>
-              {!isCollapsed && (
-                <div className="flex flex-col">
-                  <span className="font-bold text-xl tracking-tight text-foreground leading-none">XANDEUM</span>
-                  <span className="text-[10px] font-mono text-cyan-500 tracking-[0.2em] uppercase mt-1">Scope</span>
-                </div>
-              )}
-            </div>
 
-            <nav className={cn("space-y-1.5", isCollapsed && "space-y-2 w-full flex flex-col items-center")}>
-              <SidebarButton
-                icon={<LayoutDashboard className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
-                label="Dashboard"
-                active={activeView === "dashboard"}
-                onClick={() => setActiveView("dashboard")}
-                collapsed={isCollapsed}
-              />
-              <SidebarButton
-                icon={<Server className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
-                label="pNodes"
-                active={activeView === "pnodes"}
-                onClick={() => setActiveView("pnodes")}
-                collapsed={isCollapsed}
-              />
-              <SidebarButton
-                icon={<MapIcon className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
-                label="Storage Map"
-                active={activeView === "map"}
-                onClick={() => setActiveView("map")}
-                collapsed={isCollapsed}
-              />
-              <SidebarButton
-                icon={<Activity className={cn("mr-3 h-4 w-4", isCollapsed && "mr-0 h-5 w-5")} />}
-                label="Analytics"
-                active={activeView === "analytics"}
-                onClick={() => setActiveView("analytics")}
-                collapsed={isCollapsed}
-              />
-            </nav>
-          </div>
-
-          <div className="mt-auto p-0 w-full mb-1">
-            {isCollapsed ? (
-              <div className="flex justify-center py-4 border-t border-border">
-                <div className={`h-3 w-3 rounded-full ${stats.active > 0 ? "bg-cyan-500 animate-pulse" : "bg-red-500"}`} title={stats.active > 0 ? "Online" : "Offline"} />
-              </div>
-            ) : (
-              <div className="bg-gradient-to-t from-cyan-950/10 to-transparent p-6 border-t border-border">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <div className={`h-2 w-2 rounded-full absolute -right-1 -top-1 ${stats.active > 0 ? "bg-cyan-500 animate-pulse" : "bg-red-500"}`} />
-                    <div className="h-8 w-8 rounded-lg bg-secondary/10 flex items-center justify-center border border-secondary/30">
-                      <Globe className="h-4 w-4 text-secondary" />
-                    </div>
-                  </div>
-                  <div className="text-sm">
-                    <p className="font-medium text-foreground font-mono">{XANDEUM_CONFIG.NETWORK} {stats.active > 0 ? "Active" : "Offline"}</p>
-                    <p className="text-secondary text-[10px] font-mono whitespace-nowrap">{XANDEUM_CONFIG.PROTOCOL_VERSION} ({XANDEUM_CONFIG.PROTOCOL_NAME})</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </aside>
-        {/* Drag Handle */}
-        <div
-          onMouseDown={handleMouseDown}
-          className={cn(
-            "w-1 h-full bg-border hover:bg-primary/50 transition-colors cursor-col-resize absolute right-0 top-0",
-            isDragging && "bg-primary/50"
-          )}
-        />
-      </div>
 
       {/* Main Content + Right Panel Container */}
       <div className="flex-1 flex min-w-0 h-full overflow-hidden">
@@ -565,19 +448,58 @@ export default function Home() {
           <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
           <div className="absolute top-[-200px] right-[-200px] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
-          {/* Header */}
-          <header className="h-24 flex-shrink-0 border-b border-border flex items-center justify-between px-8 py-4 bg-background/80 backdrop-blur-md sticky top-0 z-30">
-            <div className="flex flex-col min-w-0">
-              <h1 className="text-xl font-bold text-foreground tracking-tight truncate">
-                {activeView === "dashboard" && "Network Intelligence"}
-                {activeView === "pnodes" && "Node Registry"}
-                {activeView === "analytics" && "Global Analytics"}
-                {activeView === "map" && "Geographic Distribution"}
-              </h1>
-              <p className="text-xs text-muted-foreground font-mono flex items-center gap-2 truncate" suppressHydrationWarning>
-                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${metrics?.epoch ? "bg-emerald-500 animate-pulse" : "bg-yellow-500"}`} />
-                <span className="truncate">SYSTEM ONLINE // SYNC_ID: #{Math.floor(Date.now() / 10000).toString(16).toUpperCase()}</span>
-              </p>
+          <header className="h-16 flex-shrink-0 border-b border-border flex items-center justify-between px-6 bg-background/80 backdrop-blur-md sticky top-0 z-30">
+            <div className="flex items-center gap-6">
+              {/* Branding */}
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 bg-primary/20 rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+                  <Database className="text-primary h-5 w-5" />
+                </div>
+                <div className="flex flex-row items-baseline gap-1.5">
+                  <span className="font-bold text-lg tracking-tight text-foreground leading-none">XANDEUM</span>
+                  <span className="text-[10px] font-mono text-cyan-500 tracking-[0.2em] uppercase">Scope</span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-6 w-px bg-border/60" />
+
+              {/* Navigation Tabs */}
+              <nav className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveView("dashboard")}
+                  className={cn(
+                    "h-9 px-4 text-sm font-medium transition-all relative",
+                    activeView === "dashboard" ? "text-foreground bg-secondary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  Dashboard
+                  {activeView === "dashboard" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveView("pnodes")}
+                  className={cn(
+                    "h-9 px-4 text-sm font-medium transition-all relative",
+                    activeView === "pnodes" ? "text-foreground bg-secondary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  Node Registry
+                  {activeView === "pnodes" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveView("map")}
+                  className={cn(
+                    "h-9 px-4 text-sm font-medium transition-all relative",
+                    activeView === "map" ? "text-foreground bg-secondary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  Storage Map
+                  {activeView === "map" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />}
+                </Button>
+              </nav>
             </div>
 
             <div className="flex items-center gap-2 ml-auto">
@@ -643,17 +565,39 @@ export default function Home() {
                 </div>
 
                 {/* ... existing charts ... */}
+                {/* ... existing charts ... */}
+                {/* Row 1: Network Performance (2 cols) + Storage Distribution (1 col) */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                  <NetworkPerformance data={metrics?.tpsHistory || []} />
-                  <div className="grid grid-cols-1 gap-6">
-                    <StatusChart data={statusData} />
+                  <div className="lg:col-span-2">
+                    <NetworkPerformance data={metrics?.tpsHistory || []} />
+                  </div>
+                  <div className="lg:col-span-1">
+                    <StorageDistribution data={storageDistributionData} />
                   </div>
                 </div>
 
-                {/* Quick Geo Insight */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <CountryChart data={countryData} />
+                {/* Row 2: Country Chart (2 cols) + Version Chart (1 col) + Storage Distribution (1 col) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <CountryChart data={countryData} />
+                  </div>
+                  <div className="lg:col-span-1">
+                    <NodeLeaderboard data={leaderboardData} />
+                  </div>
+                  <div className="lg:col-span-3">
+                    <VersionChart data={versionData} />
+                  </div>
+                </div>
+
+                {/* Row 3: Node Leaderboard (full width) */}
+                <div>
+                  <AnalyticsBar
+                    title="Network Node Status"
+                    segments={[
+                      { label: "Online (RPC Active)", value: stats.active, color: "#3178c6" },
+                      { label: "Gossip Only", value: stats.total - stats.active, color: "#f1e05a" },
+                    ]}
+                  />
                 </div>
               </>
             )}          </div>
@@ -746,91 +690,100 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-border bg-card/50 overflow-hidden shadow-sm backdrop-blur-sm">
-                  <Table className="w-full table-fixed">
-                    <TableHeader className="bg-muted/50">
-                      <TableRow className="hover:bg-transparent border-border">
-                        <TableHead className="w-[5%]"></TableHead>
-                        <TableHead className="w-[30%] font-bold text-secondary cursor-pointer" onClick={() => handleSort("pubkey")}>
-                          Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                        </TableHead>
-                        <TableHead className="w-[25%] font-bold text-secondary hidden md:table-cell pl-4">Version</TableHead>
-                        <TableHead className="w-[20%] font-bold text-secondary text-right">Uptime</TableHead>
-                        <TableHead className="w-[20%] font-bold text-secondary text-right">Storage</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredNodes.length === 0 ? (
-                        <TableRow><TableCell colSpan={7} className="h-24 text-center">No nodes found...</TableCell></TableRow>
-                      ) : (
-                        filteredNodes.map((node) => {
-                          const ip = node.gossip?.split(':')[0] || "";
-                          const geo = geoCache[ip];
+                <Card className="flex-1 min-h-0 bg-background/50 backdrop-blur-sm border-border overflow-hidden flex flex-col">
+                  <div className="flex-1 overflow-auto rounded-md custom-scrollbar">
+                    <Table className="w-full table-fixed">
+                      <TableHeader className="bg-muted/50">
+                        <TableRow className="hover:bg-transparent border-border">
+                          <TableHead className="w-[5%]"></TableHead>
+                          <TableHead className="w-[25%] font-bold text-secondary cursor-pointer" onClick={() => handleSort("pubkey")}>
+                            Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                          </TableHead>
+                          <TableHead className="w-[25%] font-bold text-secondary hidden md:table-cell">Gossip Address</TableHead>
+                          <TableHead className="w-[15%] font-bold text-secondary hidden md:table-cell">Version</TableHead>
+                          <TableHead className="w-[10%] font-bold text-secondary text-right">Uptime</TableHead>
+                          <TableHead className="w-[20%] font-bold text-secondary text-right">Storage</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredNodes.length === 0 ? (
+                          <TableRow><TableCell colSpan={6} className="h-24 text-center">No nodes found...</TableCell></TableRow>
+                        ) : (
+                          filteredNodes.map((node) => {
+                            const ip = node.gossip?.split(':')[0] || "";
+                            const geo = geoCache[ip];
 
-                          // Format Uptime
-                          let uptimeString = "0s";
-                          if (node.uptime) {
-                            const days = node.uptime / 86400;
-                            if (days > 1) uptimeString = `${days.toFixed(1)}d`;
-                            else {
-                              const hours = node.uptime / 3600;
-                              uptimeString = `${hours.toFixed(1)}h`;
+                            // Format Uptime
+                            let uptimeString = "0s";
+                            if (node.uptime) {
+                              const days = node.uptime / 86400;
+                              if (days > 1) uptimeString = `${days.toFixed(1)}d`;
+                              else {
+                                const hours = node.uptime / 3600;
+                                uptimeString = `${hours.toFixed(1)}h`;
+                              }
                             }
-                          }
 
-                          // Format Storage
-                          const committed = formatStorage(node.storage_committed || 0);
-                          const used = formatBytes(node.storage_used || 0);
+                            // Format Storage
+                            const committed = formatStorage(node.storage_committed || 0);
+                            const used = formatBytes(node.storage_used || 0);
 
-                          return (
-                            <TableRow
-                              key={node.pubkey}
-                              className={cn(
-                                "cursor-pointer border-border transition-colors",
-                                selectedNode?.pubkey === node.pubkey
-                                  ? "bg-primary/10 border-l-2 border-l-primary hover:bg-primary/20"
-                                  : "hover:bg-muted/50"
-                              )}
-                              onClick={() => handleNodeClick(node)}
-                            >
-                              <TableCell><div className={`h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
-                              <TableCell>
-                                <div className="flex flex-col">
-                                  <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
-                                  <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
-                                </div>
-                              </TableCell>
-                              <TableCell className="hidden md:table-cell pl-4">
-                                <Badge variant="outline" className="bg-cyan-950/30 text-cyan-400 border-cyan-800/50 font-mono text-xs max-w-[180px] truncate inline-block">
-                                  {XandeumClient.formatVersion(node.version || null)}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right font-mono text-sm text-foreground">{uptimeString}</TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex flex-col items-end">
-                                  <span className="font-bold text-sm text-foreground">{committed}</span>
-                                  <span className="text-[10px] text-muted-foreground">
-                                    {((node.storage_committed || 0) / (1024 * 1024)).toFixed(0)} MB Cached
-                                  </span>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                            return (
+                              <TableRow
+                                key={node.pubkey}
+                                className={cn(
+                                  "cursor-pointer border-border transition-colors",
+                                  selectedNode?.pubkey === node.pubkey
+                                    ? "bg-primary/10 border-l-2 border-l-primary hover:bg-primary/20"
+                                    : "hover:bg-muted/50"
+                                )}
+                                onClick={() => handleNodeClick(node)}
+                              >
+                                <TableCell className="text-center"><div className={`mx-auto h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
+                                <TableCell>
+                                  <div className="flex flex-col">
+                                    <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
+                                    <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell font-mono text-xs text-muted-foreground break-all">
+                                  {node.gossip}
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell">
+                                  <Badge variant="outline" className="bg-cyan-950/30 text-cyan-400 border-cyan-800/50 font-mono text-xs max-w-[180px] truncate inline-block">
+                                    {XandeumClient.formatVersion(node.version || null)}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-right font-mono text-sm text-foreground">{uptimeString}</TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex flex-col items-end">
+                                    <span className="font-bold text-sm text-foreground">{committed}</span>
+                                    <span className="text-[10px] text-muted-foreground">
+                                      {((node.storage_committed || 0) / (1024 * 1024)).toFixed(0)} MB Cached
+                                    </span>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </Card>
               </div>
 
               {/* Right Panel - Node Details (sticks to edge) */}
               {selectedNode && (
                 <>
                   {/* Resize Handle */}
+                  {/* Resize Handle */}
                   <div
                     onMouseDown={handleRightMouseDown}
-                    className="w-1 h-full cursor-col-resize bg-border hover:bg-primary/50 flex-shrink-0 transition-colors z-50 hidden md:block"
-                  />
+                    className="w-1.5 h-full cursor-col-resize bg-background border-l border-border hover:bg-primary/20 flex-shrink-0 transition-colors z-50 hidden md:flex items-center justify-center"
+                  >
+                    <div className="h-8 w-1 bg-muted-foreground/30 rounded-full" />
+                  </div>
                   <aside
                     className="hidden md:flex flex-shrink-0 h-full min-h-0 flex-col overflow-hidden shadow-sm"
                     style={{ width: rightSidebarWidth, backgroundColor: '#020617' }}
@@ -1005,37 +958,7 @@ export default function Home() {
             </div>
           )}
 
-          {activeView === "analytics" && (
-            <div className="px-8 py-6 space-y-6">
-              {/* Row 1: Network Performance (2 cols) + Status Bar (1 col) */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <NetworkPerformance data={metrics?.tpsHistory || []} />
-                </div>
-                <div className="lg:col-span-1">
-                  <AnalyticsBar
-                    title="Network Node Status"
-                    segments={[
-                      { label: "Online (RPC Active)", value: stats.active, color: "#3178c6" },
-                      { label: "Gossip Only", value: stats.total - stats.active, color: "#f1e05a" },
-                    ]}
-                  />
-                </div>
-              </div>
 
-              {/* Row 2: Country Chart (2 cols) + Version Chart (1 col) + Storage Distribution (1 col) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <CountryChart data={countryData} />
-                <VersionChart data={versionData} />
-                <StorageDistribution data={storageDistributionData} />
-              </div>
-
-              {/* Row 3: Node Leaderboard (full width) */}
-              <div>
-                <NodeLeaderboard data={leaderboardData} />
-              </div>
-            </div>
-          )}
 
           {/* VIEW: MAP */}
           {activeView === "map" && (

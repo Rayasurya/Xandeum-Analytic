@@ -4,7 +4,7 @@ This is a dashboard I built to monitor Xandeum pNodes. It fetches live data expl
 
 **Live Demo:** [https://xandeum-analytic.vercel.app/](https://xandeum-analytic.vercel.app/)
 
-![Dashboard Preview](https://github.com/Rayasurya/Xandeum-Analytic/blob/main/public/demo.gif?raw=true)
+![Dashboard Preview](https://github.com/Rayasurya/Xandeum-Analytic/blob/main/public/demo-v2.gif?raw=true)
 
 ## What it does
 

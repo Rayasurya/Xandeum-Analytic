@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 interface VersionChartProps {
-    data: { name: string; value: number }[]
+    data: { name: string; value: number }[];
+    onDrillDown?: (version: string) => void;
 }
 
 const COLORS = [
@@ -16,12 +17,34 @@ const COLORS = [
     "#334155"  // Slate-700
 ];
 
-export function VersionChart({ data }: VersionChartProps) {
+const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-[#020617] border border-border p-3 rounded-lg shadow-xl z-50">
+                <p className="font-bold text-foreground mb-1">{payload[0].name}</p>
+                <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: payload[0].fill }} />
+                    <span className="text-sm font-mono text-muted-foreground">
+                        {payload[0].value} Nodes
+                    </span>
+                </div>
+                {onDrillDown && (
+                    <p className="text-[10px] text-primary font-bold mt-1 text-center">
+                        (Click to View Nodes)
+                    </p>
+                )}
+            </div>
+        );
+    }
+    return null;
+};
+
+export function VersionChart({ data, onDrillDown }: VersionChartProps) {
     return (
         <Card className="col-span-1 bg-card/50 border shadow-sm">
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center">
-                    Software Version Distribution
+                    Software Distribution
                     <InfoTooltip content="Breakdown of Xandeum software versions running across the network." />
                 </CardTitle>
             </CardHeader>
@@ -44,13 +67,16 @@ export function VersionChart({ data }: VersionChartProps) {
                                             dataKey="value"
                                         >
                                             {data.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                <Cell
+                                                    key={`cell-${index}`}
+                                                    fill={COLORS[index % COLORS.length]}
+                                                    strokeWidth={0}
+                                                    className={onDrillDown ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
+                                                    onClick={() => onDrillDown && onDrillDown(entry.name)}
+                                                />
                                             ))}
                                         </Pie>
-                                        <Tooltip
-                                            contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', color: '#f8fafc', fontSize: '12px' }}
-                                            itemStyle={{ color: '#06b6d4' }}
-                                        />
+                                        <Tooltip content={(props: any) => <CustomTooltip {...props} onDrillDown={onDrillDown} />} />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>

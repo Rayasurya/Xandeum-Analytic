@@ -5,12 +5,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 interface CountryChartProps {
-    data: { name: string; value: number }[]
+    data: { name: string; value: number }[];
+    onDrillDown?: (country: string) => void;
 }
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
-export function CountryChart({ data }: CountryChartProps) {
+const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-[#020617] border border-border p-3 rounded-lg shadow-xl z-50">
+                <p className="font-bold text-foreground mb-1">{payload[0].payload.name}</p>
+                <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: payload[0].fill }} />
+                    <span className="text-sm font-mono text-muted-foreground">
+                        {payload[0].value} Nodes
+                    </span>
+                </div>
+                {onDrillDown && (
+                    <p className="text-[10px] text-primary font-bold mt-1 text-center">
+                        (Click to View Nodes)
+                    </p>
+                )}
+            </div>
+        );
+    }
+    return null;
+};
+
+export function CountryChart({ data, onDrillDown }: CountryChartProps) {
     // Sort and take top 5 if not already
     const chartData = [...data].sort((a, b) => b.value - a.value).slice(0, 5);
 
@@ -39,13 +62,16 @@ export function CountryChart({ data }: CountryChartProps) {
                             />
                             <Tooltip
                                 cursor={{ fill: 'transparent' }}
-                                contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', color: '#f8fafc' }}
-                                itemStyle={{ color: '#fff', fontFamily: 'monospace' }}
-                                formatter={(value: number) => [value, "Nodes"]}
+                                content={<CustomTooltip onDrillDown={onDrillDown} />}
                             />
                             <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
                                 {chartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={COLORS[index % COLORS.length]}
+                                        className={onDrillDown ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
+                                        onClick={() => onDrillDown && onDrillDown(entry.name)}
+                                    />
                                 ))}
                             </Bar>
                         </BarChart>

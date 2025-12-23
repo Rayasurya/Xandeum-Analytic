@@ -11,9 +11,10 @@ const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
 
 interface GlobalMapProps {
     data: { name: string; value: number; code: string }[];
+    onDrillDown?: (country: string) => void;
 }
 
-export function GlobalMap({ data }: GlobalMapProps) {
+export function GlobalMap({ data, onDrillDown }: GlobalMapProps) {
     const [position, setPosition] = useState<{
         coordinates: [number, number];
         zoom: number;
@@ -143,7 +144,7 @@ export function GlobalMap({ data }: GlobalMapProps) {
                                             geography={geo}
                                             onMouseEnter={() => {
                                                 const { name } = geo.properties;
-                                                setTooltipContent(`${name}: ${dataMap[name] || 0} Nodes`);
+                                                setTooltipContent(`${name}: ${dataMap[name] || 0} Nodes${dataMap[name] > 0 ? " (Click to View Nodes)" : ""}`);
                                             }}
                                             onMouseLeave={() => {
                                                 setTooltipContent("");
@@ -151,19 +152,26 @@ export function GlobalMap({ data }: GlobalMapProps) {
                                             onMouseMove={(event: React.MouseEvent) => {
                                                 setHoverPosition({ x: event.clientX, y: event.clientY });
                                             }}
+                                            onClick={() => {
+                                                const { name } = geo.properties;
+                                                if (dataMap[name] > 0 && onDrillDown) {
+                                                    onDrillDown(name);
+                                                }
+                                            }}
                                             style={{
                                                 default: {
                                                     fill: nodeCount > 0 ? colorScale(nodeCount) : "#334155",
                                                     stroke: "#0f172a",
                                                     strokeWidth: 0.5,
                                                     outline: "none",
+                                                    cursor: nodeCount > 0 ? "pointer" : "default"
                                                 },
                                                 hover: {
                                                     fill: "#06b6d4",
                                                     stroke: "#fff",
                                                     strokeWidth: 1,
                                                     outline: "none",
-                                                    cursor: "grab"
+                                                    cursor: nodeCount > 0 ? "pointer" : "default"
                                                 },
                                                 pressed: {
                                                     fill: "#E42",

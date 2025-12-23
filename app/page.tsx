@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef } from "react";
+import Image from "next/image";
+import { useEffect, useState, useMemo, useRef, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { XandeumClient, PNodeInfo } from "./lib/xandeum";
 import { XANDEUM_CONFIG } from "./config";
 import {
   Activity,
+  SearchX,
   Server,
   Search,
   RefreshCw,
@@ -101,9 +104,37 @@ const formatPubkey = (key: string) => {
   return `${key.slice(0, 4)}...${key.slice(-4)}`;
 };
 
-export default function Home() {
-  // Navigation State
-  const [activeView, setActiveView] = useState<ViewState>("dashboard");
+function HomeContent() {
+  // URL-based Navigation (enables browser back/forward)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get initial view from URL or default to dashboard
+  const getViewFromUrl = useCallback((): ViewState => {
+    const view = searchParams.get('view');
+    if (view === 'pnodes' || view === 'dashboard' || view === 'map' || view === 'analytics') {
+      return view;
+    }
+    return 'dashboard';
+  }, [searchParams]);
+
+  const [activeView, setActiveViewState] = useState<ViewState>(getViewFromUrl());
+
+  // Custom setActiveView that updates URL for browser history
+  const setActiveView = useCallback((view: ViewState) => {
+    setActiveViewState(view);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', view);
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  // Sync state when URL changes (browser back/forward)
+  useEffect(() => {
+    const viewFromUrl = getViewFromUrl();
+    if (viewFromUrl !== activeView) {
+      setActiveViewState(viewFromUrl);
+    }
+  }, [searchParams, getViewFromUrl]);
 
   // Data State
   const [nodes, setNodes] = useState<PNodeInfo[]>([]);
@@ -121,6 +152,7 @@ export default function Home() {
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
   const [filterCountry, setFilterCountry] = useState<string>("all");
   const [filterVersion, setFilterVersion] = useState<string>("all");
+  const [filterStorage, setFilterStorage] = useState<string>("all");
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
 
   const { toast } = useToast();
@@ -306,7 +338,24 @@ export default function Home() {
         if (nodeVersion !== filterVersion) matchesVersion = false;
       }
 
-      return matchesSearch && matchesStatus && matchesCountry && matchesVersion;
+      // 5. Storage Filter
+      let matchesStorage = true;
+      if (filterStorage !== "all") {
+        const gb = (node.storage_committed || 0) / (1024 * 1024 * 1024);
+        let bin = "> 10 TB";
+        if (gb < 100) bin = "< 100 GB";
+        else if (gb < 1000) bin = "100 GB - 1 TB";
+        else if (gb < 10000) bin = "1 TB - 10 TB";
+
+        if (bin !== filterStorage) matchesStorage = false;
+
+        // DEBUG: Trace filtering logic
+        if (filterStorage !== "all" && gb > 10000) {
+          console.log(`[FilterDebug] Node: ${node.pubkey?.slice(0, 4)} | Storage: ${gb.toFixed(0)} GB | Bin: ${bin} | Filter: ${filterStorage} | Match: ${matchesStorage}`);
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesCountry && matchesVersion && matchesStorage;
     });
 
     if (sortConfig) {
@@ -331,7 +380,7 @@ export default function Home() {
       });
     }
     return result;
-  }, [nodes, searchTerm, filterStatus, filterCountry, filterVersion, sortConfig, geoCache]);
+  }, [nodes, searchTerm, filterStatus, filterCountry, filterVersion, filterStorage, sortConfig, geoCache]);
 
   // Handle viewing a specific node (load Geo from cache)
   const handleNodeClick = (node: PNodeInfo) => {
@@ -356,6 +405,35 @@ export default function Home() {
       direction = "desc";
     }
     setSortConfig({ key, direction });
+  };
+
+  // Drill Down Handler (Interactive Visualization)
+  const handleDrillDown = (type: 'country' | 'version' | 'status' | 'node' | 'storage', value: string) => {
+    // 1. Reset filters/search to ensure we see what we clicked
+    setFilterStatus("all");
+    setFilterCountry("all");
+    setFilterVersion("all");
+    setFilterStorage("all");
+    setSearchTerm("");
+
+    // 2. Apply the specific filter
+    if (type === 'country') setFilterCountry(value);
+    // Handle potential mapping issues or clean up version string if needed
+    if (type === 'version') setFilterVersion(value);
+    if (type === 'status') {
+      if (value.toLowerCase() === 'active') setFilterStatus("active");
+      else if (value.toLowerCase() === 'inactive') setFilterStatus("inactive");
+    }
+    if (type === 'node') setSearchTerm(value);
+    if (type === 'storage') setFilterStorage(value);
+
+    // 3. Switch View
+    setActiveView("pnodes");
+
+    toast({
+      title: "Filter Applied",
+      description: `Showing results for: ${value}`,
+    });
   };
 
   const handleExport = () => {
@@ -452,8 +530,8 @@ export default function Home() {
             <div className="flex items-center gap-6">
               {/* Branding */}
               <div className="flex items-center gap-3">
-                <div className="h-8 w-8 bg-primary/20 rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Database className="text-primary h-5 w-5" />
+                <div className="h-8 w-8 relative flex items-center justify-center">
+                  <Image src="/logo.png" alt="Xandeum" width={32} height={32} className="object-contain" />
                 </div>
                 <div className="flex flex-row items-baseline gap-1.5">
                   <span className="font-bold text-lg tracking-tight text-foreground leading-none">XANDEUM</span>
@@ -531,6 +609,7 @@ export default function Home() {
                     subtext="Global Network"
                     subtextClassName="text-secondary/80"
                     tooltip="Count of all unique nodes discovered in the global gossip mesh."
+                    loading={loading}
                   />
                   <DashboardCard
                     icon={<Zap className="w-3 h-3 text-primary" />}
@@ -539,6 +618,7 @@ export default function Home() {
                     subtext="RPC/TPU Responding"
                     subtextClassName="text-emerald-500"
                     tooltip="Nodes currently online and responding to RPC/TPU requests."
+                    loading={loading}
                   />
                   <DashboardCard
                     icon={<Database className="w-3 h-3 text-blue-400" />}
@@ -551,6 +631,7 @@ export default function Home() {
                     subtext="Network Capacity"
                     subtextClassName="text-blue-400"
                     tooltip="Total verified storage capacity committed to the network."
+                    loading={loading}
                   />
                   <DashboardCard
                     icon={<Activity className="w-3 h-3 text-muted-foreground" />}
@@ -572,24 +653,24 @@ export default function Home() {
                     <NetworkPerformance data={metrics?.tpsHistory || []} />
                   </div>
                   <div className="lg:col-span-1">
-                    <StorageDistribution data={storageDistributionData} />
+                    <StorageDistribution data={storageDistributionData} onDrillDown={(s) => handleDrillDown('storage', s)} />
                   </div>
                 </div>
 
                 {/* Row 2: Version Chart (2 cols) + Node Leaderboard (1 col) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
-                    <VersionChart data={versionData} />
+                    <VersionChart data={versionData} onDrillDown={(v) => handleDrillDown('version', v)} />
                   </div>
                   <div className="lg:col-span-1">
-                    <NodeLeaderboard data={leaderboardData} />
+                    <NodeLeaderboard data={leaderboardData} onDrillDown={(nodeId) => handleDrillDown('node', nodeId)} />
                   </div>
                 </div>
 
                 {/* Row 3: Global Distribution (Full Width) */}
                 <div className="grid grid-cols-1 gap-6">
                   <div className="w-full">
-                    <CountryChart data={countryData} />
+                    <CountryChart data={countryData} onDrillDown={(c) => handleDrillDown('country', c)} />
                   </div>
                 </div>
 
@@ -711,7 +792,22 @@ export default function Home() {
                       </TableHeader>
                       <TableBody>
                         {filteredNodes.length === 0 ? (
-                          <TableRow><TableCell colSpan={6} className="h-24 text-center">No nodes found...</TableCell></TableRow>
+                          <TableRow>
+                            <TableCell colSpan={6} className="h-64 text-center">
+                              <div className="flex flex-col items-center justify-center text-muted-foreground gap-3">
+                                <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center">
+                                  <SearchX className="h-6 w-6 opacity-50" />
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="font-medium text-foreground">No nodes found</p>
+                                  <p className="text-xs">No nodes match your filters. Try adjusting your search term or filters.</p>
+                                </div>
+                                <Button variant="outline" size="sm" onClick={() => { setSearchTerm(""); setFilterStatus("all"); setFilterCountry("all"); setFilterVersion("all"); }} className="mt-2">
+                                  Clear Filters
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
                         ) : (
                           filteredNodes.map((node) => {
                             const ip = node.gossip?.split(':')[0] || "";
@@ -967,7 +1063,7 @@ export default function Home() {
           {/* VIEW: MAP */}
           {activeView === "map" && (
             <div className="flex-1 min-h-0 overflow-hidden">
-              <GlobalMap data={countryData} />
+              <GlobalMap data={countryData} onDrillDown={(c) => handleDrillDown('country', c)} />
             </div>
           )}
 
@@ -978,8 +1074,24 @@ export default function Home() {
   );
 }
 
+// Main export with Suspense for useSearchParams
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
 // Subcomponents
-function DashboardCard({ icon, title, value, subtext, subtextClassName, tooltip }: any) {
+function DashboardCard({ icon, title, value, subtext, subtextClassName, tooltip, loading }: any) {
   return (
     <Card className="bg-card/40 border-border shadow-sm hover:bg-muted/50 transition-colors duration-200">
       <CardHeader className="pb-2">
@@ -989,7 +1101,11 @@ function DashboardCard({ icon, title, value, subtext, subtextClassName, tooltip 
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-3xl font-bold text-foreground font-mono">{value}</div>
+        {loading ? (
+          <Skeleton className="h-8 w-24 mb-1" />
+        ) : (
+          <div className="text-3xl font-bold text-foreground font-mono">{value}</div>
+        )}
         <p className={`text-[10px] mt-1 font-mono ${subtextClassName}`}>{subtext}</p>
       </CardContent>
     </Card>

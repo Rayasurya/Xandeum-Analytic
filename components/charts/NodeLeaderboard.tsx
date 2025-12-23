@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 interface NodeLeaderboardProps {
-    data: { name: string; value: number; fullPubkey: string }[]
+    data: { name: string; value: number; fullPubkey: string }[];
+    onDrillDown?: (nodeId: string) => void;
 }
 
 const COLORS = [
@@ -16,58 +17,90 @@ const COLORS = [
     '#6ee7b7', // Emerald 300 (Lightest - Last)
 ];
 
-const CustomizedContent = (props: any) => {
-    const { x, y, width, height, index, value, name } = props;
-
-    return (
-        <g>
-            <rect
-                x={x}
-                y={y}
-                width={width}
-                height={height}
-                style={{
-                    fill: COLORS[index % COLORS.length] || COLORS[0],
-                    stroke: '#0d1117',
-                    strokeWidth: 2,
-                    strokeOpacity: 1,
-                }}
-                rx={6}
-                ry={6}
-            />
-            {width > 60 && height > 30 && (
-                <text
-                    x={x + width / 2}
-                    y={y + height / 2}
-                    textAnchor="middle"
-                    fill="#fff"
-                    fontSize={12}
-                    fontWeight="bold"
-                    style={{ pointerEvents: 'none' }}
-                >
-                    {name}
-                </text>
-            )}
-            {width > 60 && height > 30 && (
-                <text
-                    x={x + width / 2}
-                    y={y + height / 2 + 14}
-                    textAnchor="middle"
-                    fill="#fff"
-                    fontSize={10}
-                    fillOpacity={0.8}
-                    style={{ pointerEvents: 'none' }}
-                >
-                    {value} GB
-                </text>
-            )}
-        </g>
-    );
+const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
+    if (active && payload && payload.length) {
+        const data = payload[0].payload;
+        return (
+            <div className="bg-[#020617] border border-border p-3 rounded-lg shadow-xl z-50">
+                <p className="font-bold text-foreground mb-1">{data.name}</p>
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-mono text-emerald-400">
+                        {data.value} GB Storage
+                    </span>
+                </div>
+                {onDrillDown && (
+                    <p className="text-[10px] text-primary font-bold mt-1 text-center">
+                        (Click to View Nodes)
+                    </p>
+                )}
+            </div>
+        );
+    }
+    return null;
 };
 
-export function NodeLeaderboard({ data }: NodeLeaderboardProps) {
-    // Process data for Treemap (Recharts Treemap likes a single root content for animations usually, but flat array works too)
-    // We pass the flat data directly.
+export function NodeLeaderboard({ data, onDrillDown }: NodeLeaderboardProps) {
+
+    // Moved inside to access onDrillDown
+    const CustomizedContent = (props: any) => {
+        const { x, y, width, height, index, value, name } = props;
+
+        // Recharts passes standard props. We need to lookup the item for fullPubkey via index
+        // assuming data order is preserved by Recharts (usually is)
+        const item = data[index];
+        const pubkey = item ? item.fullPubkey : "";
+
+        return (
+            <g
+                onClick={() => {
+                    if (onDrillDown && pubkey) {
+                        onDrillDown(pubkey);
+                    }
+                }}
+                style={{ cursor: onDrillDown ? 'pointer' : 'default' }}
+            >
+                <rect
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    style={{
+                        fill: COLORS[index % COLORS.length] || COLORS[0],
+                        stroke: 'transparent',
+                        strokeWidth: 0,
+                    }}
+                    rx={6}
+                    ry={6}
+                />
+                {width > 60 && height > 30 && (
+                    <text
+                        x={x + width / 2}
+                        y={y + height / 2}
+                        textAnchor="middle"
+                        fill="#fff"
+                        fontSize={12}
+                        fontWeight="bold"
+                        style={{ pointerEvents: 'none' }}
+                    >
+                        {name}
+                    </text>
+                )}
+                {width > 60 && height > 30 && (
+                    <text
+                        x={x + width / 2}
+                        y={y + height / 2 + 14}
+                        textAnchor="middle"
+                        fill="#fff"
+                        fontSize={10}
+                        fillOpacity={0.8}
+                        style={{ pointerEvents: 'none' }}
+                    >
+                        {value} GB
+                    </text>
+                )}
+            </g>
+        );
+    };
 
     return (
         <Card className="bg-card/50 border-primary/20 shadow-sm relative overflow-hidden group h-full">
@@ -88,11 +121,7 @@ export function NodeLeaderboard({ data }: NodeLeaderboardProps) {
                             fill="#8884d8"
                             content={<CustomizedContent />}
                         >
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#020617', borderColor: '#1e293b', color: '#f8fafc', fontSize: '12px' }}
-                                itemStyle={{ color: '#10b981' }}
-                                formatter={(value: number) => [`${value} GB`, 'Storage']}
-                            />
+                            <Tooltip content={<CustomTooltip onDrillDown={onDrillDown} />} />
                         </Treemap>
                     </ResponsiveContainer>
                 </div>

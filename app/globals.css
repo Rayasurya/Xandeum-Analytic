@@ -42,35 +42,46 @@
   }
 
   /* Light Mode Variables (Overrides :root default which is dark) */
+  /* Using softer colors - not pure black/white for reduced eye strain */
   :root[class~="light"],
   .light {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    /* Soft off-white background instead of pure white */
+    --background: 210 20% 98%;
+    /* Soft dark gray (slate-800) instead of pure black */
+    --foreground: 215 25% 27%;
 
+    /* Cards slightly warmer than background */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 215 25% 27%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    /* Popovers/tooltips with good contrast */
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 24 95% 53%;
-    --primary-foreground: 0 0% 98%;
+    /* Primary - Electric Orange (adjusted for light mode) */
+    --primary: 24 95% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 189 94% 43%;
-    --secondary-foreground: 0 0% 98%;
+    /* Secondary - Teal/Cyan (darker for light bg visibility) */
+    --secondary: 189 80% 35%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted areas - subtle gray */
+    --muted: 210 30% 95%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - soft blue-gray */
+    --accent: 210 30% 95%;
+    --accent-foreground: 215 25% 27%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive - softer red */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 24 95% 53%;
+    /* Borders - visible but subtle */
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 24 95% 50%;
   }
 
   .dark {

@@ -80,6 +80,13 @@ import { cn } from "@/lib/utils";
 import { GlobalMap } from "@/components/charts/GlobalMap";
 import { StorageDistribution } from "@/components/charts/StorageDistribution";
 import { NodeLeaderboard } from "@/components/charts/NodeLeaderboard";
+import dynamic from "next/dynamic";
+
+// Dynamic import for Leaflet (SSR fix)
+const LeafletClusterMap = dynamic(
+  () => import("@/components/charts/LeafletClusterMap").then(mod => mod.LeafletClusterMap),
+  { ssr: false, loading: () => <div className="w-full h-full flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div> }
+);
 
 
 type ViewState = "dashboard" | "pnodes" | "analytics" | "map";
@@ -470,6 +477,24 @@ function HomeContent() {
       .slice(0, 8);
   }, [geoCache]);
 
+  // Map node data for LeafletClusterMap
+  const mapNodeData = useMemo(() => {
+    return nodes.map(node => {
+      const ip = node.gossip?.split(':')[0];
+      const geo = ip ? geoCache[ip] : null;
+      return {
+        pubkey: node.pubkey,
+        lat: geo?.lat || 0,
+        lng: geo?.lon || 0,
+        healthScore: node.uptime ? Math.min(100, (node.uptime / 86400) * 10) : 50, // Basic health score based on uptime
+        storageCommitted: node.storage_committed || 0,
+        city: geo?.city,
+        country: geo?.country,
+        isOnline: !!node.rpc && !!node.tpu,
+      };
+    }).filter(n => n.lat !== 0 && n.lng !== 0); // Only include nodes with valid geo
+  }, [nodes, geoCache]);
+
   const statusData = useMemo(() => [
     { name: "Active", value: stats.active },
     { name: "Inactive", value: stats.total - stats.active }
@@ -552,6 +577,8 @@ function HomeContent() {
   // Handle viewing a specific node (load Geo from cache)
   const handleNodeClick = (node: PNodeInfo) => {
     setSelectedNode(node);
+    // Switch to pnodes view to show the node intelligence panel
+    setActiveView("pnodes");
     // If we don't have this one in cache (maybe added recently), fetch it individually
     const ip = node.gossip?.split(':')[0];
     if (ip && !geoCache[ip]) {
@@ -1475,7 +1502,13 @@ ${selectedNode?.pubkey}
           {/* VIEW: MAP */}
           {activeView === "map" && (
             <div className="flex-1 min-h-0 overflow-hidden">
-              <GlobalMap data={countryData} onDrillDown={(c) => handleDrillDown('country', c)} />
+              <LeafletClusterMap
+                nodes={mapNodeData}
+                onNodeClick={(pubkey) => {
+                  const node = nodes.find(n => n.pubkey === pubkey);
+                  if (node) handleNodeClick(node);
+                }}
+              />
             </div>
           )}
 

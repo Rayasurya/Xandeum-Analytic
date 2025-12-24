@@ -20,8 +20,8 @@ const COLORS = [
 const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-[#020617] border border-border p-3 rounded-lg shadow-xl z-50">
-                <p className="font-bold text-foreground mb-1">{payload[0].name}</p>
+            <div className="bg-popover border border-border p-3 rounded-lg shadow-xl z-50">
+                <p className="font-bold text-popover-foreground mb-1">{payload[0].name}</p>
                 <div className="flex items-center gap-2 mb-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: payload[0].fill }} />
                     <span className="text-sm font-mono text-muted-foreground">
@@ -89,7 +89,7 @@ export function VersionChart({ data, onDrillDown }: VersionChartProps) {
                                             className="w-3 h-3 rounded-full flex-shrink-0"
                                             style={{ backgroundColor: COLORS[index % COLORS.length] }}
                                         />
-                                        <span className="text-sm text-gray-300 font-mono truncate" title={entry.name}>
+                                        <span className="text-sm text-foreground font-mono truncate" title={entry.name}>
                                             {entry.name}
                                         </span>
                                     </div>

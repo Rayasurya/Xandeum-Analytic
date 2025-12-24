@@ -698,7 +698,7 @@ function HomeContent() {
             </div>
             <div className="flex flex-row items-baseline gap-2">
               <span className="font-bold text-2xl tracking-tight text-foreground">XANDEUM</span>
-              <span className="text-sm font-mono text-cyan-500 tracking-[0.2em] uppercase">Scope</span>
+              <span className="text-sm font-mono text-secondary dark:text-cyan-500 tracking-[0.2em] uppercase">Scope</span>
             </div>
           </div>
 
@@ -728,7 +728,7 @@ function HomeContent() {
                 </div>
                 <div className="flex flex-row items-baseline gap-1.5">
                   <span className="font-bold text-lg tracking-tight text-foreground leading-none">XANDEUM</span>
-                  <span className="text-[10px] font-mono text-cyan-500 tracking-[0.2em] uppercase">Scope</span>
+                  <span className="text-[10px] font-mono text-secondary dark:text-cyan-500 tracking-[0.2em] uppercase">Scope</span>
                 </div>
               </div>
 
@@ -1083,7 +1083,7 @@ function HomeContent() {
                                   {node.gossip}
                                 </TableCell>
                                 <TableCell className="hidden md:table-cell">
-                                  <Badge variant="outline" className="bg-cyan-950/30 text-cyan-400 border-cyan-800/50 font-mono text-xs max-w-[180px] truncate inline-block">
+                                  <Badge variant="outline" className="bg-secondary/10 text-secondary dark:bg-cyan-950/30 dark:text-cyan-400 border-secondary/30 dark:border-cyan-800/50 font-mono text-xs max-w-[180px] truncate inline-block">
                                     {XandeumClient.formatVersion(node.version || null)}
                                   </Badge>
                                 </TableCell>
@@ -1118,8 +1118,8 @@ function HomeContent() {
                     <div className="h-8 w-1 bg-muted-foreground/30 rounded-full" />
                   </div>
                   <aside
-                    className="hidden md:flex flex-shrink-0 h-full min-h-0 flex-col overflow-hidden shadow-sm"
-                    style={{ width: rightSidebarWidth, backgroundColor: '#020617' }}
+                    className="hidden md:flex flex-shrink-0 h-full min-h-0 flex-col overflow-hidden shadow-sm bg-background dark:bg-[#020617]"
+                    style={{ width: rightSidebarWidth }}
                   >
 
                     {/* Header */}

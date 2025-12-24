@@ -5,6 +5,7 @@ import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simp
 import { scaleLinear } from "d3-scale";
 import { Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 // Standard World Atlas TopoJSON
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -15,6 +16,9 @@ interface GlobalMapProps {
 }
 
 export function GlobalMap({ data, onDrillDown }: GlobalMapProps) {
+    const { theme, resolvedTheme } = useTheme();
+    const isDark = resolvedTheme === "dark" || theme === "dark";
+
     const [position, setPosition] = useState<{
         coordinates: [number, number];
         zoom: number;
@@ -160,15 +164,15 @@ export function GlobalMap({ data, onDrillDown }: GlobalMapProps) {
                                             }}
                                             style={{
                                                 default: {
-                                                    fill: nodeCount > 0 ? colorScale(nodeCount) : "#334155",
-                                                    stroke: "#0f172a",
+                                                    fill: nodeCount > 0 ? colorScale(nodeCount) : (isDark ? "#334155" : "#cbd5e1"),
+                                                    stroke: isDark ? "#0f172a" : "#94a3b8",
                                                     strokeWidth: 0.5,
                                                     outline: "none",
                                                     cursor: nodeCount > 0 ? "pointer" : "default"
                                                 },
                                                 hover: {
-                                                    fill: "#06b6d4",
-                                                    stroke: "#fff",
+                                                    fill: nodeCount > 0 ? "#06b6d4" : (isDark ? "#475569" : "#94a3b8"),
+                                                    stroke: isDark ? "#fff" : "#64748b",
                                                     strokeWidth: 1,
                                                     outline: "none",
                                                     cursor: nodeCount > 0 ? "pointer" : "default"

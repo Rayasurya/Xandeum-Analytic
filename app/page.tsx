@@ -49,6 +49,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuCheckboxItem,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -251,6 +252,7 @@ function HomeContent() {
   const [filterCountry, setFilterCountry] = useState<string>("all");
   const [filterVersion, setFilterVersion] = useState<string>("all");
   const [filterStorage, setFilterStorage] = useState<string>("all");
+  const [filterHealth, setFilterHealth] = useState<string>("all");
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
   const [pendingToast, setPendingToast] = useState<{ title: string; description: string; variant?: "default" | "destructive" } | null>(null);
 
@@ -482,15 +484,16 @@ function HomeContent() {
     return nodes.map(node => {
       const ip = node.gossip?.split(':')[0];
       const geo = ip ? geoCache[ip] : null;
+      const health = calculateHealthScore(node);
       return {
         pubkey: node.pubkey,
         lat: geo?.lat || 0,
         lng: geo?.lon || 0,
-        healthScore: node.uptime ? Math.min(100, (node.uptime / 86400) * 10) : 50, // Basic health score based on uptime
+        healthScore: health.total,
         storageCommitted: node.storage_committed || 0,
         city: geo?.city,
         country: geo?.country,
-        isOnline: !!node.rpc && !!node.tpu,
+        isOnline: !!(node.rpc || node.tpu), // Fixed: OR instead of AND
       };
     }).filter(n => n.lat !== 0 && n.lng !== 0); // Only include nodes with valid geo
   }, [nodes, geoCache]);
@@ -540,14 +543,18 @@ function HomeContent() {
         else if (gb < 10000) bin = "1 TB - 10 TB";
 
         if (bin !== filterStorage) matchesStorage = false;
-
-        // DEBUG: Trace filtering logic
-        if (filterStorage !== "all" && gb > 10000) {
-          console.log(`[FilterDebug] Node: ${node.pubkey?.slice(0, 4)} | Storage: ${gb.toFixed(0)} GB | Bin: ${bin} | Filter: ${filterStorage} | Match: ${matchesStorage}`);
-        }
       }
 
-      return matchesSearch && matchesStatus && matchesCountry && matchesVersion && matchesStorage;
+      // 6. Health Filter
+      let matchesHealth = true;
+      if (filterHealth !== "all") {
+        const health = calculateHealthScore(node);
+        if (filterHealth === "healthy" && health.status !== "HEALTHY") matchesHealth = false;
+        if (filterHealth === "warning" && health.status !== "WARNING") matchesHealth = false;
+        if (filterHealth === "critical" && health.status !== "CRITICAL") matchesHealth = false;
+      }
+
+      return matchesSearch && matchesStatus && matchesCountry && matchesVersion && matchesStorage && matchesHealth;
     });
 
     if (sortConfig) {
@@ -572,7 +579,7 @@ function HomeContent() {
       });
     }
     return result;
-  }, [nodes, searchTerm, filterStatus, filterCountry, filterVersion, filterStorage, sortConfig, geoCache]);
+  }, [nodes, searchTerm, filterStatus, filterCountry, filterVersion, filterStorage, filterHealth, sortConfig, geoCache]);
 
   // Handle viewing a specific node (load Geo from cache)
   const handleNodeClick = (node: PNodeInfo) => {
@@ -820,7 +827,7 @@ function HomeContent() {
                       variant="ghost"
                       size="icon"
                       onClick={handleManualSync}
-                      className="h-9 w-9 text-muted-foreground hover:text-foreground"
+                      className="h-9 w-9 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
                     >
                       <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
                     </Button>
@@ -956,7 +963,7 @@ function HomeContent() {
 
                   {/* Right side: Actions */}
                   <div className="flex items-center gap-2">
-                    <Button className="bg-primary hover:bg-orange-600 text-primary-foreground font-bold" onClick={handleExport}>
+                    <Button className="bg-primary hover:bg-orange-600 active:scale-95 text-primary-foreground font-bold transition-all" onClick={handleExport}>
                       <Download className="mr-2 h-4 w-4" /> EXPORT ENRICHED CSV
                     </Button>
                     <DropdownMenu>
@@ -965,71 +972,173 @@ function HomeContent() {
                           variant="outline"
                           size={selectedNode ? "icon" : "default"}
                           className={cn(
-                            "border-border bg-card text-muted-foreground hover:text-foreground flex-shrink-0",
-                            selectedNode && "h-10 w-10"
+                            "border-border bg-card text-muted-foreground hover:text-foreground flex-shrink-0 transition-all",
+                            selectedNode && "h-10 w-10",
+                            (filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all") && "border-primary bg-primary/10 text-primary"
                           )}
                         >
                           <Filter className="h-4 w-4" />
                           {!selectedNode && <span className="ml-2">Filters</span>}
-                          {(filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all") && (
+                          {(filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all" || filterStorage !== "all" || filterHealth !== "all") && (
                             <Badge variant="secondary" className={cn("h-5 px-1.5 text-[10px]", selectedNode ? "absolute -top-1 -right-1" : "ml-2")}>
-                              {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0) + (filterVersion !== "all" ? 1 : 0)}
+                              {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0) + (filterVersion !== "all" ? 1 : 0) + (filterStorage !== "all" ? 1 : 0) + (filterHealth !== "all" ? 1 : 0)}
                             </Badge>
                           )}
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-56 bg-popover border-border text-popover-foreground">
+                      <DropdownMenuContent align="end" className="w-48 max-h-[300px] overflow-y-auto bg-popover border-border text-popover-foreground text-sm p-0">
                         {/* Status Section */}
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider sticky top-0 bg-popover z-10">
                           Status
                         </div>
-                        <DropdownMenuItem onClick={() => setFilterStatus("all")} className="flex items-center justify-between cursor-pointer">
+                        <DropdownMenuCheckboxItem
+                          checked={filterStatus === "all"}
+                          onCheckedChange={() => setFilterStatus("all")}
+                          className="text-xs py-1"
+                        >
                           All Nodes
-                          {filterStatus === "all" && <Check className="h-4 w-4 text-primary" />}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setFilterStatus("active")} className="flex items-center justify-between cursor-pointer">
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterStatus === "active"}
+                          onCheckedChange={() => setFilterStatus(filterStatus === "active" ? "all" : "active")}
+                          className="text-xs py-1"
+                        >
                           Active Only
-                          {filterStatus === "active" && <Check className="h-4 w-4 text-emerald-500" />}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setFilterStatus("inactive")} className="flex items-center justify-between cursor-pointer">
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterStatus === "inactive"}
+                          onCheckedChange={() => setFilterStatus(filterStatus === "inactive" ? "all" : "inactive")}
+                          className="text-xs py-1"
+                        >
                           Inactive Only
-                          {filterStatus === "inactive" && <Check className="h-4 w-4 text-red-500" />}
-                        </DropdownMenuItem>
+                        </DropdownMenuCheckboxItem>
 
                         <Separator className="my-1 bg-border" />
 
                         {/* Country Section */}
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider sticky top-0 bg-popover z-10">
                           Country
                         </div>
-                        <DropdownMenuItem onClick={() => setFilterCountry("all")} className="flex items-center justify-between cursor-pointer">
+                        <DropdownMenuCheckboxItem
+                          checked={filterCountry === "all"}
+                          onCheckedChange={() => setFilterCountry("all")}
+                          className="text-xs py-1"
+                        >
                           All Countries
-                          {filterCountry === "all" && <Check className="h-4 w-4 text-primary" />}
-                        </DropdownMenuItem>
-                        {/* Dynamically list top countries found in cache */}
-                        {Array.from(new Set(Object.values(geoCache).map((g: any) => g.country))).slice(0, 5).map((country: any) => (
-                          <DropdownMenuItem key={country} onClick={() => setFilterCountry(country)} className="flex items-center justify-between cursor-pointer">
-                            <span className="truncate max-w-[150px]">{country}</span>
-                            {filterCountry === country && <Check className="h-4 w-4 text-primary" />}
-                          </DropdownMenuItem>
+                        </DropdownMenuCheckboxItem>
+                        {Array.from(new Set(Object.values(geoCache).map((g: any) => g.country))).map((country: any) => (
+                          <DropdownMenuCheckboxItem
+                            key={country}
+                            checked={filterCountry === country}
+                            onCheckedChange={() => setFilterCountry(filterCountry === country ? "all" : country)}
+                            className="text-xs py-1"
+                          >
+                            <span className="truncate max-w-[120px]">{country}</span>
+                          </DropdownMenuCheckboxItem>
                         ))}
 
                         <Separator className="my-1 bg-border" />
 
                         {/* Version Section */}
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider sticky top-0 bg-popover z-10">
                           Version
                         </div>
-                        <DropdownMenuItem onClick={() => setFilterVersion("all")} className="flex items-center justify-between cursor-pointer">
+                        <DropdownMenuCheckboxItem
+                          checked={filterVersion === "all"}
+                          onCheckedChange={() => setFilterVersion("all")}
+                          className="text-xs py-1"
+                        >
                           All Versions
-                          {filterVersion === "all" && <Check className="h-4 w-4 text-primary" />}
-                        </DropdownMenuItem>
+                        </DropdownMenuCheckboxItem>
                         {versionData.map((v) => (
-                          <DropdownMenuItem key={v.name} onClick={() => setFilterVersion(v.name)} className="flex items-center justify-between cursor-pointer">
-                            <span className="truncate max-w-[150px]">{v.name}</span>
-                            {filterVersion === v.name && <Check className="h-4 w-4 text-primary" />}
-                          </DropdownMenuItem>
+                          <DropdownMenuCheckboxItem
+                            key={v.name}
+                            checked={filterVersion === v.name}
+                            onCheckedChange={() => setFilterVersion(filterVersion === v.name ? "all" : v.name)}
+                            className="text-xs py-1"
+                          >
+                            <span className="truncate max-w-[120px]">{v.name}</span>
+                          </DropdownMenuCheckboxItem>
                         ))}
+
+                        <Separator className="my-1 bg-border" />
+
+                        {/* Storage Section */}
+                        <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider sticky top-0 bg-popover z-10">
+                          Storage
+                        </div>
+                        <DropdownMenuCheckboxItem
+                          checked={filterStorage === "all"}
+                          onCheckedChange={() => setFilterStorage("all")}
+                          className="text-xs py-1"
+                        >
+                          All Storage
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterStorage === "< 100 GB"}
+                          onCheckedChange={() => setFilterStorage(filterStorage === "< 100 GB" ? "all" : "< 100 GB")}
+                          className="text-xs py-1"
+                        >
+                          &lt; 100 GB
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterStorage === "100 GB - 1 TB"}
+                          onCheckedChange={() => setFilterStorage(filterStorage === "100 GB - 1 TB" ? "all" : "100 GB - 1 TB")}
+                          className="text-xs py-1"
+                        >
+                          100 GB - 1 TB
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterStorage === "1 TB - 10 TB"}
+                          onCheckedChange={() => setFilterStorage(filterStorage === "1 TB - 10 TB" ? "all" : "1 TB - 10 TB")}
+                          className="text-xs py-1"
+                        >
+                          1 TB - 10 TB
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterStorage === "> 10 TB"}
+                          onCheckedChange={() => setFilterStorage(filterStorage === "> 10 TB" ? "all" : "> 10 TB")}
+                          className="text-xs py-1"
+                        >
+                          &gt; 10 TB
+                        </DropdownMenuCheckboxItem>
+
+                        <Separator className="my-1 bg-border" />
+
+                        {/* Health Section */}
+                        <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider sticky top-0 bg-popover z-10">
+                          Health
+                        </div>
+                        <DropdownMenuCheckboxItem
+                          checked={filterHealth === "all"}
+                          onCheckedChange={() => setFilterHealth("all")}
+                          className="text-xs py-1"
+                        >
+                          All Health
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterHealth === "healthy"}
+                          onCheckedChange={() => setFilterHealth(filterHealth === "healthy" ? "all" : "healthy")}
+                          className="text-xs py-1"
+                        >
+                          🟢 Healthy (≥75)
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterHealth === "warning"}
+                          onCheckedChange={() => setFilterHealth(filterHealth === "warning" ? "all" : "warning")}
+                          className="text-xs py-1"
+                        >
+                          🟡 Warning (50-74)
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterHealth === "critical"}
+                          onCheckedChange={() => setFilterHealth(filterHealth === "critical" ? "all" : "critical")}
+                          className="text-xs py-1"
+                        >
+                          🔴 Critical (&lt;50)
+                        </DropdownMenuCheckboxItem>
+                        {/* Bottom spacer for sticky headers */}
+                        <div className="h-6" />
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -1062,7 +1171,7 @@ function HomeContent() {
                                   <p className="font-medium text-foreground">No nodes found</p>
                                   <p className="text-xs">No nodes match your filters. Try adjusting your search term or filters.</p>
                                 </div>
-                                <Button variant="outline" size="sm" onClick={() => { setSearchTerm(""); setFilterStatus("all"); setFilterCountry("all"); setFilterVersion("all"); }} className="mt-2">
+                                <Button variant="outline" size="sm" onClick={() => { setSearchTerm(""); setFilterStatus("all"); setFilterCountry("all"); setFilterVersion("all"); setFilterStorage("all"); setFilterHealth("all"); }} className="mt-2 active:scale-95 transition-all">
                                   Clear Filters
                                 </Button>
                               </div>
@@ -1349,14 +1458,14 @@ function HomeContent() {
                             <div className="flex gap-2 mt-4">
                               <Button
                                 onClick={handleExportHtml}
-                                className="flex-1 bg-primary hover:bg-orange-600 text-primary-foreground font-bold h-10"
+                                className="flex-1 bg-primary hover:bg-orange-600 active:scale-95 text-primary-foreground font-bold h-10 transition-all"
                                 size="sm"
                               >
                                 <Download className="mr-2 h-4 w-4" /> Export HTML
                               </Button>
                               <Button
                                 variant="outline"
-                                className="flex-1 h-10 font-bold"
+                                className="flex-1 h-10 font-bold active:scale-95 transition-all"
                                 size="sm"
                                 onClick={() => {
                                   const healthScore = calculateHealthScore(selectedNode);
@@ -1444,7 +1553,7 @@ ${selectedNode?.pubkey}
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                  className="h-7 w-7 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
                                   onClick={() => {
                                     const jsonData = JSON.stringify({
                                       pubkey: selectedNode?.pubkey,

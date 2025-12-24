@@ -32,10 +32,10 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
     }).filter(Boolean) : [];
 
     return (
-        <Card className="bg-card/50 border-primary/20 shadow-sm col-span-1 lg:col-span-2 relative overflow-hidden group">
+        <Card className="bg-card/50 border-border shadow-sm col-span-1 lg:col-span-2 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent skew-x-12 translate-x-[-150%] animate-shimmer group-hover:animate-none opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground tracking-wider uppercase flex items-center gap-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
                     Real-Time Network Performance
                     <InfoTooltip content="Real-time Transactions Per Second (TPS) processed by the network." />

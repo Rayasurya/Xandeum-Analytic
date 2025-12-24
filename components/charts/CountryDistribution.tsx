@@ -11,11 +11,11 @@ const COLORS = ["#f97316", "#06b6d4", "#8b5cf6", "#ec4899", "#10b981"];
 
 export function CountryChart({ data }: CountryChartProps) {
     return (
-        <Card className="col-span-1 lg:col-span-2 bg-card/50 border-primary/20 shadow-sm relative overflow-hidden group">
+        <Card className="col-span-1 lg:col-span-2 bg-card/50 border-border shadow-sm relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent skew-x-12 translate-x-[-150%] animate-shimmer group-hover:animate-none opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                    <span className="w-2 h-2 rounded-full bg-orange-500" />
                     Global Node Distribution
                 </CardTitle>
             </CardHeader>

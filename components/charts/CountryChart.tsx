@@ -38,10 +38,10 @@ export function CountryChart({ data, onDrillDown }: CountryChartProps) {
     const chartData = [...data].sort((a, b) => b.value - a.value).slice(0, 5);
 
     return (
-        <Card className="bg-card/50 border-primary/20 shadow-sm overflow-hidden hover:bg-card/60 transition-colors h-full">
+        <Card className="bg-card/50 border-border shadow-sm overflow-hidden hover:bg-card/60 transition-colors h-full">
             <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground tracking-wider uppercase flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-500/50" />
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-500" />
                     Global Distribution
                     <InfoTooltip content="Geographic location of active nodes based on their IP addresses." />
                 </CardTitle>

@@ -104,6 +104,93 @@ const formatPubkey = (key: string) => {
   return `${key.slice(0, 4)}...${key.slice(-4)}`;
 };
 
+// Health Score Calculation (0-100)
+interface HealthScore {
+  total: number;
+  status: "HEALTHY" | "WARNING" | "CRITICAL";
+  breakdown: {
+    version: { score: number; max: number };
+    uptime: { score: number; max: number };
+    storage: { score: number; max: number };
+    rpc: { score: number; max: number };
+  };
+}
+
+const calculateHealthScore = (node: any): HealthScore => {
+  let versionScore = 0;
+  let uptimeScore = 0;
+  let storageScore = 0;
+  let rpcScore = 0;
+
+  // Version Score (40 points max) - Latest version = full points
+  const currentVersion = node?.version?.split(" ")[0] || "";
+  if (currentVersion === "0.8.0") {
+    versionScore = 40;
+  } else if (currentVersion === "0.7.0") {
+    versionScore = 30;
+  } else if (currentVersion === "0.6.0") {
+    versionScore = 20;
+  } else if (currentVersion) {
+    versionScore = 10;
+  }
+
+  // Uptime Score (30 points max) - Based on uptime duration
+  const uptimeSeconds = node?.uptime || 0;
+  const uptimeDays = uptimeSeconds / 86400;
+  if (uptimeDays >= 30) {
+    uptimeScore = 30;
+  } else if (uptimeDays >= 14) {
+    uptimeScore = 25;
+  } else if (uptimeDays >= 7) {
+    uptimeScore = 20;
+  } else if (uptimeDays >= 1) {
+    uptimeScore = 15;
+  } else if (uptimeDays >= 0.5) {
+    uptimeScore = 10;
+  } else if (uptimeSeconds > 0) {
+    uptimeScore = 5;
+  }
+
+  // Storage Score (20 points max) - Based on committed storage
+  const storageGB = (node?.storage_committed || 0) / (1024 * 1024 * 1024);
+  if (storageGB >= 1000) {
+    storageScore = 20; // 1TB+
+  } else if (storageGB >= 500) {
+    storageScore = 18;
+  } else if (storageGB >= 100) {
+    storageScore = 15;
+  } else if (storageGB >= 10) {
+    storageScore = 10;
+  } else if (storageGB > 0) {
+    storageScore = 5;
+  }
+
+  // RPC Status Score (10 points max) - Online = full points
+  if (node?.rpc) {
+    rpcScore = 10;
+  }
+
+  const total = versionScore + uptimeScore + storageScore + rpcScore;
+
+  let status: "HEALTHY" | "WARNING" | "CRITICAL" = "HEALTHY";
+  if (total < 50) {
+    status = "CRITICAL";
+  } else if (total < 75) {
+    status = "WARNING";
+  }
+
+  return {
+    total,
+    status,
+    breakdown: {
+      version: { score: versionScore, max: 40 },
+      uptime: { score: uptimeScore, max: 30 },
+      storage: { score: storageScore, max: 20 },
+      rpc: { score: rpcScore, max: 10 },
+    },
+  };
+};
+
 function HomeContent() {
   // URL-based Navigation (enables browser back/forward)
   const router = useRouter();
@@ -147,6 +234,10 @@ function HomeContent() {
 
   // UI State
   const [loading, setLoading] = useState(true);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+  const [isManualSync, setIsManualSync] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const [minLoadTimeElapsed, setMinLoadTimeElapsed] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedNode, setSelectedNode] = useState<PNodeInfo | null>(null);
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
@@ -154,9 +245,40 @@ function HomeContent() {
   const [filterVersion, setFilterVersion] = useState<string>("all");
   const [filterStorage, setFilterStorage] = useState<string>("all");
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
+  const [pendingToast, setPendingToast] = useState<{ title: string; description: string; variant?: "default" | "destructive" } | null>(null);
 
   const { toast } = useToast();
   const client = new XandeumClient();
+
+  // Minimum 5 second loading screen
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinLoadTimeElapsed(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Animate out and hide loading screen when both data is loaded AND minimum time has elapsed
+  useEffect(() => {
+    if (!loading && minLoadTimeElapsed) {
+      setIsAnimatingOut(true);
+      // Wait for animation to complete before hiding
+      const hideTimer = setTimeout(() => {
+        setShowLoadingScreen(false);
+        setIsManualSync(false); // Reset for next time
+      }, 500);
+      return () => clearTimeout(hideTimer);
+    }
+  }, [loading, minLoadTimeElapsed]);
+
+  // Show pending toast after loading screen is hidden
+  useEffect(() => {
+    if (!showLoadingScreen && pendingToast) {
+      toast(pendingToast);
+      setPendingToast(null);
+    }
+  }, [showLoadingScreen, pendingToast, toast]);
+
 
   const fetchGeoBatch = async (nodeList: PNodeInfo[]) => {
     if (Object.keys(geoCache).length > 0) return; // Already cached
@@ -214,19 +336,35 @@ function HomeContent() {
       // Trigger Background Geo Sync
       fetchGeoBatch(nodeList);
 
-      toast({
+      // Queue toast to show after loading screen hides
+      setPendingToast({
         title: "Dashboard Synchronized",
         description: `Connected to latest epoch ${networkMetrics?.epoch || 'Unknown'}`,
-      })
+      });
     } catch (err: any) {
-      toast({
+      setPendingToast({
         variant: "destructive",
         title: "Sync Failed",
         description: err.message || "Could not connect to Xandeum pRPC.",
-      })
+      });
     } finally {
       setLoading(false);
     }
+  };
+
+  // Manual sync function
+  const handleManualSync = () => {
+    setLoading(true);
+    setShowLoadingScreen(true);
+    setIsManualSync(true); // Mark as manual sync for blurred overlay
+    setIsAnimatingOut(false);
+    setMinLoadTimeElapsed(false);
+    // Refetch data
+    fetchData();
+    // Shorter wait for manual sync (2 seconds)
+    setTimeout(() => {
+      setMinLoadTimeElapsed(true);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -517,7 +655,33 @@ function HomeContent() {
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans transition-colors duration-300 h-screen overflow-hidden">
 
+      {/* Loading Screen Overlay */}
+      {showLoadingScreen && (
+        <div className={cn(
+          "fixed inset-0 z-[100] flex flex-col items-center justify-center transition-all duration-500",
+          isManualSync ? "bg-background/80 backdrop-blur-md" : "bg-background",
+          isAnimatingOut ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+        )}>
+          {/* Logo */}
+          <div className="mb-8 flex flex-col items-center gap-3">
+            <div className="h-16 w-16 relative flex items-center justify-center">
+              <Image src="/logo.png" alt="Xandeum" width={64} height={64} className="object-contain" />
+            </div>
+            <div className="flex flex-row items-baseline gap-2">
+              <span className="font-bold text-2xl tracking-tight text-foreground">XANDEUM</span>
+              <span className="text-sm font-mono text-cyan-500 tracking-[0.2em] uppercase">Scope</span>
+            </div>
+          </div>
 
+          {/* Loader Animation */}
+          <div className="xandeum-loader mb-8" style={{ fontSize: '24px' }} />
+
+          {/* Loading Text */}
+          <p className="text-muted-foreground text-sm font-mono animate-pulse">
+            {isManualSync ? "Refreshing data..." : "Synchronizing network data..."}
+          </p>
+        </div>
+      )}
 
       {/* Main Content + Right Panel Container */}
       <div className="flex-1 flex min-w-0 h-full overflow-hidden">
@@ -591,6 +755,26 @@ function HomeContent() {
                   <p className="text-sm font-mono text-foreground font-bold">{metrics?.epoch || "Syncing"}</p>
                 </div>
               </div>
+
+              {/* Sync Button */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleManualSync}
+                      className="h-9 w-9 text-muted-foreground hover:text-foreground"
+                    >
+                      <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sync Network Data</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
               <ModeToggle />
             </div>
           </header>
@@ -721,11 +905,18 @@ function HomeContent() {
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="border-border bg-card text-muted-foreground hover:text-foreground overflow-hidden whitespace-nowrap flex-shrink-0">
-                          <Filter className="h-4 w-4 mr-2" />
-                          Filters
+                        <Button
+                          variant="outline"
+                          size={selectedNode ? "icon" : "default"}
+                          className={cn(
+                            "border-border bg-card text-muted-foreground hover:text-foreground flex-shrink-0",
+                            selectedNode && "h-10 w-10"
+                          )}
+                        >
+                          <Filter className="h-4 w-4" />
+                          {!selectedNode && <span className="ml-2">Filters</span>}
                           {(filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all") && (
-                            <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-[10px]">
+                            <Badge variant="secondary" className={cn("h-5 px-1.5 text-[10px]", selectedNode ? "absolute -top-1 -right-1" : "ml-2")}>
                               {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0) + (filterVersion !== "all" ? 1 : 0)}
                             </Badge>
                           )}
@@ -938,11 +1129,11 @@ function HomeContent() {
                                 </Label>
                                 <div className="flex items-center gap-2">
                                   {selectedNode?.rpc ? (
-                                    <Badge className="bg-emerald-500/20 text-emerald-400 border-none">
+                                    <Badge className="bg-emerald-500/20 text-emerald-400 border-none cursor-default hover:bg-emerald-500/20">
                                       Online
                                     </Badge>
                                   ) : (
-                                    <Badge variant="destructive">Offline</Badge>
+                                    <Badge variant="destructive" className="cursor-default hover:bg-destructive">Offline</Badge>
                                   )}
                                 </div>
                               </div>
@@ -955,6 +1146,75 @@ function HomeContent() {
                                 </div>
                               </div>
                             </div>
+
+                            <Separator className="bg-border" />
+
+                            {/* Health Score */}
+                            {(() => {
+                              const healthScore = calculateHealthScore(selectedNode);
+                              return (
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                                      <Activity className="h-4 w-4 text-primary" /> Health Score
+                                    </h4>
+                                    <Badge className={cn(
+                                      "border-none cursor-default",
+                                      healthScore.status === "HEALTHY" && "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20",
+                                      healthScore.status === "WARNING" && "bg-amber-500/20 text-amber-400 hover:bg-amber-500/20",
+                                      healthScore.status === "CRITICAL" && "bg-red-500/20 text-red-400 hover:bg-red-500/20"
+                                    )}>
+                                      {healthScore.status}
+                                    </Badge>
+                                  </div>
+
+                                  {/* Score Display */}
+                                  <div className="flex items-center gap-3">
+                                    <div className="text-3xl font-bold text-foreground">{healthScore.total}</div>
+                                    <div className="text-muted-foreground text-sm">/100</div>
+                                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                                      <div
+                                        className={cn(
+                                          "h-full rounded-full transition-all",
+                                          healthScore.total >= 75 && "bg-emerald-500",
+                                          healthScore.total >= 50 && healthScore.total < 75 && "bg-amber-500",
+                                          healthScore.total < 50 && "bg-red-500"
+                                        )}
+                                        style={{ width: `${healthScore.total}%` }}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  {/* Breakdown */}
+                                  <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="bg-muted/50 p-2 rounded">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Version</span>
+                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.version.score}/{healthScore.breakdown.version.max}</span>
+                                      </div>
+                                    </div>
+                                    <div className="bg-muted/50 p-2 rounded">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Uptime</span>
+                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.uptime.score}/{healthScore.breakdown.uptime.max}</span>
+                                      </div>
+                                    </div>
+                                    <div className="bg-muted/50 p-2 rounded">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Storage</span>
+                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.storage.score}/{healthScore.breakdown.storage.max}</span>
+                                      </div>
+                                    </div>
+                                    <div className="bg-muted/50 p-2 rounded">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">RPC Status</span>
+                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.rpc.score}/{healthScore.breakdown.rpc.max}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })()}
 
                             <Separator className="bg-border" />
 
@@ -1029,13 +1289,93 @@ function HomeContent() {
                               )}
                             </div>
 
-                            <Button
-                              onClick={handleExportHtml}
-                              className="w-full bg-primary hover:bg-orange-600 text-primary-foreground font-bold h-10 mt-4"
-                              size="sm"
-                            >
-                              <Download className="mr-2 h-4 w-4" /> Export as HTML
-                            </Button>
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 mt-4">
+                              <Button
+                                onClick={handleExportHtml}
+                                className="flex-1 bg-primary hover:bg-orange-600 text-primary-foreground font-bold h-10"
+                                size="sm"
+                              >
+                                <Download className="mr-2 h-4 w-4" /> Export HTML
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="flex-1 h-10 font-bold"
+                                size="sm"
+                                onClick={() => {
+                                  const healthScore = calculateHealthScore(selectedNode);
+                                  const uptimeSeconds = selectedNode?.uptime || 0;
+                                  const days = Math.floor(uptimeSeconds / 86400);
+                                  const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+
+                                  // Build metrics array - only include non-zero/non-null values
+                                  const metrics: string[] = [];
+
+                                  if (selectedNode?.version) {
+                                    metrics.push(`• Version: ${XandeumClient.formatVersion(selectedNode.version)}`);
+                                  }
+                                  if (uptimeSeconds > 0) {
+                                    metrics.push(`• Uptime: ${days}d ${hours}h`);
+                                  }
+                                  if (selectedNode?.storage_committed && selectedNode.storage_committed > 0) {
+                                    metrics.push(`• Storage Committed: ${formatStorage(selectedNode.storage_committed)}`);
+                                  }
+                                  if (selectedNode?.storage_used && selectedNode.storage_used > 0) {
+                                    metrics.push(`• Storage Used: ${formatStorage(selectedNode.storage_used)}`);
+                                  }
+                                  if (selectedNode?.credits && selectedNode.credits > 0) {
+                                    metrics.push(`• Credits: ${selectedNode.credits.toLocaleString()}`);
+                                  }
+
+                                  // Build location string
+                                  const locationParts: string[] = [];
+                                  if (geoData?.city) locationParts.push(geoData.city);
+                                  if (geoData?.country) locationParts.push(geoData.country);
+
+                                  // Status emoji based on health
+                                  const statusEmoji = healthScore.status === "HEALTHY" ? "🟢" : healthScore.status === "WARNING" ? "🟡" : "🔴";
+
+                                  let detailsText = `${statusEmoji} XANDEUM NODE REPORT
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Node ID
+${selectedNode?.pubkey}
+
+📊 Health: ${healthScore.total}/100 (${healthScore.status})
+┌─ Version: ${healthScore.breakdown.version.score}/${healthScore.breakdown.version.max}
+├─ Uptime: ${healthScore.breakdown.uptime.score}/${healthScore.breakdown.uptime.max}
+├─ Storage: ${healthScore.breakdown.storage.score}/${healthScore.breakdown.storage.max}
+└─ RPC: ${healthScore.breakdown.rpc.score}/${healthScore.breakdown.rpc.max}`;
+
+                                  if (metrics.length > 0) {
+                                    detailsText += `\n\n📈 Metrics\n${metrics.join('\n')}`;
+                                  }
+
+                                  detailsText += `\n\n🔗 Network
+• Gossip: ${selectedNode?.gossip || "N/A"}`;
+
+                                  if (selectedNode?.rpc) {
+                                    detailsText += `\n• RPC: ${selectedNode.rpc}`;
+                                  }
+
+                                  if (locationParts.length > 0) {
+                                    detailsText += `\n\n🌍 Location: ${locationParts.join(', ')}`;
+                                    if (geoData?.org || geoData?.isp) {
+                                      detailsText += `\n• Provider: ${geoData.org || geoData.isp}`;
+                                    }
+                                  }
+
+                                  navigator.clipboard.writeText(detailsText).then(() => {
+                                    toast({
+                                      title: "Copied to Clipboard",
+                                      description: "Node report copied successfully.",
+                                    });
+                                  });
+                                }}
+                              >
+                                <Copy className="mr-2 h-4 w-4" /> Copy All
+                              </Button>
+                            </div>
 
                             <Separator className="bg-border my-4" />
 
@@ -1056,6 +1396,7 @@ function HomeContent() {
                                     storage_usage_percent: selectedNode?.storage_usage_percent,
                                     uptime: selectedNode?.uptime,
                                     credits: selectedNode?.credits,
+                                    health_score: calculateHealthScore(selectedNode).total,
                                   }, null, 2)}
                                 </pre>
                               </div>

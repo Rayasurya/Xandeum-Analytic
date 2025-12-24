@@ -36,7 +36,6 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent skew-x-12 translate-x-[-150%] animate-shimmer group-hover:animate-none opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
                     Real-Time Network Performance
                     <InfoTooltip content="Real-time Transactions Per Second (TPS) processed by the network." />
                 </CardTitle>

@@ -36,7 +36,6 @@ export function StorageDistribution({ data, onDrillDown }: StorageDistributionPr
         <Card className="bg-card/50 border-border shadow-sm relative overflow-hidden group h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-cyan-500" />
                     Storage Capacity
                     <InfoTooltip content="Categorization of nodes based on their committed storage capacity to the network." />
                 </CardTitle>

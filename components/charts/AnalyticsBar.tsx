@@ -23,7 +23,7 @@ export function AnalyticsBar({ title, segments, tooltip }: AnalyticsBarProps) {
     return (
         <div className="p-6 rounded-xl border border-border bg-card/50 backdrop-blur-sm h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-sm text-foreground tracking-wide flex items-center gap-2">
+                <h3 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
                     {title}
                     {/* Internal import to avoid circular dep if needed, or pass component */}
                 </h3>

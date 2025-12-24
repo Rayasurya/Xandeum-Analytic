@@ -808,7 +808,7 @@ function HomeContent() {
             </div>
           </header>
 
-          <div className={cn("w-full relative z-10", activeView === "dashboard" ? "px-8 py-6 space-y-8" : "hidden")}>
+          <div className={cn("w-full relative z-10", activeView === "dashboard" ? "px-6 py-6 space-y-6" : "hidden")}>
 
             {/* VIEW: DASHBOARD */}
             {activeView === "dashboard" && (

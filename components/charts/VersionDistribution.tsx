@@ -44,7 +44,6 @@ export function VersionChart({ data, onDrillDown }: VersionChartProps) {
         <Card className="col-span-1 bg-card/50 border-border shadow-sm">
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
                     Software Distribution
                     <InfoTooltip content="Breakdown of Xandeum software versions running across the network." />
                 </CardTitle>

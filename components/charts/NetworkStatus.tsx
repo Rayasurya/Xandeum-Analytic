@@ -18,7 +18,6 @@ export function StatusChart({ data }: StatusChartProps) {
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
                     Network Activity Status
                 </CardTitle>
             </CardHeader>

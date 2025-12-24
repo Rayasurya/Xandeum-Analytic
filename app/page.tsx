@@ -289,30 +289,59 @@ function HomeContent() {
       const uniqueIps = Array.from(new Set(
         nodeList
           .map(n => n.gossip?.split(':')[0])
-          .filter(ip => ip && ip !== "127.0.0.1" && !ip.startsWith("0."))
-      )).slice(0, 95); // Limit to 95 to be safe with 100 limit
+          .filter(ip => ip && ip !== "127.0.0.1" && !ip.startsWith("0.") && ip !== "localhost")
+      )) as string[];
 
       if (uniqueIps.length === 0) return;
 
-      // 2. Batch Request (via internal proxy to avoid Mixed Content / HTTPS issues)
-      const response = await fetch("/api/geo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Body is already the array of objects { query: ip } expected by the proxy/ip-api
-        body: JSON.stringify(uniqueIps.map(ip => ({ query: ip })))
-      });
+      console.log(`Geo: Fetching location for ${uniqueIps.length} unique IPs`);
 
-      const data = await response.json();
+      // 2. Split into batches of 45 (ip-api free tier limit per request)
+      const BATCH_SIZE = 45;
+      const batches: string[][] = [];
+      for (let i = 0; i < uniqueIps.length; i += BATCH_SIZE) {
+        batches.push(uniqueIps.slice(i, i + BATCH_SIZE));
+      }
 
-      // 3. Map Results
       const newCache: Record<string, any> = {};
-      data.forEach((item: any) => {
-        if (item.status === "success") {
-          newCache[item.query] = item;
-        }
-      });
 
-      setGeoCache(newCache);
+      // 3. Process batches with delay to respect rate limits
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+
+        try {
+          const response = await fetch("/api/geo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(batch.map(ip => ({ query: ip })))
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data)) {
+              data.forEach((item: any) => {
+                if (item.status === "success") {
+                  newCache[item.query] = item;
+                }
+              });
+            }
+          } else {
+            console.error(`Geo batch ${i + 1} failed:`, response.status);
+          }
+        } catch (batchErr) {
+          console.error(`Geo batch ${i + 1} error:`, batchErr);
+        }
+
+        // Wait 1.5 seconds between batches to respect rate limits (45 req/min)
+        if (i < batches.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+
+        // Update cache progressively so UI shows results as they come in
+        setGeoCache(prev => ({ ...prev, ...newCache }));
+      }
+
+      console.log(`Geo: Successfully fetched ${Object.keys(newCache).length} locations`);
     } catch (err) {
       console.error("Geo Batch Sync Failed", err);
     } finally {
@@ -1381,9 +1410,38 @@ ${selectedNode?.pubkey}
 
                             {/* Raw JSON Stream */}
                             <div>
-                              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-primary" /> RAW_JSON_STREAM
-                              </h4>
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-primary" /> RAW_JSON_STREAM
+                                </h4>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                  onClick={() => {
+                                    const jsonData = JSON.stringify({
+                                      pubkey: selectedNode?.pubkey,
+                                      gossip: selectedNode?.gossip,
+                                      rpc: selectedNode?.rpc,
+                                      version: selectedNode?.version,
+                                      storage_committed: selectedNode?.storage_committed,
+                                      storage_used: selectedNode?.storage_used,
+                                      storage_usage_percent: selectedNode?.storage_usage_percent,
+                                      uptime: selectedNode?.uptime,
+                                      credits: selectedNode?.credits,
+                                      health_score: calculateHealthScore(selectedNode).total,
+                                    }, null, 2);
+                                    navigator.clipboard.writeText(jsonData).then(() => {
+                                      toast({
+                                        title: "JSON Copied",
+                                        description: "Raw node data copied to clipboard.",
+                                      });
+                                    });
+                                  }}
+                                >
+                                  <Copy className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
                               <div className="bg-muted/50 rounded-lg border border-border p-3 font-mono text-[10px] text-muted-foreground overflow-x-auto max-h-40 overflow-y-auto">
                                 <pre className="whitespace-pre-wrap break-all">
                                   {JSON.stringify({

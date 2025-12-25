@@ -51,12 +51,106 @@ export function AIChatWidget({ context }: AIChatWidgetProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [showNudge, setShowNudge] = useState(true);
+    const [position, setPosition] = useState({ side: 'right' as 'left' | 'right', y: 24 }); // side and y distance from bottom
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null); // temp position during drag
+    const dragRef = useRef<{ startX: number; startY: number; startY2: number } | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Load saved position from localStorage
+    useEffect(() => {
+        const saved = localStorage.getItem('chatbot-position-v2');
+        if (saved) {
+            try {
+                const pos = JSON.parse(saved);
+                setPosition(pos);
+            } catch (e) {
+                // ignore parse errors
+            }
+        }
+    }, []);
+
+    // Save position to localStorage when it changes
+    useEffect(() => {
+        localStorage.setItem('chatbot-position-v2', JSON.stringify(position));
+    }, [position]);
 
     // Scroll to bottom when messages change
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
+    // Auto-hide nudge after opening chat once
+    useEffect(() => {
+        if (isOpen) {
+            setShowNudge(false);
+        }
+    }, [isOpen]);
+
+    // Drag handlers
+    const [hasDragged, setHasDragged] = useState(false);
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+        setHasDragged(false); // Reset on mousedown
+        const currentX = position.side === 'right' ? window.innerWidth - 24 - 56 : 24;
+        setDragPos({ x: currentX, y: window.innerHeight - position.y - 56 });
+        dragRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            startY2: position.y
+        };
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!isDragging || !dragRef.current) return;
+
+        // Check if mouse moved more than 5 pixels (threshold for drag vs click)
+        const deltaX = Math.abs(e.clientX - dragRef.current.startX);
+        const deltaY = Math.abs(e.clientY - dragRef.current.startY);
+        if (deltaX > 5 || deltaY > 5) {
+            setHasDragged(true);
+        }
+
+        const newX = Math.max(10, Math.min(window.innerWidth - 66, e.clientX - 28));
+        const newYDelta = dragRef.current.startY - e.clientY;
+        const newY = Math.max(10, Math.min(window.innerHeight - 70, dragRef.current.startY2 + newYDelta));
+
+        setDragPos({ x: newX, y: window.innerHeight - newY - 56 });
+        // Update y position for final snap
+        setPosition(prev => ({ ...prev, y: newY }));
+    };
+
+    const [isSnapping, setIsSnapping] = useState(false);
+
+    const handleMouseUp = () => {
+        if (isDragging && dragPos) {
+            // Enable snap animation
+            setIsSnapping(true);
+            // Snap to left or right based on which side is closer
+            const snapToRight = dragPos.x > window.innerWidth / 2;
+            setPosition(prev => ({ side: snapToRight ? 'right' : 'left', y: prev.y }));
+            setDragPos(null);
+            setIsDragging(false);
+            dragRef.current = null;
+            // Disable snap animation after it completes
+            setTimeout(() => setIsSnapping(false), 300);
+        }
+    };
+
+    // Global mouse event listeners for dragging
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            return () => {
+                window.removeEventListener('mousemove', handleMouseMove);
+                window.removeEventListener('mouseup', handleMouseUp);
+            };
+        }
+    }, [isDragging]);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -143,21 +237,61 @@ export function AIChatWidget({ context }: AIChatWidgetProps) {
 
     return (
         <>
-            {/* Floating Chat Button */}
+            {/* AI Nudge Tooltip */}
+            {showNudge && !isOpen && !isDragging && (
+                <div
+                    className="fixed z-50 animate-fade-in"
+                    style={position.side === 'right'
+                        ? { right: 96, bottom: position.y + 7 }
+                        : { left: 96, bottom: position.y + 7 }
+                    }
+                >
+                    <div className="relative bg-card border border-border rounded-xl px-4 py-2 shadow-lg">
+                        <button
+                            onClick={() => setShowNudge(false)}
+                            className="absolute -top-2 -right-2 w-5 h-5 bg-muted hover:bg-muted-foreground/20 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors text-xs"
+                        >
+                            ×
+                        </button>
+                        <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-primary" />
+                            <span className="text-sm font-medium text-foreground">Ask me anything!</span>
+                        </div>
+                        {/* Arrow pointing to button */}
+                        <div className={cn(
+                            "absolute top-1/2 -translate-y-1/2",
+                            position.side === 'right' ? "right-0 translate-x-full" : "left-0 -translate-x-full rotate-180"
+                        )}>
+                            <div className="w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-border" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Floating Chat Button (Draggable) */}
             <button
-                onClick={() => setIsOpen(!isOpen)}
+                onMouseDown={handleMouseDown}
+                onClick={() => !hasDragged && setIsOpen(!isOpen)}
                 className={cn(
-                    "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg transition-all duration-300",
+                    "fixed z-50 w-14 h-14 rounded-full shadow-lg",
+                    (isSnapping || !isDragging) && "transition-all duration-300 ease-out", // Animate when snapping or not dragging
                     "bg-gradient-to-br from-primary to-orange-600 hover:from-orange-600 hover:to-primary",
                     "flex items-center justify-center text-white",
-                    "hover:scale-110 active:scale-95",
+                    isDragging ? "cursor-grabbing scale-110" : "cursor-grab hover:scale-110",
+                    "active:scale-95",
                     isOpen && "rotate-90"
                 )}
+                style={isDragging && dragPos
+                    ? { left: dragPos.x, top: dragPos.y }
+                    : position.side === 'right'
+                        ? { right: 24, bottom: position.y }
+                        : { left: 24, bottom: position.y }
+                }
             >
                 {isOpen ? (
                     <X className="w-6 h-6" />
                 ) : (
-                    <MessageSquare className="w-6 h-6" />
+                    <Bot className="w-6 h-6" />
                 )}
             </button>
 
@@ -167,11 +301,30 @@ export function AIChatWidget({ context }: AIChatWidgetProps) {
                     className={cn(
                         "fixed z-50 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden",
                         "flex flex-col",
-                        // Desktop
-                        "bottom-24 right-6 w-[380px] h-[520px]",
-                        // Mobile
+                        // Desktop size
+                        "w-[380px] h-[520px]",
+                        // Mobile - full width bottom sheet
                         "max-md:bottom-0 max-md:right-0 max-md:left-0 max-md:w-full max-md:h-[70vh] max-md:rounded-b-none"
                     )}
+                    style={(() => {
+                        // Calculate if there's enough space above the button for the chat window (520px height + 70px offset)
+                        const buttonBottom = position.y;
+                        const spaceAbove = typeof window !== 'undefined' ? window.innerHeight - buttonBottom - 56 : 600; // 56px is button height
+                        const chatHeight = 520;
+                        const hasSpaceAbove = spaceAbove >= chatHeight + 20; // 20px padding
+
+                        const baseStyle = position.side === 'right'
+                            ? { right: 24 }
+                            : { left: 24 };
+
+                        if (hasSpaceAbove) {
+                            // Open above the button
+                            return { ...baseStyle, bottom: buttonBottom + 70 };
+                        } else {
+                            // Open below the button (use top instead of bottom)
+                            return { ...baseStyle, top: 70 };
+                        }
+                    })()}
                 >
                     {/* Header */}
                     <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-primary/10 to-orange-500/10 border-b border-border">

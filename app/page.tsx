@@ -280,6 +280,11 @@ function HomeContent() {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
   const [pendingToast, setPendingToast] = useState<{ title: string; description: string; variant?: "default" | "destructive" } | null>(null);
 
+  // Copy Status State
+  const [copyStatusLoading, setCopyStatusLoading] = useState(false);
+  const [copyStatusError, setCopyStatusError] = useState(false);
+  const [copyStatusSuccess, setCopyStatusSuccess] = useState(false);
+
   const { toast } = useToast();
   const client = new XandeumClient();
 
@@ -976,6 +981,110 @@ function HomeContent() {
                             </span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
+                          <div className="relative">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={copyStatusLoading}
+                              className={cn(
+                                "text-xs px-3 py-1.5 h-7 mt-3 transition-all duration-200",
+                                copyStatusSuccess && "bg-emerald-500/20 border-emerald-500 text-emerald-400",
+                                copyStatusError && "bg-red-500/20 border-red-500 text-red-400",
+                                !copyStatusSuccess && !copyStatusError && "hover:bg-primary/10 hover:border-primary hover:text-primary"
+                              )}
+                              onClick={async () => {
+                                if (copyStatusLoading) return;
+
+                                setCopyStatusLoading(true);
+                                setCopyStatusError(false);
+                                setCopyStatusSuccess(false);
+
+                                try {
+                                  // Prepare context for AI
+                                  const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0;
+                                  const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
+                                  const mostCommon = getMostCommonVersion(nodes);
+                                  const outdated = nodes.filter(n => n.version !== mostCommon).length;
+                                  const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
+
+                                  // Call AI API for summary
+                                  const response = await fetch('/api/chat', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      messages: [{
+                                        role: 'user',
+                                        content: `Generate a concise, professional network status summary for sharing. Use emojis and formatting. Include: Grade ${healthyPct >= 90 ? "A+" : healthyPct >= 80 ? "A" : healthyPct >= 70 ? "B+" : healthyPct >= 60 ? "B" : healthyPct >= 50 ? "C+" : healthyPct >= 40 ? "C" : healthyPct >= 30 ? "D" : "F"} (${healthyPct}/100), Total nodes: ${stats.total}, Active: ${stats.active}, Healthy: ${nodes.filter(n => calculateHealthScore(n).total >= 75).length}, At-risk: ${atRisk}, Storage: ${totalStorage}, Current version: ${mostCommon?.split(' ')[0] || 'Unknown'}, Outdated: ${outdated}. Keep it brief and shareable.`
+                                      }],
+                                      context: {
+                                        totalNodes: stats.total,
+                                        activeNodes: stats.active,
+                                        totalStorage,
+                                        healthyCount: nodes.filter(n => calculateHealthScore(n).total >= 75).length,
+                                        warningCount: nodes.filter(n => { const s = calculateHealthScore(n); return s.total >= 50 && s.total < 75; }).length,
+                                        criticalCount: nodes.filter(n => calculateHealthScore(n).total < 50).length,
+                                      }
+                                    })
+                                  });
+
+                                  if (!response.ok) throw new Error('API failed');
+
+                                  // Read streaming response
+                                  const reader = response.body?.getReader();
+                                  const decoder = new TextDecoder();
+                                  let summary = '';
+
+                                  if (reader) {
+                                    while (true) {
+                                      const { done, value } = await reader.read();
+                                      if (done) break;
+                                      summary += decoder.decode(value, { stream: true });
+                                    }
+                                  }
+
+                                  // Add timestamp and link
+                                  summary += `\n\n⏰ ${new Date().toLocaleString()}\n🔗 ${window.location.origin}`;
+
+                                  await navigator.clipboard.writeText(summary);
+                                  setCopyStatusSuccess(true);
+                                  setTimeout(() => setCopyStatusSuccess(false), 3000);
+                                } catch (e) {
+                                  console.error('Copy status failed:', e);
+                                  setCopyStatusError(true);
+                                  setTimeout(() => setCopyStatusError(false), 5000);
+                                } finally {
+                                  setCopyStatusLoading(false);
+                                }
+                              }}
+                            >
+                              {copyStatusLoading ? (
+                                <>
+                                  <RefreshCw className="h-3 w-3 mr-1.5 animate-spin" />
+                                  Generating...
+                                </>
+                              ) : copyStatusSuccess ? (
+                                <>
+                                  <Check className="h-3 w-3 mr-1.5" />
+                                  Copied!
+                                </>
+                              ) : copyStatusError ? (
+                                <>
+                                  <X className="h-3 w-3 mr-1.5" />
+                                  Try Again
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="h-3 w-3 mr-1.5" />
+                                  Copy Status
+                                </>
+                              )}
+                            </Button>
+                            {copyStatusError && (
+                              <div className="absolute left-0 top-full mt-1 px-2 py-1 bg-red-500/90 text-white text-[10px] rounded whitespace-nowrap z-10">
+                                AI unavailable. Try again later.
+                              </div>
+                            )}
+                          </div>
                         </div>
                         <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center">
                           <Trophy className="h-8 w-8 text-primary" />
@@ -1168,9 +1277,9 @@ function HomeContent() {
 
           {/* VIEW: NODES - Full height layout with right panel sticking to edge */}
           {activeView === "pnodes" && (
-            <div className="flex flex-1 min-h-0 overflow-hidden">
+            <div className="flex flex-1 min-h-0 overflow-hidden h-full">
               {/* Table Section with padding */}
-              <div className={cn("flex-1 min-w-0 px-8 py-6 space-y-4 overflow-y-auto", selectedNode && "hidden md:block")}>
+              <div className={cn("flex-1 min-w-0 px-8 py-6 space-y-4 flex flex-col h-full", selectedNode && "hidden md:flex")}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card/50 p-4 rounded-xl border border-border">
                   {/* Left side: Search + Node Count */}
                   <div className="flex items-center gap-4 w-full sm:w-auto">
@@ -1405,19 +1514,19 @@ function HomeContent() {
                   </div>
                 </div>
 
-                <Card className="flex-1 min-h-0 bg-background/50 backdrop-blur-sm border-border overflow-hidden flex flex-col">
-                  <div className="flex-1 overflow-auto rounded-md custom-scrollbar">
+                <Card className="bg-background/50 backdrop-blur-sm border-border overflow-hidden flex flex-col flex-1 min-h-0">
+                  <div className="flex-1 overflow-y-auto rounded-md">
                     <Table className="w-full table-fixed">
-                      <TableHeader className="bg-muted/50">
+                      <TableHeader>
                         <TableRow className="hover:bg-transparent border-border">
-                          <TableHead className="w-[5%]"></TableHead>
-                          <TableHead className="w-[25%] font-bold text-secondary cursor-pointer" onClick={() => handleSort("pubkey")}>
+                          <TableHead className="w-[4%] bg-muted"></TableHead>
+                          <TableHead className="w-[20%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
                             Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                           </TableHead>
-                          <TableHead className="w-[25%] font-bold text-secondary hidden md:table-cell">Gossip Address</TableHead>
-                          <TableHead className="w-[15%] font-bold text-secondary hidden md:table-cell">Version</TableHead>
-                          <TableHead className="w-[10%] font-bold text-secondary text-right">Uptime</TableHead>
-                          <TableHead className="w-[20%] font-bold text-secondary text-right">Storage</TableHead>
+                          <TableHead className="w-[22%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
+                          <TableHead className="w-[14%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
+                          <TableHead className="w-[12%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
+                          <TableHead className="w-[18%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -1479,9 +1588,9 @@ function HomeContent() {
                                 <TableCell className="hidden md:table-cell font-mono text-xs text-muted-foreground break-all">
                                   {node.gossip}
                                 </TableCell>
-                                <TableCell className="hidden md:table-cell">
-                                  <Badge variant="outline" className="bg-secondary/10 text-secondary dark:bg-cyan-950/30 dark:text-cyan-400 border-secondary/30 dark:border-cyan-800/50 font-mono text-xs max-w-[180px] truncate inline-block">
-                                    {XandeumClient.formatVersion(node.version || null)}
+                                <TableCell className="hidden md:table-cell overflow-hidden">
+                                  <Badge variant="outline" className="bg-secondary/10 text-secondary dark:bg-cyan-950/30 dark:text-cyan-400 border-secondary/30 dark:border-cyan-800/50 font-mono text-xs max-w-full truncate block">
+                                    {(node.version?.split(' ')[0]) || "Unknown"}
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-right font-mono text-sm text-foreground">{uptimeString}</TableCell>

@@ -131,8 +131,17 @@
   }
 
   /* Only show focus ring for keyboard navigation (accessibility) */
-  *:focus-visible {
+  /* Exclude dropdown items as they use bg-accent for focus state */
+  *:focus-visible:not([role="menuitemcheckbox"]):not([role="menuitem"]):not([role="menuitemradio"]):not([role="menu"]):not([data-radix-popper-content-wrapper] *) {
     @apply ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+  }
+
+  /* Ensure dropdown menus never show focus rings */
+  [data-radix-popper-content-wrapper] *:focus,
+  [data-radix-popper-content-wrapper] *:focus-visible {
+    outline: none !important;
+    ring: none !important;
+    box-shadow: none !important;
   }
 
   /* Remove focus ring on mouse clicks for buttons and interactive elements */

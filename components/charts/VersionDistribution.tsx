@@ -65,6 +65,8 @@ export function VersionChart({ data, onDrillDown }: VersionChartProps) {
                                             outerRadius={110}
                                             paddingAngle={5}
                                             dataKey="value"
+                                            onClick={(data) => onDrillDown && onDrillDown(data.name)}
+                                            style={{ cursor: onDrillDown ? 'pointer' : 'default' }}
                                         >
                                             {data.map((entry, index) => (
                                                 <Cell
@@ -72,7 +74,6 @@ export function VersionChart({ data, onDrillDown }: VersionChartProps) {
                                                     fill={COLORS[index % COLORS.length]}
                                                     strokeWidth={0}
                                                     className={onDrillDown ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
-                                                    onClick={() => onDrillDown && onDrillDown(entry.name)}
                                                 />
                                             ))}
                                         </Pie>
@@ -84,7 +85,11 @@ export function VersionChart({ data, onDrillDown }: VersionChartProps) {
                             {/* Custom Legend Section */}
                             <div className="flex flex-col gap-6 justify-center">
                                 {data.map((entry, index) => (
-                                    <div key={index} className="flex items-center gap-3">
+                                    <div
+                                        key={index}
+                                        className={`flex items-center gap-3 ${onDrillDown ? 'cursor-pointer hover:opacity-70 transition-opacity' : ''}`}
+                                        onClick={() => onDrillDown && onDrillDown(entry.name)}
+                                    >
                                         <span
                                             className="w-3 h-3 rounded-full flex-shrink-0"
                                             style={{ backgroundColor: COLORS[index % COLORS.length] }}

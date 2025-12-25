@@ -10,6 +10,7 @@ interface AnalyticsBarProps {
     title: string;
     segments: Segment[]; // Expects data to sum to 100% or close
     tooltip?: string;
+    onSegmentClick?: (segment: Segment) => void;
 }
 
 /**
@@ -17,7 +18,7 @@ interface AnalyticsBarProps {
  * A "GitHub Languages" style stacked progress bar.
  * Features: Fully rounded pill shape, specific neon palette, minimalist legend.
  */
-export function AnalyticsBar({ title, segments, tooltip }: AnalyticsBarProps) {
+export function AnalyticsBar({ title, segments, tooltip, onSegmentClick }: AnalyticsBarProps) {
     const total = segments.reduce((acc, curr) => acc + curr.value, 0);
 
     return (
@@ -42,11 +43,13 @@ export function AnalyticsBar({ title, segments, tooltip }: AnalyticsBarProps) {
                             <div
                                 key={idx}
                                 style={{ width: `${percent}%`, backgroundColor: seg.color }}
-                                className="h-full first:rounded-l-full last:rounded-r-full hover:brightness-110 transition-all duration-300 relative group"
+                                className={`h-full first:rounded-l-full last:rounded-r-full hover:brightness-110 transition-all duration-300 relative group ${onSegmentClick ? 'cursor-pointer' : ''}`}
+                                onClick={() => onSegmentClick && onSegmentClick(seg)}
                             >
                                 {/* Tooltip on hover over segment */}
                                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-popover border border-border text-xs text-popover-foreground rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none shadow-md">
                                     {seg.label}: {seg.value} ({percent.toFixed(1)}%)
+                                    {onSegmentClick && <span className="block text-primary text-[10px] mt-1">(Click to View Nodes)</span>}
                                 </div>
                             </div>
                         );
@@ -56,7 +59,11 @@ export function AnalyticsBar({ title, segments, tooltip }: AnalyticsBarProps) {
                 {/* Legend */}
                 <div className="flex flex-wrap gap-4">
                     {segments.map((seg, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
+                        <div
+                            key={idx}
+                            className={`flex items-center gap-2 ${onSegmentClick ? 'cursor-pointer hover:opacity-70 transition-opacity' : ''}`}
+                            onClick={() => onSegmentClick && onSegmentClick(seg)}
+                        >
                             <span
                                 className="w-2.5 h-2.5 rounded-full"
                                 style={{ backgroundColor: seg.color }}

@@ -984,6 +984,12 @@ function HomeContent() {
                             })()
                           )}
                           onClick={() => {
+                            // Reset all filters first, then apply specific filter
+                            setSearchTerm("");
+                            setFilterStatus("all");
+                            setFilterCountry("all");
+                            setFilterVersion("all");
+                            setFilterStorage("all");
                             setFilterHealth("at_risk");
                             setActiveView("pnodes");
                           }}
@@ -1019,7 +1025,16 @@ function HomeContent() {
                                 ? "bg-amber-500/10 border-amber-500/30"
                                 : "bg-red-500/10 border-red-500/30"
                           )}
-                          onClick={() => setActiveView("pnodes")}
+                          onClick={() => {
+                            // Reset all filters - show all nodes
+                            setSearchTerm("");
+                            setFilterStatus("all");
+                            setFilterCountry("all");
+                            setFilterVersion("all");
+                            setFilterStorage("all");
+                            setFilterHealth("all");
+                            setActiveView("pnodes");
+                          }}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2">
@@ -1051,7 +1066,13 @@ function HomeContent() {
                             })()
                           )}
                           onClick={() => {
+                            // Reset all filters first, then apply specific filter
+                            setSearchTerm("");
+                            setFilterStatus("all");
+                            setFilterCountry("all");
                             setFilterVersion("outdated");
+                            setFilterStorage("all");
+                            setFilterHealth("all");
                             setActiveView("pnodes");
                           }}
                         >
@@ -1122,6 +1143,14 @@ function HomeContent() {
                       { label: "Online (RPC Active)", value: stats.active, color: "#3178c6" },
                       { label: "Gossip Only", value: stats.total - stats.active, color: "#f1e05a" },
                     ]}
+                    onSegmentClick={(segment) => {
+                      // Map segment labels to filter values
+                      if (segment.label.includes("Online")) {
+                        handleDrillDown('status', 'active');
+                      } else {
+                        handleDrillDown('status', 'inactive');
+                      }
+                    }}
                   />
                 </div>
               </>

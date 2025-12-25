@@ -403,11 +403,58 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                                             : "bg-orange-50 dark:bg-primary/10 text-foreground rounded-tl-sm"
                                     )}
                                 >
-                                    <p className="text-sm whitespace-pre-wrap">
-                                        {message.content.split("**").map((part, i) =>
-                                            i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+                                    <div
+                                        className={cn(
+                                            "text-sm whitespace-pre-wrap",
+                                            // Ensure links inside have generic styles if not overridden
+                                            "[&>a]:underline [&>a]:underline-offset-2 [&>a]:font-medium"
                                         )}
-                                    </p>
+                                    >
+                                        {(() => {
+                                            // Helper to parse markdown links and bold
+                                            const content = message.content;
+                                            const parts = [];
+                                            const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+                                            let lastIndex = 0;
+                                            let match;
+
+                                            while ((match = linkRegex.exec(content)) !== null) {
+                                                if (match.index > lastIndex) {
+                                                    parts.push({ type: 'text', content: content.substring(lastIndex, match.index) });
+                                                }
+                                                parts.push({ type: 'link', text: match[1], url: match[2] });
+                                                lastIndex = match.index + match[0].length;
+                                            }
+                                            if (lastIndex < content.length) {
+                                                parts.push({ type: 'text', content: content.substring(lastIndex) });
+                                            }
+
+                                            return parts.map((part, i) => {
+                                                if (part.type === 'link') {
+                                                    return (
+                                                        <a
+                                                            key={i}
+                                                            href={part.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className={cn(
+                                                                "transition-colors",
+                                                                message.role === "user"
+                                                                    ? "text-white/90 hover:text-white"
+                                                                    : "text-primary hover:text-orange-700"
+                                                            )}
+                                                        >
+                                                            {part.text}
+                                                        </a>
+                                                    );
+                                                }
+                                                // Handle Bold text
+                                                return part.content?.split("**").map((subPart, j) =>
+                                                    j % 2 === 1 ? <strong key={`${i}-${j}`}>{subPart}</strong> : subPart
+                                                );
+                                            });
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
                         ))}

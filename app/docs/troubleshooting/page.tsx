@@ -1,222 +1,137 @@
-import { ArrowRight, AlertCircle, WifiOff, Activity, HardDrive, RefreshCw } from "lucide-react";
+import { AlertTriangle, Terminal, FileText, CheckCircle, Search, HelpCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function TroubleshootingPage() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-4xl">
             {/* Header */}
             <div>
-                <div className="text-sm text-primary font-medium mb-2">Documentation</div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground">Troubleshooting</h1>
-                <p className="text-muted-foreground mt-2">
-                    Solutions to common pNode issues and how to diagnose problems.
+                <div className="text-sm text-primary font-medium mb-2">Technical Documentation</div>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground">Troubleshooting & Error Codes</h1>
+                <p className="text-muted-foreground mt-2 text-lg">
+                    Diagnostic framework for resolving common pNode failures, interpreting logs, and debugging network issues.
                 </p>
             </div>
 
-            {/* Node Offline/Inactive */}
+            {/* Error Codes */}
             <section className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
-                        <WifiOff className="h-5 w-5 text-red-500" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-foreground">Node Showing "Inactive" or "Offline"</h2>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    <AlertTriangle className="h-6 w-6 text-primary" />
+                    Error Code Reference
+                </h2>
+                <div className="overflow-hidden rounded-lg border border-border">
+                    <table className="w-full text-sm">
+                        <thead className="bg-muted">
+                            <tr>
+                                <th className="p-3 text-left font-bold text-foreground">Code</th>
+                                <th className="p-3 text-left font-bold text-foreground">Message</th>
+                                <th className="p-3 text-left font-bold text-foreground">Resolution</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            <tr className="bg-card">
+                                <td className="p-3 font-mono text-red-500">0x1001</td>
+                                <td className="p-3 text-muted-foreground">Socket Bind Failed</td>
+                                <td className="p-3 text-muted-foreground">Port 8899/8001 is already in use. Check `sudo lsof -i :8899`.</td>
+                            </tr>
+                            <tr className="bg-card/50">
+                                <td className="p-3 font-mono text-red-500">0x2004</td>
+                                <td className="p-3 text-muted-foreground">PoPS Proof Timeout</td>
+                                <td className="p-3 text-muted-foreground">Disk too slow (&gt;400ms read latency). Migrate to NVMe.</td>
+                            </tr>
+                            <tr className="bg-card">
+                                <td className="p-3 font-mono text-red-500">0x3012</td>
+                                <td className="p-3 text-muted-foreground">Gossip Lag Detected</td>
+                                <td className="p-3 text-muted-foreground">Network congested. Ensure 1Gbps connection and check firewall Rules.</td>
+                            </tr>
+                            <tr className="bg-card/50">
+                                <td className="p-3 font-mono text-red-500">0x4000</td>
+                                <td className="p-3 text-muted-foreground">Version mismatch</td>
+                                <td className="p-3 text-muted-foreground">Validator binary is deprecated. Update immediately.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </section>
 
+            {/* Log Analysis */}
+            <section className="space-y-4">
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    <FileText className="h-6 w-6 text-primary" />
+                    Log Analysis
+                </h2>
                 <p className="text-muted-foreground">
-                    If your node appears inactive in the dashboard, it usually means the RPC endpoint is unreachable. Follow these steps:
+                    Xandeum logs are managed by `systemd`. Use `journalctl` to inspect runtime behavior.
                 </p>
 
-                <div className="space-y-3">
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">1. Check Internet Connectivity</h4>
-                        <p className="text-sm text-muted-foreground mb-2">Ensure your server has stable internet:</p>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            ping google.com
-                        </code>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">2. Verify Ports Are Open</h4>
-                        <p className="text-sm text-muted-foreground mb-2">Check that RPC and TPU ports are accessible:</p>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground mb-2">
-                            nc -zv YOUR_IP 8899
-                        </code>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            nc -zv YOUR_IP 8001
-                        </code>
-                        <p className="text-xs text-muted-foreground mt-2">
-                            Replace YOUR_IP with your server's public IP address.
+                <div className="grid gap-4">
+                    <div className="p-4 bg-slate-950 rounded-lg border border-border">
+                        <h3 className="font-semibold text-slate-50 mb-2">Monitor Live Logs</h3>
+                        <pre className="text-xs font-mono text-emerald-400 overflow-x-auto">
+                            sudo journalctl -u xandeum-validator -f -o cat
+                        </pre>
+                        <p className="text-xs text-slate-400 mt-2">
+                            Shows real-time output. Look for <span className="text-red-400">ERROR</span> or <span className="text-yellow-400">WARN</span> flags.
                         </p>
                     </div>
 
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">3. Check Validator Service Status</h4>
-                        <p className="text-sm text-muted-foreground mb-2">Verify the validator is running:</p>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            systemctl status xandeum-validator
-                        </code>
-                    </div>
+                    <div className="p-4 bg-slate-950 rounded-lg border border-border">
+                        <h3 className="font-semibold text-slate-50 mb-2">Grep for Specific Errors</h3>
+                        <pre className="text-xs font-mono text-emerald-400 overflow-x-auto">
+                            # Check for panic events
+                            sudo journalctl -u xandeum-validator | grep "panic"
 
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">4. Review Logs</h4>
-                        <p className="text-sm text-muted-foreground mb-2">Check for errors in the validator logs:</p>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            tail -f /var/log/xandeum.log
-                        </code>
+                            # Check for PoPS failures
+                            sudo journalctl -u xandeum-validator | grep "proof_failed"
+                        </pre>
                     </div>
                 </div>
             </section>
 
-            {/* Low Health Score */}
+            {/* Connectivity Tests */}
             <section className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                        <Activity className="h-5 w-5 text-amber-500" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-foreground">Low Health Score (&lt; 75)</h2>
-                </div>
-
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    <Terminal className="h-6 w-6 text-primary" />
+                    Network Diagnostics
+                </h2>
                 <p className="text-muted-foreground">
-                    A low health score can be caused by one or more degraded metrics:
+                    Verify that your node is visible to the rest of the cluster.
                 </p>
-
-                <div className="space-y-3">
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">Low Uptime Score</h4>
-                        <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                            <li>Recent restart or power outage</li>
-                            <li>Use a UPS (Uninterruptible Power Supply)</li>
-                            <li>Avoid unnecessary restarts — schedule maintenance</li>
-                        </ul>
+                <div className="space-y-2">
+                    <div className="p-3 bg-muted/50 rounded flex items-center justify-between border border-border">
+                        <div>
+                            <h4 className="font-bold text-foreground text-sm">Check RPC Port Visibility</h4>
+                            <code className="text-xs text-muted-foreground">nc -zv &lt;YOUR_IP&gt; 8899</code>
+                        </div>
+                        <span className="text-xs bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded">Expected: Succeeded</span>
                     </div>
-
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">Storage Issues</h4>
-                        <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                            <li>Check disk space: <code className="bg-muted px-1 rounded">df -h</code></li>
-                            <li>Verify the pledged storage volume is mounted</li>
-                            <li>Check for disk errors: <code className="bg-muted px-1 rounded">dmesg | grep -i error</code></li>
-                        </ul>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">Outdated Version</h4>
-                        <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                            <li>Check current version: <code className="bg-muted px-1 rounded">xandeum-validator --version</code></li>
-                            <li>Update to the latest release</li>
-                            <li>Restart the validator after updating</li>
-                        </ul>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">Network Latency</h4>
-                        <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                            <li>Minimum recommended: 1 Gbps symmetric fiber</li>
-                            <li>Check bandwidth: <code className="bg-muted px-1 rounded">speedtest-cli</code></li>
-                            <li>Reduce network congestion on the host</li>
-                        </ul>
+                    <div className="p-3 bg-muted/50 rounded flex items-center justify-between border border-border">
+                        <div>
+                            <h4 className="font-bold text-foreground text-sm">Check Gossip Throughput</h4>
+                            <code className="text-xs text-muted-foreground">xandeum-validator gossip --monitor</code>
+                        </div>
+                        <span className="text-xs bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded">Target: &gt; 2Mbps</span>
                     </div>
                 </div>
             </section>
 
-            {/* Storage Problems */}
-            <section className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                        <HardDrive className="h-5 w-5 text-purple-500" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-foreground">Storage Problems</h2>
-                </div>
-
-                <div className="space-y-3">
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">Check Disk Space</h4>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            df -h
-                        </code>
-                        <p className="text-xs text-muted-foreground mt-2">
-                            Ensure you have sufficient free space on the pledged storage volume.
-                        </p>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">Verify Mount Points</h4>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            lsblk
-                        </code>
-                        <p className="text-xs text-muted-foreground mt-2">
-                            Confirm your storage drives are properly mounted.
-                        </p>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-card border border-border">
-                        <h4 className="font-bold text-foreground mb-2">Check Disk Health</h4>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            smartctl -a /dev/sda
-                        </code>
-                        <p className="text-xs text-muted-foreground mt-2">
-                            Use SMART data to check for failing drives (replace /dev/sda with your device).
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Version Update */}
-            <section className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                        <RefreshCw className="h-5 w-5 text-cyan-500" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-foreground">Updating Your Node</h2>
-                </div>
-
-                <div className="p-4 rounded-lg bg-card border border-border space-y-3">
-                    <div>
-                        <h4 className="font-bold text-foreground mb-2">1. Check Current Version</h4>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            xandeum-validator --version
-                        </code>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-foreground mb-2">2. Download Latest Release</h4>
-                        <p className="text-sm text-muted-foreground">
-                            Follow the official update instructions from the Xandeum documentation.
-                        </p>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-foreground mb-2">3. Restart the Validator</h4>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            sudo systemctl restart xandeum-validator
-                        </code>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-foreground mb-2">4. Verify the Update</h4>
-                        <code className="block bg-muted p-2 rounded text-sm text-foreground">
-                            xandeum-validator --version
-                        </code>
-                    </div>
-                </div>
-            </section>
-
-            {/* Still Having Issues */}
+            {/* Support */}
             <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-orange-500/10 border border-primary/20">
-                <div className="flex items-start gap-3">
-                    <AlertCircle className="h-6 w-6 text-primary flex-shrink-0" />
-                    <div>
-                        <h3 className="text-lg font-bold text-foreground mb-2">Still Having Issues?</h3>
-                        <p className="text-muted-foreground mb-4">
-                            Check the FAQ or use the AI Assistant on the dashboard for real-time help.
-                        </p>
-                        <Link
-                            href="/docs/faq"
-                            className="inline-flex items-center gap-2 text-primary hover:text-orange-500 font-medium transition-colors"
-                        >
-                            View FAQ <ArrowRight className="h-4 w-4" />
-                        </Link>
-                    </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">Still Stuck?</h3>
+                <p className="text-muted-foreground mb-4">
+                    If diagnostics fail, ask our AI assistant or join the Discord developer channel.
+                </p>
+                <div className="flex gap-4">
+                    <button className="inline-flex items-center gap-2 text-primary hover:text-orange-500 font-medium transition-colors">
+                        Ask Xandeum AI <Search className="h-4 w-4" />
+                    </button>
+                    <Link
+                        href="https://discord.gg/xandeum"
+                        target="_blank"
+                        className="inline-flex items-center gap-2 text-primary hover:text-orange-500 font-medium transition-colors"
+                    >
+                        Join Discord <ArrowRight className="h-4 w-4" />
+                    </Link>
                 </div>
             </section>
         </div>

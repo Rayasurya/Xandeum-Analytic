@@ -1,168 +1,109 @@
-import { ArrowRight, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { HeartPulse, ShieldCheck, Activity, AlertTriangle, ArrowRight, Gauge, Layers } from "lucide-react";
 import Link from "next/link";
 
 export default function HealthScorePage() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-4xl">
             {/* Header */}
             <div>
-                <div className="text-sm text-primary font-medium mb-2">Documentation</div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground">Health Score</h1>
-                <p className="text-muted-foreground mt-2">
-                    Understanding how node health is calculated and what it means for your pNode.
+                <div className="text-sm text-primary font-medium mb-2">Technical Documentation</div>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground">Health Score Algorithm</h1>
+                <p className="text-muted-foreground mt-2 text-lg">
+                    Comprehensive breakdown of the 0-100 scoring model used to grade pNode performance and determine reward eligibility.
                 </p>
             </div>
 
-            {/* What is Health Score? */}
+            {/* The Formula */}
             <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">What is Health Score?</h2>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    <Gauge className="h-6 w-6 text-primary" />
+                    The Scoring Algorithm
+                </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                    The Health Score is a <strong className="text-foreground">composite metric from 0 to 100</strong> that indicates the overall reliability and performance of a pNode. It's calculated based on multiple factors that together represent how well the node is serving the network.
+                    The Node Health Score ($H$) is a weighted sum of four key performance indicators. It is recalculated every <strong>Epoch (approx 2 days)</strong>.
                 </p>
-                <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                    <p className="text-sm text-foreground">
-                        <strong>Why it matters:</strong> Nodes with higher health scores are more likely to be selected for storage tasks and earn better rewards. Maintaining a high health score is essential for maximizing your pNode's earning potential.
+
+                <div className="p-6 rounded-lg bg-card border border-border">
+                    <div className="text-center mb-6">
+                        <code className="text-xl md:text-2xl font-mono bg-slate-950 text-emerald-400 p-3 rounded-lg border border-emerald-500/30">
+                            H = (0.4 × U) + (0.3 × S) + (0.2 × R) + (0.1 × V)
+                        </code>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                        <div className="p-3 bg-muted/50 rounded border border-border">
+                            <h4 className="font-bold flex items-center gap-2"><Activity className="w-4 h-4 text-emerald-500" /> U: Uptime (40%)</h4>
+                            <p className="text-xs text-muted-foreground mt-1">Percentage of time the node was reachable via Gossip over the last epoch.</p>
+                        </div>
+                        <div className="p-3 bg-muted/50 rounded border border-border">
+                            <h4 className="font-bold flex items-center gap-2"><Layers className="w-4 h-4 text-purple-500" /> S: Storage (30%)</h4>
+                            <p className="text-xs text-muted-foreground mt-1">Consistency of Proof of Storage challenges passed vs attempted.</p>
+                        </div>
+                        <div className="p-3 bg-muted/50 rounded border border-border">
+                            <h4 className="font-bold flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-blue-500" /> R: RPC (20%)</h4>
+                            <p className="text-xs text-muted-foreground mt-1">Availability of the HTTP/JSON-RPC API on port 8899.</p>
+                        </div>
+                        <div className="p-3 bg-muted/50 rounded border border-border">
+                            <h4 className="font-bold flex items-center gap-2"><HeartPulse className="w-4 h-4 text-indigo-500" /> V: Version (10%)</h4>
+                            <p className="text-xs text-muted-foreground mt-1">Binary freshness (100% for latest, 50% for N-1, 0% for older).</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Thresholds & Penalties */}
+            <section className="space-y-4">
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    <AlertTriangle className="h-6 w-6 text-primary" />
+                    Grading & Rewards
+                </h2>
+                <div className="overflow-hidden rounded-lg border border-border">
+                    <table className="w-full text-sm">
+                        <thead className="bg-muted">
+                            <tr>
+                                <th className="p-3 text-left font-bold text-foreground">Grade</th>
+                                <th className="p-3 text-left font-bold text-foreground">Score Range</th>
+                                <th className="p-3 text-left font-bold text-foreground">Reward Multiplier</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            <tr className="bg-card">
+                                <td className="p-3 font-bold text-emerald-500">Healthy</td>
+                                <td className="p-3 font-mono">75 - 100</td>
+                                <td className="p-3 text-muted-foreground">1.0x (Full Reward)</td>
+                            </tr>
+                            <tr className="bg-card/50">
+                                <td className="p-3 font-bold text-yellow-500">Warning</td>
+                                <td className="p-3 font-mono">50 - 74</td>
+                                <td className="p-3 text-muted-foreground">0.5x (Halved Reward)</td>
+                            </tr>
+                            <tr className="bg-card">
+                                <td className="p-3 font-bold text-red-500">Critical</td>
+                                <td className="p-3 font-mono">0 - 49</td>
+                                <td className="p-3 text-muted-foreground">0.0x (No Reward)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 mt-4">
+                    <h3 className="text-sm font-bold text-red-500 mb-1">Slashing Contitions (Penalties)</h3>
+                    <p className="text-sm text-muted-foreground">
+                        If a node produces invalid blocks (malicious behavior) or stays offline for &gt; 50% of an epoch, it may be <strong>Jailed</strong> (removed from validator set) and lose a portion of its staked SOL/XAND.
                     </p>
                 </div>
             </section>
 
-            {/* Status Thresholds */}
-            <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">Status Thresholds</h2>
-
-                <div className="grid gap-4 md:grid-cols-3">
-                    <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
-                        <div className="flex items-center gap-2 mb-2">
-                            <CheckCircle className="h-5 w-5 text-emerald-500" />
-                            <h3 className="font-bold text-emerald-400">Healthy</h3>
-                        </div>
-                        <div className="text-2xl font-bold text-foreground mb-1">≥ 75</div>
-                        <p className="text-sm text-muted-foreground">
-                            Node is performing well. All metrics are within acceptable ranges.
-                        </p>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                        <div className="flex items-center gap-2 mb-2">
-                            <AlertTriangle className="h-5 w-5 text-amber-500" />
-                            <h3 className="font-bold text-amber-400">Warning</h3>
-                        </div>
-                        <div className="text-2xl font-bold text-foreground mb-1">50 - 74</div>
-                        <p className="text-sm text-muted-foreground">
-                            Some metrics are degrading. Review and address issues soon.
-                        </p>
-                    </div>
-
-                    <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30">
-                        <div className="flex items-center gap-2 mb-2">
-                            <XCircle className="h-5 w-5 text-red-500" />
-                            <h3 className="font-bold text-red-400">Critical</h3>
-                        </div>
-                        <div className="text-2xl font-bold text-foreground mb-1">&lt; 50</div>
-                        <p className="text-sm text-muted-foreground">
-                            Immediate action required. Node may be at risk of penalties.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* How It's Calculated */}
-            <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">How It's Calculated</h2>
-                <p className="text-muted-foreground">
-                    The health score is a weighted sum of four key metrics:
-                </p>
-
-                <div className="space-y-3">
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-card border border-border">
-                        <div className="w-16 text-center">
-                            <div className="text-2xl font-bold text-primary">40%</div>
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold text-foreground">Uptime</h3>
-                            <p className="text-sm text-muted-foreground">
-                                How long the node has been continuously online. Longer uptime = higher score.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-card border border-border">
-                        <div className="w-16 text-center">
-                            <div className="text-2xl font-bold text-primary">30%</div>
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold text-foreground">Storage Consistency</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Whether the pledged storage is available and responsive. Based on storage committed amount.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-card border border-border">
-                        <div className="w-16 text-center">
-                            <div className="text-2xl font-bold text-primary">20%</div>
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold text-foreground">RPC Status</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Whether the node's RPC endpoint is reachable. Nodes must have open RPC/TPU ports.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-card border border-border">
-                        <div className="w-16 text-center">
-                            <div className="text-2xl font-bold text-primary">10%</div>
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold text-foreground">Version Freshness</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Running the latest software version. Outdated nodes receive lower scores.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* How to Improve */}
-            <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">How to Improve Your Score</h2>
-
-                <ul className="space-y-2 text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        <span><strong className="text-foreground">Keep your node online</strong> — Avoid unnecessary restarts. Use a UPS for power stability.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        <span><strong className="text-foreground">Update regularly</strong> — Run the latest validator version to maximize version score.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        <span><strong className="text-foreground">Ensure port accessibility</strong> — Keep RPC (8899) and TPU (8001) ports open.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        <span><strong className="text-foreground">Monitor storage</strong> — Ensure pledged storage volume is mounted and healthy.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        <span><strong className="text-foreground">Stable internet</strong> — Use at least 1 Gbps symmetric connection for best performance.</span>
-                    </li>
-                </ul>
-            </section>
-
             {/* Next Steps */}
             <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-orange-500/10 border border-primary/20">
-                <h3 className="text-lg font-bold text-foreground mb-2">Next Steps</h3>
+                <h3 className="text-lg font-bold text-foreground mb-2">Score Too Low?</h3>
                 <p className="text-muted-foreground mb-4">
-                    Dive deeper into individual metrics and what they mean.
+                    Use the troubleshooting guide to identify which component is dragging your score down.
                 </p>
                 <Link
-                    href="/docs/metrics"
+                    href="/docs/troubleshooting"
                     className="inline-flex items-center gap-2 text-primary hover:text-orange-500 font-medium transition-colors"
                 >
-                    Explore All Metrics <ArrowRight className="h-4 w-4" />
+                    Diagnose Node Issues <ArrowRight className="h-4 w-4" />
                 </Link>
             </section>
         </div>

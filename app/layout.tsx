@@ -29,8 +29,8 @@ export default function RootLayout({
       <body className={`${inter.variable} ${geistMono.variable} font-sans`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <TooltipProvider delayDuration={0}>

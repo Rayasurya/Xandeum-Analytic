@@ -16,7 +16,7 @@ const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
                 <p className="font-bold text-popover-foreground mb-1">{payload[0].payload.name}</p>
                 <div className="flex items-center gap-2 mb-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: payload[0].fill }} />
-                    <span className="text-sm font-mono text-cyan-400">
+                    <span className="text-sm font-mono text-orange-600 dark:text-orange-400">
                         {payload[0].value} Nodes
                     </span>
                 </div>
@@ -69,7 +69,7 @@ export function StorageDistribution({ data, onDrillDown }: StorageDistributionPr
                                 {data.map((entry, index) => (
                                     <Cell
                                         key={`cell-${index}`}
-                                        fill="#06b6d4"
+                                        fill="#f97316"
                                         fillOpacity={0.6 + (index * 0.1)}
                                         className={onDrillDown ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
                                         onClick={() => onDrillDown && onDrillDown(entry.name)}

@@ -9,7 +9,13 @@ interface CountryChartProps {
     onDrillDown?: (country: string) => void;
 }
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+const COLORS = [
+    '#0ea5e9', // Sky 500
+    '#38bdf8', // Sky 400
+    '#7dd3fc', // Sky 300
+    '#bae6fd', // Sky 200
+    '#e0f2fe', // Sky 100
+];
 
 const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
     if (active && payload && payload.length) {
@@ -49,12 +55,12 @@ export function CountryChart({ data, onDrillDown }: CountryChartProps) {
                 <div className="h-[250px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart layout="vertical" data={chartData} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#1e293b" />
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
                             <XAxis type="number" hide />
                             <YAxis
                                 dataKey="name"
                                 type="category"
-                                tick={{ fill: '#94a3b8', fontSize: 11, fontFamily: 'monospace' }}
+                                tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'monospace' }}
                                 width={80}
                                 tickLine={false}
                                 axisLine={false}

@@ -39,7 +39,7 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
                     Real-Time Network Performance
                     <InfoTooltip content="Real-time Transactions Per Second (TPS) processed by the network." />
                 </CardTitle>
-                <div className="text-xs font-mono text-cyan-500">Live TPS History</div>
+                <div className="text-xs font-mono text-cyan-600 dark:text-cyan-500">Live TPS History</div>
             </CardHeader>
             <CardContent>
                 <div className="h-[250px] w-full">
@@ -51,7 +51,7 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
                                     <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                             <XAxis
                                 dataKey="time"
                                 ticks={customTicks}

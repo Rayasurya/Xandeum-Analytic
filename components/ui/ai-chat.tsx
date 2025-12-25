@@ -22,6 +22,9 @@ interface ChatContext {
 
 interface AIChatWidgetProps {
     context: ChatContext;
+    externalOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    hideFloatingButton?: boolean;
 }
 
 interface Message {
@@ -46,8 +49,16 @@ const SUGGESTIONS = [
     "Show node issues",
 ];
 
-export function AIChatWidget({ context }: AIChatWidgetProps) {
-    const [isOpen, setIsOpen] = useState(false);
+export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloatingButton }: AIChatWidgetProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+    const setIsOpen = (open: boolean) => {
+        if (onOpenChange) {
+            onOpenChange(open);
+        } else {
+            setInternalOpen(open);
+        }
+    };
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -238,7 +249,7 @@ export function AIChatWidget({ context }: AIChatWidgetProps) {
     return (
         <>
             {/* AI Nudge Tooltip */}
-            {showNudge && !isOpen && !isDragging && (
+            {showNudge && !isOpen && !isDragging && !hideFloatingButton && (
                 <div
                     className="fixed z-50 animate-fade-in"
                     style={position.side === 'right'
@@ -268,32 +279,34 @@ export function AIChatWidget({ context }: AIChatWidgetProps) {
                 </div>
             )}
 
-            {/* Floating Chat Button (Draggable) */}
-            <button
-                onMouseDown={handleMouseDown}
-                onClick={() => !hasDragged && setIsOpen(!isOpen)}
-                className={cn(
-                    "fixed z-50 w-14 h-14 rounded-full shadow-lg",
-                    (isSnapping || !isDragging) && "transition-all duration-300 ease-out", // Animate when snapping or not dragging
-                    "bg-gradient-to-br from-primary to-orange-600 hover:from-orange-600 hover:to-primary",
-                    "flex items-center justify-center text-white",
-                    isDragging ? "cursor-grabbing scale-110" : "cursor-grab hover:scale-110",
-                    "active:scale-95",
-                    isOpen && "rotate-90"
-                )}
-                style={isDragging && dragPos
-                    ? { left: dragPos.x, top: dragPos.y }
-                    : position.side === 'right'
-                        ? { right: 24, bottom: position.y }
-                        : { left: 24, bottom: position.y }
-                }
-            >
-                {isOpen ? (
-                    <X className="w-6 h-6" />
-                ) : (
-                    <Bot className="w-6 h-6" />
-                )}
-            </button>
+            {/* Floating Chat Button (Draggable) - Hidden when hideFloatingButton is true */}
+            {!hideFloatingButton && (
+                <button
+                    onMouseDown={handleMouseDown}
+                    onClick={() => !hasDragged && setIsOpen(!isOpen)}
+                    className={cn(
+                        "fixed z-50 w-14 h-14 rounded-full shadow-lg",
+                        (isSnapping || !isDragging) && "transition-all duration-300 ease-out", // Animate when snapping or not dragging
+                        "bg-gradient-to-br from-primary to-orange-600 hover:from-orange-600 hover:to-primary",
+                        "flex items-center justify-center text-white",
+                        isDragging ? "cursor-grabbing scale-110" : "cursor-grab hover:scale-110",
+                        "active:scale-95",
+                        isOpen && "rotate-90"
+                    )}
+                    style={isDragging && dragPos
+                        ? { left: dragPos.x, top: dragPos.y }
+                        : position.side === 'right'
+                            ? { right: 24, bottom: position.y }
+                            : { left: 24, bottom: position.y }
+                    }
+                >
+                    {isOpen ? (
+                        <X className="w-6 h-6" />
+                    ) : (
+                        <Bot className="w-6 h-6" />
+                    )}
+                </button>
+            )}
 
             {/* Chat Window */}
             {isOpen && (
@@ -351,7 +364,7 @@ export function AIChatWidget({ context }: AIChatWidgetProps) {
                                 <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                                     <Bot className="w-4 h-4 text-primary" />
                                 </div>
-                                <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                                <div className="bg-orange-50 dark:bg-primary/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
                                     <p className="text-sm text-foreground whitespace-pre-line">
                                         {WELCOME_MESSAGE.split("**").map((part, i) =>
                                             i % 2 === 1 ? <strong key={i}>{part}</strong> : part
@@ -386,8 +399,8 @@ export function AIChatWidget({ context }: AIChatWidgetProps) {
                                     className={cn(
                                         "rounded-2xl px-4 py-3 max-w-[85%]",
                                         message.role === "user"
-                                            ? "bg-primary text-white rounded-tr-sm"
-                                            : "bg-muted text-foreground rounded-tl-sm"
+                                            ? "bg-orange-600 text-white rounded-tr-sm"
+                                            : "bg-orange-50 dark:bg-primary/10 text-foreground rounded-tl-sm"
                                     )}
                                 >
                                     <p className="text-sm whitespace-pre-wrap">

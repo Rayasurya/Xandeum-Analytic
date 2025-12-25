@@ -27,7 +27,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  Trophy
+  Trophy,
+  Sparkles
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -285,8 +286,33 @@ function HomeContent() {
   const [copyStatusError, setCopyStatusError] = useState(false);
   const [copyStatusSuccess, setCopyStatusSuccess] = useState(false);
 
+  // AI Chat State (controlled from header)
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [showAiNudge, setShowAiNudge] = useState(false);
+
   const { toast } = useToast();
   const client = new XandeumClient();
+
+  useEffect(() => {
+    // Initial nudge after 3 seconds
+    const initialTimeout = setTimeout(() => {
+      if (!aiChatOpen) setShowAiNudge(true);
+      setTimeout(() => setShowAiNudge(false), 8000); // Duration 8s
+    }, 3000);
+
+    // Periodic nudge every 60 seconds
+    const interval = setInterval(() => {
+      if (!aiChatOpen) { // Don't nudge if chat is open
+        setShowAiNudge(true);
+        setTimeout(() => setShowAiNudge(false), 8000);
+      }
+    }, 60000); // 60s interval
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+  }, [aiChatOpen]);
 
   // Minimum 5 second loading screen
   useEffect(() => {
@@ -922,6 +948,51 @@ function HomeContent() {
                 </div>
               </div>
 
+              {/* AI Assistant Button */}
+              {/* AI Assistant Button */}
+              <div className="relative">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          setAiChatOpen(!aiChatOpen);
+                          setShowAiNudge(false); // Dismiss nudge on click
+                        }}
+                        className={cn(
+                          "h-9 px-4 rounded-md inline-flex items-center justify-center gap-2",
+                          "text-white font-medium text-sm",
+                          "bg-gradient-to-r from-orange-500 to-pink-500",
+                          "ai-shimmer-btn", // Shimmer overlay
+                          "transition-all duration-200 hover:brightness-110 active:scale-95",
+                          "shadow-md hover:shadow-lg",
+                          aiChatOpen && "ring-2 ring-white/40 ring-offset-1 ring-offset-background"
+                        )}
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        <span className="hidden sm:inline">Ask AI</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Xandeum Scope AI Assistant</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                {/* Auto Nudge Element */}
+                <div
+                  className={cn(
+                    "absolute top-full left-1/2 -translate-x-1/2 mt-3 w-max max-w-[250px] px-4 py-2 rounded-2xl bg-popover border border-border text-popover-foreground text-xs font-medium shadow-xl pointer-events-none transition-all duration-700 ease-in-out z-50 flex items-center gap-2",
+                    showAiNudge ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                  )}
+                >
+                  {/* Chat Tail */}
+                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-popover border-t border-l border-border rotate-45" />
+                  <Sparkles className="h-3 w-3 text-orange-500 mr-0.5 flex-shrink-0" />
+                  Ask me anything about Xandeum Nodes
+                </div>
+              </div>
+
               {/* Sync Button */}
               <TooltipProvider>
                 <Tooltip>
@@ -950,117 +1021,119 @@ function HomeContent() {
             {/* VIEW: DASHBOARD */}
             {activeView === "dashboard" && (
               <>
-                {/* Hero Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <DashboardCard
-                    icon={<Server className="w-3 h-3 text-secondary" />}
-                    title="Total Nodes"
-                    value={stats.total}
-                    subtext="Global Network"
-                    subtextClassName="text-secondary/80"
-                    tooltip="Count of all unique nodes discovered in the global gossip mesh."
-                    loading={loading}
-                  />
-                  <DashboardCard
-                    icon={<Zap className="w-3 h-3 text-primary" />}
-                    title="Online Nodes"
-                    value={stats.active}
-                    subtext="RPC/TPU Responding"
-                    subtextClassName="text-emerald-500"
-                    tooltip="Nodes currently online and responding to RPC/TPU requests."
-                    loading={loading}
-                  />
-                  <DashboardCard
-                    icon={<Database className="w-3 h-3 text-blue-400" />}
-                    title="Total Storage"
-                    value={(() => {
-                      const totalBytes = nodes.reduce((acc, node) => acc + (node.storage_committed || 0), 0);
-                      const tb = totalBytes / (1024 * 1024 * 1024 * 1024);
-                      return `${tb.toFixed(1)} TB`;
-                    })()}
-                    subtext="Network Capacity"
-                    subtextClassName="text-blue-400"
-                    tooltip="Total verified storage capacity committed to the network."
-                    loading={loading}
-                  />
-                  <DashboardCard
-                    icon={<Activity className="w-3 h-3 text-muted-foreground" />}
-                    title="Software Distribution"
-                    value={activeVersionsCount}
-                    subtext="Unique Versions"
-                    subtextClassName="text-muted-foreground"
-                    onClick={() => setActiveView("pnodes")}
-                    className="cursor-pointer hover:border-primary/50 transition-colors"
-                  />
+                {/* Top Section - Swapped order: Network Intelligence first, then Hero Metrics */}
+                <div className="flex flex-col-reverse gap-6">
+                  {/* Hero Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <DashboardCard
+                      icon={<Server className="w-3 h-3 text-secondary" />}
+                      title="Total Nodes"
+                      value={stats.total}
+                      subtext="Global Network"
+                      subtextClassName="text-secondary/80"
+                      tooltip="Count of all unique nodes discovered in the global gossip mesh."
+                      loading={loading}
+                    />
+                    <DashboardCard
+                      icon={<Zap className="w-3 h-3 text-primary" />}
+                      title="Online Nodes"
+                      value={stats.active}
+                      subtext="RPC/TPU Responding"
+                      subtextClassName="text-emerald-500"
+                      tooltip="Nodes currently online and responding to RPC/TPU requests."
+                      loading={loading}
+                    />
+                    <DashboardCard
+                      icon={<Database className="w-3 h-3 text-blue-400" />}
+                      title="Total Storage"
+                      value={(() => {
+                        const totalBytes = nodes.reduce((acc, node) => acc + (node.storage_committed || 0), 0);
+                        const tb = totalBytes / (1024 * 1024 * 1024 * 1024);
+                        return `${tb.toFixed(1)} TB`;
+                      })()}
+                      subtext="Network Capacity"
+                      subtextClassName="text-blue-400"
+                      tooltip="Total verified storage capacity committed to the network."
+                      loading={loading}
+                    />
+                    <DashboardCard
+                      icon={<Activity className="w-3 h-3 text-muted-foreground" />}
+                      title="Software Distribution"
+                      value={activeVersionsCount}
+                      subtext="Unique Versions"
+                      subtextClassName="text-muted-foreground"
+                      onClick={() => setActiveView("pnodes")}
+                      className="cursor-pointer hover:border-primary/50 transition-colors"
+                    />
 
-                </div>
+                  </div>
 
-                {/* Network Intelligence Summary - WOW Element */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  {/* Network Grade Card */}
-                  <Card className="bg-card/50 border-border overflow-hidden relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-orange-500/10" />
-                    <CardContent className="p-6 relative">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">Network Grade</p>
-                          <div className="flex items-baseline gap-2">
-                            <span className={cn(
-                              "text-5xl font-black",
-                              (() => {
-                                const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
-                                if (healthyPct >= 80) return "text-emerald-400";
-                                if (healthyPct >= 60) return "text-primary";
-                                if (healthyPct >= 40) return "text-amber-400";
-                                return "text-red-400";
-                              })()
-                            )}>
-                              {(() => {
-                                const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
-                                if (healthyPct >= 90) return "A+";
-                                if (healthyPct >= 80) return "A";
-                                if (healthyPct >= 70) return "B+";
-                                if (healthyPct >= 60) return "B";
-                                if (healthyPct >= 50) return "C+";
-                                if (healthyPct >= 40) return "C";
-                                if (healthyPct >= 30) return "D";
-                                return "F";
-                              })()}
-                            </span>
-                            <span className="text-lg text-muted-foreground font-mono">
-                              {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0}/100
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
-                          <div className="relative">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={copyStatusLoading}
-                              className={cn(
-                                "text-xs px-3 py-1.5 h-7 mt-3 transition-all duration-200",
-                                copyStatusSuccess && "bg-emerald-500/20 border-emerald-500 text-emerald-400",
-                                copyStatusError && "bg-red-500/20 border-red-500 text-red-400",
-                                !copyStatusSuccess && !copyStatusError && "hover:bg-primary/10 hover:border-primary hover:text-primary"
-                              )}
-                              onClick={async () => {
-                                if (copyStatusLoading) return;
+                  {/* Network Intelligence Summary - WOW Element */}
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Network Grade Card */}
+                    <Card className="bg-card/50 border-border overflow-hidden relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-orange-500/10" />
+                      <CardContent className="p-6 relative">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">Network Grade</p>
+                            <div className="flex items-baseline gap-2">
+                              <span className={cn(
+                                "text-5xl font-black",
+                                (() => {
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
+                                  if (healthyPct >= 80) return "text-emerald-400";
+                                  if (healthyPct >= 60) return "text-primary";
+                                  if (healthyPct >= 40) return "text-amber-400";
+                                  return "text-red-400";
+                                })()
+                              )}>
+                                {(() => {
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
+                                  if (healthyPct >= 90) return "A+";
+                                  if (healthyPct >= 80) return "A";
+                                  if (healthyPct >= 70) return "B+";
+                                  if (healthyPct >= 60) return "B";
+                                  if (healthyPct >= 50) return "C+";
+                                  if (healthyPct >= 40) return "C";
+                                  if (healthyPct >= 30) return "D";
+                                  return "F";
+                                })()}
+                              </span>
+                              <span className="text-lg text-muted-foreground font-mono">
+                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0}/100
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
+                            <div className="relative">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={copyStatusLoading}
+                                className={cn(
+                                  "text-xs px-3 py-1.5 h-7 mt-3 transition-all duration-200",
+                                  copyStatusSuccess && "bg-emerald-500/20 border-emerald-500 text-emerald-400",
+                                  copyStatusError && "bg-red-500/20 border-red-500 text-red-400",
+                                  !copyStatusSuccess && !copyStatusError && "hover:bg-primary/10 hover:border-primary hover:text-primary"
+                                )}
+                                onClick={async () => {
+                                  if (copyStatusLoading) return;
 
-                                setCopyStatusLoading(true);
-                                setCopyStatusError(false);
-                                setCopyStatusSuccess(false);
+                                  setCopyStatusLoading(true);
+                                  setCopyStatusError(false);
+                                  setCopyStatusSuccess(false);
 
-                                try {
-                                  // Prepare data
-                                  const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0;
-                                  const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
-                                  const mostCommon = getMostCommonVersion(nodes);
-                                  const outdated = nodes.filter(n => n.version !== mostCommon).length;
-                                  const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
-                                  const grade = healthyPct >= 90 ? "A+" : healthyPct >= 80 ? "A" : healthyPct >= 70 ? "B+" : healthyPct >= 60 ? "B" : healthyPct >= 50 ? "C+" : healthyPct >= 40 ? "C" : healthyPct >= 30 ? "D" : "F";
+                                  try {
+                                    // Prepare data
+                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0;
+                                    const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
+                                    const mostCommon = getMostCommonVersion(nodes);
+                                    const outdated = nodes.filter(n => n.version !== mostCommon).length;
+                                    const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
+                                    const grade = healthyPct >= 90 ? "A+" : healthyPct >= 80 ? "A" : healthyPct >= 70 ? "B+" : healthyPct >= 60 ? "B" : healthyPct >= 50 ? "C+" : healthyPct >= 40 ? "C" : healthyPct >= 30 ? "D" : "F";
 
-                                  // Clean, simple format for messaging apps
-                                  const summary = `🌐 *XANDEUM NETWORK STATUS*
+                                    // Clean, simple format for messaging apps
+                                    const summary = `🌐 *XANDEUM NETWORK STATUS*
 
 🏆 Grade: *${grade}* (${healthyPct}/100)
 
@@ -1079,185 +1152,186 @@ Outdated: ${outdated}
 ⏰ ${new Date().toLocaleString()}
 🔗 ${window.location.origin}`;
 
-                                  await navigator.clipboard.writeText(summary);
-                                  setCopyStatusSuccess(true);
-                                  setTimeout(() => setCopyStatusSuccess(false), 3000);
-                                } catch (e) {
-                                  console.error('Copy status failed:', e);
-                                  setCopyStatusError(true);
-                                  setTimeout(() => setCopyStatusError(false), 5000);
-                                } finally {
-                                  setCopyStatusLoading(false);
-                                }
-                              }}
-                            >
-                              {copyStatusLoading ? (
-                                <>
-                                  <RefreshCw className="h-3 w-3 mr-1.5 animate-spin" />
-                                  Generating...
-                                </>
-                              ) : copyStatusSuccess ? (
-                                <>
-                                  <Check className="h-3 w-3 mr-1.5" />
-                                  Copied!
-                                </>
-                              ) : copyStatusError ? (
-                                <>
-                                  <X className="h-3 w-3 mr-1.5" />
-                                  Try Again
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="h-3 w-3 mr-1.5" />
-                                  Copy Status
-                                </>
-                              )}
-                            </Button>
-                            {copyStatusError && (
-                              <div className="absolute left-0 top-full mt-1 px-2 py-1 bg-red-500/90 text-white text-[10px] rounded whitespace-nowrap z-10">
-                                AI unavailable. Try again later.
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center">
-                          <Trophy className="h-8 w-8 text-primary" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Intelligence Insights */}
-                  <Card className="lg:col-span-3 bg-card/50 border-border">
-                    <CardContent className="p-6">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-4">Network Intelligence</p>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* At-Risk Nodes */}
-                        <div
-                          className={cn(
-                            "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
-                            (() => {
-                              const atRisk = nodes.filter(n => {
-                                const score = calculateHealthScore(n);
-                                return score.total < 75;
-                              }).length;
-                              if (atRisk === 0) return "bg-emerald-500/10 border-emerald-500/30";
-                              if (atRisk <= 5) return "bg-amber-500/10 border-amber-500/30";
-                              return "bg-red-500/10 border-red-500/30";
-                            })()
-                          )}
-                          onClick={() => {
-                            // Reset all filters first, then apply specific filter
-                            setSearchTerm("");
-                            setFilterStatus("all");
-                            setFilterCountry("all");
-                            setFilterVersion("all");
-                            setFilterStorage("all");
-                            setFilterHealth("at_risk");
-                            setActiveView("pnodes");
-                          }}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              {(() => {
-                                const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
-                                if (atRisk === 0) return <span className="text-lg">✅</span>;
-                                if (atRisk <= 5) return <span className="text-lg">⚠️</span>;
-                                return <span className="text-lg">🔴</span>;
-                              })()}
-                              <span className="text-2xl font-bold text-foreground">
-                                {nodes.filter(n => calculateHealthScore(n).total < 75).length}
-                              </span>
-                            </div>
-                            <span className="text-xs text-primary font-medium">View →</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {nodes.filter(n => calculateHealthScore(n).total < 75).length === 0
-                              ? "All nodes healthy!"
-                              : "Nodes at risk"}
-                          </p>
-                        </div>
-
-                        {/* Network Status */}
-                        <div
-                          className={cn(
-                            "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
-                            stats.total > 0 && (stats.active / stats.total) >= 0.8
-                              ? "bg-emerald-500/10 border-emerald-500/30"
-                              : stats.total > 0 && (stats.active / stats.total) >= 0.6
-                                ? "bg-amber-500/10 border-amber-500/30"
-                                : "bg-red-500/10 border-red-500/30"
-                          )}
-                          onClick={() => {
-                            // Reset all filters - show all nodes
-                            setSearchTerm("");
-                            setFilterStatus("all");
-                            setFilterCountry("all");
-                            setFilterVersion("all");
-                            setFilterStorage("all");
-                            setFilterHealth("all");
-                            setActiveView("pnodes");
-                          }}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">
-                                {stats.total > 0 && (stats.active / stats.total) >= 0.8 ? "✅" :
-                                  stats.total > 0 && (stats.active / stats.total) >= 0.6 ? "⚠️" : "🔴"}
-                              </span>
-                              <span className="text-lg font-bold text-foreground">
-                                {stats.total > 0 && (stats.active / stats.total) >= 0.8 ? "Excellent" :
-                                  stats.total > 0 && (stats.active / stats.total) >= 0.6 ? "Good" : "Degraded"}
-                              </span>
-                            </div>
-                            <span className="text-xs text-primary font-medium">View →</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">Network health status</p>
-                        </div>
-
-                        {/* Outdated Versions - Shows nodes not on latest software */}
-                        {(() => {
-                          const latestVersion = getMostCommonVersion(nodes);
-                          const outdated = nodes.filter(n => {
-                            const nodeVersion = n.version?.split(' ')[0];
-                            return nodeVersion && nodeVersion !== latestVersion;
-                          }).length;
-                          return (
-                            <div
-                              className={cn(
-                                "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
-                                outdated === 0 ? "bg-emerald-500/10 border-emerald-500/30" :
-                                  outdated <= 10 ? "bg-amber-500/10 border-amber-500/30" :
-                                    "bg-red-500/10 border-red-500/30"
-                              )}
-                              onClick={() => {
-                                // Reset all filters first, then apply specific filter
-                                setSearchTerm("");
-                                setFilterStatus("all");
-                                setFilterCountry("all");
-                                setFilterVersion("outdated");
-                                setFilterStorage("all");
-                                setFilterHealth("all");
-                                setActiveView("pnodes");
-                              }}
-                            >
-                              <div className="flex items-center justify-between mb-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-lg">{outdated === 0 ? "✅" : "🔄"}</span>
-                                  <span className="text-2xl font-bold text-foreground">{outdated}</span>
+                                    await navigator.clipboard.writeText(summary);
+                                    setCopyStatusSuccess(true);
+                                    setTimeout(() => setCopyStatusSuccess(false), 3000);
+                                  } catch (e) {
+                                    console.error('Copy status failed:', e);
+                                    setCopyStatusError(true);
+                                    setTimeout(() => setCopyStatusError(false), 5000);
+                                  } finally {
+                                    setCopyStatusLoading(false);
+                                  }
+                                }}
+                              >
+                                {copyStatusLoading ? (
+                                  <>
+                                    <RefreshCw className="h-3 w-3 mr-1.5 animate-spin" />
+                                    Generating...
+                                  </>
+                                ) : copyStatusSuccess ? (
+                                  <>
+                                    <Check className="h-3 w-3 mr-1.5" />
+                                    Copied!
+                                  </>
+                                ) : copyStatusError ? (
+                                  <>
+                                    <X className="h-3 w-3 mr-1.5" />
+                                    Try Again
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="h-3 w-3 mr-1.5" />
+                                    Copy Status
+                                  </>
+                                )}
+                              </Button>
+                              {copyStatusError && (
+                                <div className="absolute left-0 top-full mt-1 px-2 py-1 bg-red-500/90 text-white text-[10px] rounded whitespace-nowrap z-10">
+                                  AI unavailable. Try again later.
                                 </div>
-                                <span className="text-xs text-primary font-medium">View →</span>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                {outdated === 0 ? "All on latest version!" : "Outdated versions"}
-                              </p>
+                              )}
                             </div>
-                          );
-                        })()}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                          </div>
+                          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center">
+                            <Trophy className="h-8 w-8 text-primary" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Intelligence Insights */}
+                    <Card className="lg:col-span-3 bg-card/50 border-border flex flex-col">
+                      <CardContent className="p-6 flex-1 flex flex-col">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-4">Network Intelligence</p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                          {/* Network Status */}
+                          <div
+                            className={cn(
+                              "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all flex flex-col justify-between h-full",
+                              stats.total > 0 && (stats.active / stats.total) >= 0.8
+                                ? "bg-emerald-500/10 border-emerald-500/30"
+                                : stats.total > 0 && (stats.active / stats.total) >= 0.6
+                                  ? "bg-amber-500/10 border-amber-500/30"
+                                  : "bg-red-500/10 border-red-500/30"
+                            )}
+                            onClick={() => {
+                              // Reset all filters - show all nodes
+                              setSearchTerm("");
+                              setFilterStatus("all");
+                              setFilterCountry("all");
+                              setFilterVersion("all");
+                              setFilterStorage("all");
+                              setFilterHealth("all");
+                              setActiveView("pnodes");
+                            }}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">
+                                  {stats.total > 0 && (stats.active / stats.total) >= 0.8 ? "✅" :
+                                    stats.total > 0 && (stats.active / stats.total) >= 0.6 ? "⚠️" : "🔴"}
+                                </span>
+                                <span className="text-lg font-bold text-foreground">
+                                  {stats.total > 0 && (stats.active / stats.total) >= 0.8 ? "Excellent" :
+                                    stats.total > 0 && (stats.active / stats.total) >= 0.6 ? "Good" : "Degraded"}
+                                </span>
+                              </div>
+                              <span className="text-xs text-primary font-medium whitespace-nowrap">View →</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">Network health status</p>
+                          </div>
+
+                          {/* At-Risk Nodes */}
+                          <div
+                            className={cn(
+                              "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all flex flex-col justify-between h-full",
+                              (() => {
+                                const atRisk = nodes.filter(n => {
+                                  const score = calculateHealthScore(n);
+                                  return score.total < 75;
+                                }).length;
+                                if (atRisk === 0) return "bg-emerald-500/10 border-emerald-500/30";
+                                if (atRisk <= 5) return "bg-amber-500/10 border-amber-500/30";
+                                return "bg-red-500/10 border-red-500/30";
+                              })()
+                            )}
+                            onClick={() => {
+                              // Reset all filters first, then apply specific filter
+                              setSearchTerm("");
+                              setFilterStatus("all");
+                              setFilterCountry("all");
+                              setFilterVersion("all");
+                              setFilterStorage("all");
+                              setFilterHealth("at_risk");
+                              setActiveView("pnodes");
+                            }}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                {(() => {
+                                  const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
+                                  if (atRisk === 0) return <span className="text-lg">✅</span>;
+                                  if (atRisk <= 5) return <span className="text-lg">⚠️</span>;
+                                  return <span className="text-lg">🔴</span>;
+                                })()}
+                                <span className="text-2xl font-bold text-foreground">
+                                  {nodes.filter(n => calculateHealthScore(n).total < 75).length}
+                                </span>
+                              </div>
+                              <span className="text-xs text-primary font-medium">View →</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {nodes.filter(n => calculateHealthScore(n).total < 75).length === 0
+                                ? "All nodes healthy!"
+                                : "Nodes at risk"}
+                            </p>
+                          </div>
+
+                          {/* Outdated Versions - Shows nodes not on latest software */}
+                          {(() => {
+                            const latestVersion = getMostCommonVersion(nodes);
+                            const outdated = nodes.filter(n => {
+                              const nodeVersion = n.version?.split(' ')[0];
+                              return nodeVersion && nodeVersion !== latestVersion;
+                            }).length;
+                            return (
+                              <div
+                                className={cn(
+                                  "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all flex flex-col justify-between h-full",
+                                  outdated === 0 ? "bg-emerald-500/10 border-emerald-500/30" :
+                                    outdated <= 10 ? "bg-amber-500/10 border-amber-500/30" :
+                                      "bg-red-500/10 border-red-500/30"
+                                )}
+                                onClick={() => {
+                                  // Reset all filters first, then apply specific filter
+                                  setSearchTerm("");
+                                  setFilterStatus("all");
+                                  setFilterCountry("all");
+                                  setFilterVersion("outdated");
+                                  setFilterStorage("all");
+                                  setFilterHealth("all");
+                                  setActiveView("pnodes");
+                                }}
+                              >
+                                <div className="flex items-center justify-between mb-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-lg">{outdated === 0 ? "✅" : "🔄"}</span>
+                                    <span className="text-2xl font-bold text-foreground">{outdated}</span>
+                                  </div>
+                                  <span className="text-xs text-primary font-medium">View →</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                  {outdated === 0 ? "All on latest version!" : "Outdated versions"}
+                                </p>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div> {/* End of flex-col-reverse wrapper */}
 
                 {/* ... existing charts ... */}
                 {/* ... existing charts ... */}
@@ -1293,8 +1367,8 @@ Outdated: ${outdated}
                   <AnalyticsBar
                     title="Network Node Status"
                     segments={[
-                      { label: "Online (RPC Active)", value: stats.active, color: "#3178c6" },
-                      { label: "Gossip Only", value: stats.total - stats.active, color: "#f1e05a" },
+                      { label: "Online (RPC Active)", value: stats.active, color: "#10b981" },
+                      { label: "Gossip Only", value: stats.total - stats.active, color: "#f59e0b" },
                     ]}
                     onSegmentClick={(segment) => {
                       // Map segment labels to filter values
@@ -2060,8 +2134,11 @@ ${selectedNode?.pubkey}
             </div>
           )}
 
-          {/* AI Chat Widget */}
+          {/* AI Chat Widget - controlled from header button */}
           <AIChatWidget
+            externalOpen={aiChatOpen}
+            onOpenChange={setAiChatOpen}
+            hideFloatingButton={true}
             context={{
               totalNodes: stats.total,
               activeNodes: stats.active,

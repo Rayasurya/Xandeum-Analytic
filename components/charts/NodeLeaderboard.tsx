@@ -10,11 +10,11 @@ interface NodeLeaderboardProps {
 }
 
 const COLORS = [
-    '#047857', // Emerald 700 (Darkest - Top)
     '#059669', // Emerald 600
     '#10b981', // Emerald 500
     '#34d399', // Emerald 400
-    '#6ee7b7', // Emerald 300 (Lightest - Last)
+    '#6ee7b7', // Emerald 300
+    '#a7f3d0', // Emerald 200
 ];
 
 const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
@@ -24,7 +24,7 @@ const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
             <div className="bg-popover border border-border p-3 rounded-lg shadow-xl z-50">
                 <p className="font-bold text-popover-foreground mb-1">{data.name}</p>
                 <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-mono text-emerald-400">
+                    <span className="text-sm font-mono text-emerald-600 dark:text-emerald-400">
                         {data.value} GB Storage
                     </span>
                 </div>
@@ -69,8 +69,8 @@ export function NodeLeaderboard({ data, onDrillDown }: NodeLeaderboardProps) {
                         stroke: 'transparent',
                         strokeWidth: 0,
                     }}
-                    rx={6}
-                    ry={6}
+                    rx={0}
+                    ry={0}
                 />
                 {width > 60 && height > 30 && (
                     <text
@@ -103,15 +103,15 @@ export function NodeLeaderboard({ data, onDrillDown }: NodeLeaderboardProps) {
     };
 
     return (
-        <Card className="bg-card/50 border-border shadow-sm relative overflow-hidden group h-full">
+        <Card className="bg-card/50 border-border shadow-sm relative overflow-hidden group h-full flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                     Top Nodes
                     <InfoTooltip content="Top performing nodes ranked by their committed storage contribution." />
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="h-[250px] w-full">
+            <CardContent className="flex-1 p-6 pt-0 flex flex-col">
+                <div className="flex-1 w-full rounded-lg overflow-hidden min-h-[200px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <Treemap
                             data={data}

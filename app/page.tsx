@@ -114,6 +114,28 @@ const formatPubkey = (key: string) => {
   return `${key.slice(0, 4)}...${key.slice(-4)}`;
 };
 
+// Helper: Get the most common (majority) version - this is the "official" version
+const getMostCommonVersion = (nodes: any[]): string => {
+  const versionCounts: Record<string, number> = {};
+  nodes.forEach(node => {
+    const version = node.version?.split(' ')[0];
+    if (version) {
+      versionCounts[version] = (versionCounts[version] || 0) + 1;
+    }
+  });
+
+  // Find the version with the highest count
+  let maxCount = 0;
+  let mostCommon = "";
+  Object.entries(versionCounts).forEach(([version, count]) => {
+    if (count > maxCount) {
+      maxCount = count;
+      mostCommon = version;
+    }
+  });
+  return mostCommon;
+};
+
 // Health Score Calculation (0-100)
 interface HealthScore {
   total: number;
@@ -533,14 +555,12 @@ function HomeContent() {
       if (filterVersion !== "all") {
         const nodeVersion = node.version?.split(' ')[0] || "Unknown";
         if (filterVersion === "outdated") {
-          // Special filter: show nodes NOT on the latest version
-          const allVersions = nodes.map(n => n.version?.split(' ')[0]).filter(Boolean);
-          const latestVersion = allVersions.sort().reverse()[0];
+          // Special filter: show nodes NOT on the most common (official) version
+          const latestVersion = getMostCommonVersion(nodes);
           if (nodeVersion === latestVersion) matchesVersion = false;
         } else if (filterVersion === "latest") {
-          // Special filter: show nodes on the latest version
-          const allVersions = nodes.map(n => n.version?.split(' ')[0]).filter(Boolean);
-          const latestVersion = allVersions.sort().reverse()[0];
+          // Special filter: show nodes on the most common (official) version
+          const latestVersion = getMostCommonVersion(nodes);
           if (nodeVersion !== latestVersion) matchesVersion = false;
         } else if (nodeVersion !== filterVersion) {
           matchesVersion = false;
@@ -1053,54 +1073,44 @@ function HomeContent() {
                         </div>
 
                         {/* Outdated Versions - Shows nodes not on latest software */}
-                        <div
-                          className={cn(
-                            "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
-                            (() => {
-                              const versions = nodes.map(n => n.version).filter(Boolean);
-                              const latestVersion = versions.sort().reverse()[0];
-                              const outdated = nodes.filter(n => n.version && n.version !== latestVersion).length;
-                              if (outdated === 0) return "bg-emerald-500/10 border-emerald-500/30";
-                              if (outdated <= 10) return "bg-amber-500/10 border-amber-500/30";
-                              return "bg-red-500/10 border-red-500/30";
-                            })()
-                          )}
-                          onClick={() => {
-                            // Reset all filters first, then apply specific filter
-                            setSearchTerm("");
-                            setFilterStatus("all");
-                            setFilterCountry("all");
-                            setFilterVersion("outdated");
-                            setFilterStorage("all");
-                            setFilterHealth("all");
-                            setActiveView("pnodes");
-                          }}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              {(() => {
-                                const versions = nodes.map(n => n.version).filter(Boolean);
-                                const latestVersion = versions.sort().reverse()[0];
-                                const outdated = nodes.filter(n => n.version && n.version !== latestVersion).length;
-                                return (
-                                  <>
-                                    <span className="text-lg">{outdated === 0 ? "✅" : "🔄"}</span>
-                                    <span className="text-2xl font-bold text-foreground">{outdated}</span>
-                                  </>
-                                );
-                              })()}
+                        {(() => {
+                          const latestVersion = getMostCommonVersion(nodes);
+                          const outdated = nodes.filter(n => {
+                            const nodeVersion = n.version?.split(' ')[0];
+                            return nodeVersion && nodeVersion !== latestVersion;
+                          }).length;
+                          return (
+                            <div
+                              className={cn(
+                                "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
+                                outdated === 0 ? "bg-emerald-500/10 border-emerald-500/30" :
+                                  outdated <= 10 ? "bg-amber-500/10 border-amber-500/30" :
+                                    "bg-red-500/10 border-red-500/30"
+                              )}
+                              onClick={() => {
+                                // Reset all filters first, then apply specific filter
+                                setSearchTerm("");
+                                setFilterStatus("all");
+                                setFilterCountry("all");
+                                setFilterVersion("outdated");
+                                setFilterStorage("all");
+                                setFilterHealth("all");
+                                setActiveView("pnodes");
+                              }}
+                            >
+                              <div className="flex items-center justify-between mb-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-lg">{outdated === 0 ? "✅" : "🔄"}</span>
+                                  <span className="text-2xl font-bold text-foreground">{outdated}</span>
+                                </div>
+                                <span className="text-xs text-primary font-medium">View →</span>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {outdated === 0 ? "All on latest version!" : "Outdated versions"}
+                              </p>
                             </div>
-                            <span className="text-xs text-primary font-medium">View →</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {(() => {
-                              const versions = nodes.map(n => n.version).filter(Boolean);
-                              const latestVersion = versions.sort().reverse()[0];
-                              const outdated = nodes.filter(n => n.version && n.version !== latestVersion).length;
-                              return outdated === 0 ? "All on latest version!" : "Outdated versions";
-                            })()}
-                          </p>
-                        </div>
+                          );
+                        })()}
                       </div>
                     </CardContent>
                   </Card>
@@ -1210,7 +1220,7 @@ function HomeContent() {
                           <Filter className="h-4 w-4" />
                           {!selectedNode && <span className="ml-2">Filters</span>}
                           {(filterStatus !== "all" || filterCountry !== "all" || filterVersion !== "all" || filterStorage !== "all" || filterHealth !== "all") && (
-                            <Badge variant="secondary" className={cn("h-5 px-1.5 text-[10px]", selectedNode ? "absolute -top-1 -right-1" : "ml-2")}>
+                            <Badge className={cn("h-5 px-1.5 text-[10px] bg-primary text-primary-foreground", selectedNode ? "absolute -top-1 -right-1" : "ml-2")}>
                               {(filterStatus !== "all" ? 1 : 0) + (filterCountry !== "all" ? 1 : 0) + (filterVersion !== "all" ? 1 : 0) + (filterStorage !== "all" ? 1 : 0) + (filterHealth !== "all" ? 1 : 0)}
                             </Badge>
                           )}

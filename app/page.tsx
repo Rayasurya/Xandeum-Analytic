@@ -450,9 +450,45 @@ function HomeContent() {
       }
     }, 5000);
 
-    return () => clearInterval(interval);
+    // Auto-refresh full data every 5 minutes (background sync, no loading screen)
+    const autoRefreshInterval = setInterval(async () => {
+      try {
+        const [nodeList, statsData, networkMetrics] = await Promise.all([
+          client.getPNodes(),
+          client.getStats(),
+          client.getNetworkMetrics()
+        ]);
+
+        setNodes(nodeList);
+        setStats(statsData);
+        setMetrics(networkMetrics);
+
+        // Show subtle toast notification
+        toast({
+          title: "✓ Data Updated",
+          description: `Synced at ${new Date().toLocaleTimeString()}`,
+        });
+      } catch (err) {
+        console.error("Auto-refresh failed", err);
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(autoRefreshInterval);
+    };
   }, []);
 
+  // Deep linking: Load node from URL when data is available
+  useEffect(() => {
+    const nodeId = searchParams.get('node');
+    if (nodeId && nodes.length > 0 && !selectedNode) {
+      const foundNode = nodes.find(n => n.pubkey.startsWith(nodeId));
+      if (foundNode) {
+        setSelectedNode(foundNode);
+      }
+    }
+  }, [nodes, searchParams, selectedNode]);
 
   // Compute Chart Data
   const versionData = useMemo(() => {
@@ -626,6 +662,13 @@ function HomeContent() {
     setSelectedNode(node);
     // Switch to pnodes view to show the node intelligence panel
     setActiveView("pnodes");
+
+    // Update URL with node pubkey for deep linking
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('view', 'pnodes');
+    params.set('node', node.pubkey.slice(0, 8)); // Use first 8 chars as identifier
+    router.push(`?${params.toString()}`, { scroll: false });
+
     // If we don't have this one in cache (maybe added recently), fetch it individually
     const ip = node.gossip?.split(':')[0];
     if (ip && !geoCache[ip]) {
@@ -637,6 +680,14 @@ function HomeContent() {
           }
         });
     }
+  };
+
+  // Clear node from URL when closing details panel
+  const handleCloseNodeDetails = () => {
+    setSelectedNode(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('node');
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
 
@@ -1000,50 +1051,33 @@ function HomeContent() {
                                 setCopyStatusSuccess(false);
 
                                 try {
-                                  // Prepare context for AI
+                                  // Prepare data
                                   const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0;
                                   const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
                                   const mostCommon = getMostCommonVersion(nodes);
                                   const outdated = nodes.filter(n => n.version !== mostCommon).length;
                                   const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
+                                  const grade = healthyPct >= 90 ? "A+" : healthyPct >= 80 ? "A" : healthyPct >= 70 ? "B+" : healthyPct >= 60 ? "B" : healthyPct >= 50 ? "C+" : healthyPct >= 40 ? "C" : healthyPct >= 30 ? "D" : "F";
 
-                                  // Call AI API for summary
-                                  const response = await fetch('/api/chat', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                      messages: [{
-                                        role: 'user',
-                                        content: `Generate a concise, professional network status summary for sharing. Use emojis and formatting. Include: Grade ${healthyPct >= 90 ? "A+" : healthyPct >= 80 ? "A" : healthyPct >= 70 ? "B+" : healthyPct >= 60 ? "B" : healthyPct >= 50 ? "C+" : healthyPct >= 40 ? "C" : healthyPct >= 30 ? "D" : "F"} (${healthyPct}/100), Total nodes: ${stats.total}, Active: ${stats.active}, Healthy: ${nodes.filter(n => calculateHealthScore(n).total >= 75).length}, At-risk: ${atRisk}, Storage: ${totalStorage}, Current version: ${mostCommon?.split(' ')[0] || 'Unknown'}, Outdated: ${outdated}. Keep it brief and shareable.`
-                                      }],
-                                      context: {
-                                        totalNodes: stats.total,
-                                        activeNodes: stats.active,
-                                        totalStorage,
-                                        healthyCount: nodes.filter(n => calculateHealthScore(n).total >= 75).length,
-                                        warningCount: nodes.filter(n => { const s = calculateHealthScore(n); return s.total >= 50 && s.total < 75; }).length,
-                                        criticalCount: nodes.filter(n => calculateHealthScore(n).total < 50).length,
-                                      }
-                                    })
-                                  });
+                                  // Clean, simple format for messaging apps
+                                  const summary = `🌐 *XANDEUM NETWORK STATUS*
 
-                                  if (!response.ok) throw new Error('API failed');
+🏆 Grade: *${grade}* (${healthyPct}/100)
 
-                                  // Read streaming response
-                                  const reader = response.body?.getReader();
-                                  const decoder = new TextDecoder();
-                                  let summary = '';
+📊 *Nodes*
+Total: ${stats.total}
+Active: ${stats.active}
+Healthy: ${nodes.filter(n => calculateHealthScore(n).total >= 75).length}
+At-Risk: ${atRisk}
 
-                                  if (reader) {
-                                    while (true) {
-                                      const { done, value } = await reader.read();
-                                      if (done) break;
-                                      summary += decoder.decode(value, { stream: true });
-                                    }
-                                  }
+💾 Storage: ${totalStorage}
 
-                                  // Add timestamp and link
-                                  summary += `\n\n⏰ ${new Date().toLocaleString()}\n🔗 ${window.location.origin}`;
+🔄 *Version*
+Current: ${mostCommon?.split(' ')[0] || 'Unknown'}
+Outdated: ${outdated}
+
+⏰ ${new Date().toLocaleString()}
+🔗 ${window.location.origin}`;
 
                                   await navigator.clipboard.writeText(summary);
                                   setCopyStatusSuccess(true);
@@ -1520,19 +1554,20 @@ function HomeContent() {
                       <TableHeader>
                         <TableRow className="hover:bg-transparent border-border">
                           <TableHead className="w-[4%] bg-muted"></TableHead>
-                          <TableHead className="w-[20%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
+                          <TableHead className="w-[18%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
                             Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                           </TableHead>
-                          <TableHead className="w-[22%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
-                          <TableHead className="w-[14%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
+                          <TableHead className="w-[20%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
+                          <TableHead className="w-[12%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
                           <TableHead className="w-[12%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
-                          <TableHead className="w-[18%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
+                          <TableHead className="w-[16%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
+                          <TableHead className={cn("w-[6%] font-bold text-secondary text-center bg-muted", selectedNode && "hidden")}>Share</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredNodes.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={6} className="h-64 text-center">
+                            <TableCell colSpan={7} className="h-64 text-center">
                               <div className="flex flex-col items-center justify-center text-muted-foreground gap-3">
                                 <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center">
                                   <SearchX className="h-6 w-6 opacity-50" />
@@ -1593,7 +1628,7 @@ function HomeContent() {
                                     {(node.version?.split(' ')[0]) || "Unknown"}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className="text-right font-mono text-sm text-foreground">{uptimeString}</TableCell>
+                                <TableCell className="text-right"><span className="font-mono text-sm text-foreground">{uptimeString}</span></TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex flex-col items-end">
                                     <span className="font-bold text-sm text-foreground">{committed}</span>
@@ -1601,6 +1636,23 @@ function HomeContent() {
                                       {((node.storage_committed || 0) / (1024 * 1024)).toFixed(0)} MB Cached
                                     </span>
                                   </div>
+                                </TableCell>
+                                <TableCell className={cn("text-center", selectedNode && "hidden")}>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Don't trigger row click
+                                      const url = `${window.location.origin}?view=pnodes&node=${node.pubkey.slice(0, 8)}`;
+                                      navigator.clipboard.writeText(url);
+                                      toast({
+                                        title: "Link Copied!",
+                                        description: formatPubkey(node.pubkey),
+                                      });
+                                    }}
+                                    className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-primary"
+                                    title="Copy sharable link"
+                                  >
+                                    <Copy className="h-3.5 w-3.5" />
+                                  </button>
                                 </TableCell>
                               </TableRow>
                             )
@@ -1635,13 +1687,30 @@ function HomeContent() {
                           <Server className="h-5 w-5 text-primary" />
                           <h2 className="text-lg font-bold tracking-tight text-foreground">Node Details</h2>
                         </div>
-                        <button
-                          onClick={() => setSelectedNode(null)}
-                          className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                          aria-label="Close panel"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={async () => {
+                              const url = `${window.location.origin}?view=pnodes&node=${selectedNode?.pubkey.slice(0, 8)}`;
+                              await navigator.clipboard.writeText(url);
+                              toast({
+                                title: "Link Copied!",
+                                description: "Share this link to open this node directly.",
+                              });
+                            }}
+                            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-primary"
+                            aria-label="Copy link"
+                            title="Copy shareable link"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={handleCloseNodeDetails}
+                            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                            aria-label="Close panel"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
                       <p className="text-muted-foreground font-mono text-xs mt-1 truncate">
                         {selectedNode?.pubkey}

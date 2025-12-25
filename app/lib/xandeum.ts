@@ -15,6 +15,13 @@ export interface PNodeInfo extends Omit<ContactInfo, 'version'> {
     credits?: number;
     rpc_port?: number;
     version?: string | null;
+    location?: {
+        country?: string;
+        city?: string;
+        lat?: number;
+        lon?: number;
+    };
+    status?: string;
 }
 
 export class XandeumClient {

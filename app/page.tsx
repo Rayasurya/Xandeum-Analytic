@@ -26,7 +26,8 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  Trophy
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,7 @@ import { NetworkPerformance } from "@/components/charts/NetworkPerformance";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { AIChatWidget } from "@/components/ui/ai-chat";
 
 import { GlobalMap } from "@/components/charts/GlobalMap";
 import { StorageDistribution } from "@/components/charts/StorageDistribution";
@@ -530,7 +532,19 @@ function HomeContent() {
       let matchesVersion = true;
       if (filterVersion !== "all") {
         const nodeVersion = node.version?.split(' ')[0] || "Unknown";
-        if (nodeVersion !== filterVersion) matchesVersion = false;
+        if (filterVersion === "outdated") {
+          // Special filter: show nodes NOT on the latest version
+          const allVersions = nodes.map(n => n.version?.split(' ')[0]).filter(Boolean);
+          const latestVersion = allVersions.sort().reverse()[0];
+          if (nodeVersion === latestVersion) matchesVersion = false;
+        } else if (filterVersion === "latest") {
+          // Special filter: show nodes on the latest version
+          const allVersions = nodes.map(n => n.version?.split(' ')[0]).filter(Boolean);
+          const latestVersion = allVersions.sort().reverse()[0];
+          if (nodeVersion !== latestVersion) matchesVersion = false;
+        } else if (nodeVersion !== filterVersion) {
+          matchesVersion = false;
+        }
       }
 
       // 5. Storage Filter
@@ -552,6 +566,7 @@ function HomeContent() {
         if (filterHealth === "healthy" && health.status !== "HEALTHY") matchesHealth = false;
         if (filterHealth === "warning" && health.status !== "WARNING") matchesHealth = false;
         if (filterHealth === "critical" && health.status !== "CRITICAL") matchesHealth = false;
+        if (filterHealth === "at_risk" && health.status === "HEALTHY") matchesHealth = false; // at_risk = NOT healthy
       }
 
       return matchesSearch && matchesStatus && matchesCountry && matchesVersion && matchesStorage && matchesHealth;
@@ -804,6 +819,18 @@ function HomeContent() {
                   Storage Map
                   {activeView === "map" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />}
                 </Button>
+                <a
+                  href="/docs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "h-9 px-4 text-sm font-medium transition-all relative inline-flex items-center gap-1.5",
+                    "text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
+                  )}
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Docs
+                </a>
               </nav>
             </div>
 
@@ -892,6 +919,172 @@ function HomeContent() {
 
                 </div>
 
+                {/* Network Intelligence Summary - WOW Element */}
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                  {/* Network Grade Card */}
+                  <Card className="bg-card/50 border-border overflow-hidden relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-orange-500/10" />
+                    <CardContent className="p-6 relative">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">Network Grade</p>
+                          <div className="flex items-baseline gap-2">
+                            <span className={cn(
+                              "text-5xl font-black",
+                              (() => {
+                                const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
+                                if (healthyPct >= 80) return "text-emerald-400";
+                                if (healthyPct >= 60) return "text-primary";
+                                if (healthyPct >= 40) return "text-amber-400";
+                                return "text-red-400";
+                              })()
+                            )}>
+                              {(() => {
+                                const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
+                                if (healthyPct >= 90) return "A+";
+                                if (healthyPct >= 80) return "A";
+                                if (healthyPct >= 70) return "B+";
+                                if (healthyPct >= 60) return "B";
+                                if (healthyPct >= 50) return "C+";
+                                if (healthyPct >= 40) return "C";
+                                if (healthyPct >= 30) return "D";
+                                return "F";
+                              })()}
+                            </span>
+                            <span className="text-lg text-muted-foreground font-mono">
+                              {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0}/100
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
+                        </div>
+                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center">
+                          <Trophy className="h-8 w-8 text-primary" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Intelligence Insights */}
+                  <Card className="lg:col-span-3 bg-card/50 border-border">
+                    <CardContent className="p-6">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-4">Network Intelligence</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* At-Risk Nodes */}
+                        <div
+                          className={cn(
+                            "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
+                            (() => {
+                              const atRisk = nodes.filter(n => {
+                                const score = calculateHealthScore(n);
+                                return score.total < 75;
+                              }).length;
+                              if (atRisk === 0) return "bg-emerald-500/10 border-emerald-500/30";
+                              if (atRisk <= 5) return "bg-amber-500/10 border-amber-500/30";
+                              return "bg-red-500/10 border-red-500/30";
+                            })()
+                          )}
+                          onClick={() => {
+                            setFilterHealth("at_risk");
+                            setActiveView("pnodes");
+                          }}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              {(() => {
+                                const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
+                                if (atRisk === 0) return <span className="text-lg">✅</span>;
+                                if (atRisk <= 5) return <span className="text-lg">⚠️</span>;
+                                return <span className="text-lg">🔴</span>;
+                              })()}
+                              <span className="text-2xl font-bold text-foreground">
+                                {nodes.filter(n => calculateHealthScore(n).total < 75).length}
+                              </span>
+                            </div>
+                            <span className="text-xs text-primary font-medium">View →</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {nodes.filter(n => calculateHealthScore(n).total < 75).length === 0
+                              ? "All nodes healthy!"
+                              : "Nodes at risk"}
+                          </p>
+                        </div>
+
+                        {/* Network Status */}
+                        <div
+                          className={cn(
+                            "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
+                            stats.total > 0 && (stats.active / stats.total) >= 0.8
+                              ? "bg-emerald-500/10 border-emerald-500/30"
+                              : stats.total > 0 && (stats.active / stats.total) >= 0.6
+                                ? "bg-amber-500/10 border-amber-500/30"
+                                : "bg-red-500/10 border-red-500/30"
+                          )}
+                          onClick={() => setActiveView("pnodes")}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">
+                                {stats.total > 0 && (stats.active / stats.total) >= 0.8 ? "✅" :
+                                  stats.total > 0 && (stats.active / stats.total) >= 0.6 ? "⚠️" : "🔴"}
+                              </span>
+                              <span className="text-lg font-bold text-foreground">
+                                {stats.total > 0 && (stats.active / stats.total) >= 0.8 ? "Excellent" :
+                                  stats.total > 0 && (stats.active / stats.total) >= 0.6 ? "Good" : "Degraded"}
+                              </span>
+                            </div>
+                            <span className="text-xs text-primary font-medium">View →</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">Network health status</p>
+                        </div>
+
+                        {/* Outdated Versions - Shows nodes not on latest software */}
+                        <div
+                          className={cn(
+                            "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all",
+                            (() => {
+                              const versions = nodes.map(n => n.version).filter(Boolean);
+                              const latestVersion = versions.sort().reverse()[0];
+                              const outdated = nodes.filter(n => n.version && n.version !== latestVersion).length;
+                              if (outdated === 0) return "bg-emerald-500/10 border-emerald-500/30";
+                              if (outdated <= 10) return "bg-amber-500/10 border-amber-500/30";
+                              return "bg-red-500/10 border-red-500/30";
+                            })()
+                          )}
+                          onClick={() => {
+                            setFilterVersion("outdated");
+                            setActiveView("pnodes");
+                          }}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              {(() => {
+                                const versions = nodes.map(n => n.version).filter(Boolean);
+                                const latestVersion = versions.sort().reverse()[0];
+                                const outdated = nodes.filter(n => n.version && n.version !== latestVersion).length;
+                                return (
+                                  <>
+                                    <span className="text-lg">{outdated === 0 ? "✅" : "🔄"}</span>
+                                    <span className="text-2xl font-bold text-foreground">{outdated}</span>
+                                  </>
+                                );
+                              })()}
+                            </div>
+                            <span className="text-xs text-primary font-medium">View →</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {(() => {
+                              const versions = nodes.map(n => n.version).filter(Boolean);
+                              const latestVersion = versions.sort().reverse()[0];
+                              const outdated = nodes.filter(n => n.version && n.version !== latestVersion).length;
+                              return outdated === 0 ? "All on latest version!" : "Outdated versions";
+                            })()}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
                 {/* ... existing charts ... */}
                 {/* ... existing charts ... */}
                 {/* Row 1: Network Performance (2 cols) + Storage Distribution (1 col) */}
@@ -963,8 +1156,16 @@ function HomeContent() {
 
                   {/* Right side: Actions */}
                   <div className="flex items-center gap-2">
-                    <Button className="bg-primary hover:bg-orange-600 active:scale-95 text-primary-foreground font-bold transition-all" onClick={handleExport}>
-                      <Download className="mr-2 h-4 w-4" /> EXPORT ENRICHED CSV
+                    <Button
+                      className={cn(
+                        "bg-primary hover:bg-orange-600 active:scale-95 text-primary-foreground font-bold transition-all",
+                        selectedNode && "px-3"
+                      )}
+                      onClick={handleExport}
+                    >
+                      <Download className={cn("h-4 w-4", !selectedNode && "mr-2")} />
+                      {!selectedNode && <span className="hidden lg:inline">EXPORT ENRICHED CSV</span>}
+                      {!selectedNode && <span className="lg:hidden">EXPORT</span>}
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -1050,6 +1251,20 @@ function HomeContent() {
                         >
                           All Versions
                         </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterVersion === "outdated"}
+                          onCheckedChange={() => setFilterVersion(filterVersion === "outdated" ? "all" : "outdated")}
+                          className="text-xs py-1"
+                        >
+                          🔄 Outdated
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterVersion === "latest"}
+                          onCheckedChange={() => setFilterVersion(filterVersion === "latest" ? "all" : "latest")}
+                          className="text-xs py-1"
+                        >
+                          ✅ Latest
+                        </DropdownMenuCheckboxItem>
                         {versionData.map((v) => (
                           <DropdownMenuCheckboxItem
                             key={v.name}
@@ -1115,6 +1330,13 @@ function HomeContent() {
                           className="text-xs py-1"
                         >
                           All Health
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                          checked={filterHealth === "at_risk"}
+                          onCheckedChange={() => setFilterHealth(filterHealth === "at_risk" ? "all" : "at_risk")}
+                          className="text-xs py-1"
+                        >
+                          🔴 At Risk (&lt;75)
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuCheckboxItem
                           checked={filterHealth === "healthy"}
@@ -1620,6 +1842,43 @@ ${selectedNode?.pubkey}
               />
             </div>
           )}
+
+          {/* AI Chat Widget */}
+          <AIChatWidget
+            context={{
+              totalNodes: stats.total,
+              activeNodes: stats.active,
+              totalStorage: formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0)),
+              healthyCount: nodes.filter(n => calculateHealthScore(n).status === "HEALTHY").length,
+              warningCount: nodes.filter(n => calculateHealthScore(n).status === "WARNING").length,
+              criticalCount: nodes.filter(n => calculateHealthScore(n).status === "CRITICAL").length,
+              lastUpdated: new Date().toLocaleTimeString(),
+              atRiskNodes: nodes
+                .map(n => ({ pubkey: n.pubkey.slice(0, 8) + "..." + n.pubkey.slice(-4), health: calculateHealthScore(n) }))
+                .filter(n => n.health.status !== "HEALTHY")
+                .slice(0, 10)
+                .map(n => `${n.pubkey}: ${n.health.total}/100 (${n.health.status})`),
+              topCountries: Object.entries(nodes.reduce((acc, n) => {
+                const country = n.location?.country || "Unknown";
+                acc[country] = (acc[country] || 0) + 1;
+                return acc;
+              }, {} as Record<string, number>))
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([country, count]) => `${country}: ${count}`),
+              offlineNodes: nodes
+                .filter(n => n.status !== "Active")
+                .slice(0, 10)
+                .map(n => n.pubkey),
+              softwareVersions: Object.entries(nodes.reduce((acc, n) => {
+                const version = n.version || "Unknown";
+                acc[version] = (acc[version] || 0) + 1;
+                return acc;
+              }, {} as Record<string, number>))
+                .sort((a, b) => b[1] - a[1])
+                .map(([ver, count]) => `${ver}: ${count}`),
+            }}
+          />
 
           <Toaster />
         </main>

@@ -2,6 +2,8 @@
 
 **Xandeum Scope** is a powerful, real-time analytics platform designed for the Xandeum storage-enabled blockchain. It goes beyond simple metrics to provide deep insights, AI-powered assistance, and comprehensive network health monitoring.
 
+[**Live Demo**](http://localhost:3000)
+
 ![Dashboard Preview](https://github.com/Rayasurya/Xandeum-Analytic/blob/main/public/demo-v2.gif?raw=true)
 
 ---
@@ -28,7 +30,7 @@ The dashboard is built for power users, offering granular control over data visi
     *   **Storage Committed**: Bar chart visualizing storage capacity tiers.
     *   **Geographic Spread**: Visualization of top node locations.
 
-### 🗺️ Geospatial Intelligence (Leaflet Map)
+### 🗺️ Geospatial Intelligence
 A fully interactive global map visualizing the physical decentralization of the network.
 *   **Cluster Mapping**: Nodes are grouped into clusters (circles with counts) that expand when clicked.
 *   **Health-Coded Markers**: Individual node pins are color-coded by their Health Score (Green = Healthy, Orange = Warning, Red = Critical).

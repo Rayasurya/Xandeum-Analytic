@@ -329,9 +329,11 @@ function HomeContent() {
     localStorage.setItem("xandeum_watchlist", JSON.stringify(watchlist));
   }, [watchlist]);
 
-  const addToWatchlist = () => {
-    if (!newWatchlistNode) return;
-    if (watchlist.includes(newWatchlistNode)) {
+  const addToWatchlist = (pubkey?: string) => {
+    const nodeToAdd = pubkey || newWatchlistNode;
+    if (!nodeToAdd) return;
+
+    if (watchlist.includes(nodeToAdd)) {
       toast({
         title: "Node Already Added",
         description: "This node is already in your watchlist.",
@@ -339,8 +341,8 @@ function HomeContent() {
       });
       return;
     }
-    setWatchlist([...watchlist, newWatchlistNode]);
-    setNewWatchlistNode("");
+    setWatchlist([...watchlist, nodeToAdd]);
+    if (!pubkey) setNewWatchlistNode(""); // Only clear input if added via input
     toast({
       title: "Node Added",
       description: "Node added to your watchlist.",
@@ -1948,6 +1950,25 @@ Outdated: ${outdated}
                         </div>
                         <div className="flex items-center gap-1">
                           <button
+                            onClick={() => {
+                              if (!selectedNode?.pubkey) return;
+                              if (watchlist.includes(selectedNode.pubkey)) {
+                                removeFromWatchlist(selectedNode.pubkey);
+                              } else {
+                                addToWatchlist(selectedNode.pubkey);
+                              }
+                            }}
+                            className={cn(
+                              "p-1.5 rounded-md transition-colors",
+                              watchlist.includes(selectedNode?.pubkey || "")
+                                ? "text-amber-500 hover:bg-amber-500/10"
+                                : "text-muted-foreground hover:bg-muted hover:text-amber-500"
+                            )}
+                            title={watchlist.includes(selectedNode?.pubkey || "") ? "Remove from Watchlist" : "Add to Watchlist"}
+                          >
+                            <Star className={cn("h-4 w-4", watchlist.includes(selectedNode?.pubkey || "") && "fill-amber-500")} />
+                          </button>
+                          <button
                             onClick={async () => {
                               const url = `${window.location.origin}?view=pnodes&node=${selectedNode?.pubkey.slice(0, 8)}`;
                               await navigator.clipboard.writeText(url);
@@ -2361,7 +2382,7 @@ ${selectedNode?.pubkey}
                         className="bg-background"
                       />
                     </div>
-                    <Button onClick={addToWatchlist} disabled={!newWatchlistNode || newWatchlistNode.length < 5}>
+                    <Button onClick={() => addToWatchlist()} disabled={!newWatchlistNode || newWatchlistNode.length < 5}>
                       <div className="flex items-center gap-2">
                         <span>+ Add Node</span>
                       </div>

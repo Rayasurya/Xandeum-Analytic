@@ -603,6 +603,23 @@ function HomeContent() {
     }
   }, [nodes, searchParams, selectedNode]);
 
+  // Mobile back gesture handling: Close drawer when user swipes back
+  useEffect(() => {
+    const handlePopState = () => {
+      // Check URL params directly from window.location
+      const urlParams = new URLSearchParams(window.location.search);
+      const nodeId = urlParams.get('node');
+
+      // If no node in URL but drawer is open, close it
+      if (!nodeId && selectedNode) {
+        setSelectedNode(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [selectedNode]);
+
   // Compute Chart Data
   const versionData = useMemo(() => {
     const counts = nodes.reduce((acc, node) => {

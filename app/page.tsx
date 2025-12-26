@@ -1587,7 +1587,7 @@ Outdated: ${outdated}
           {activeView === "pnodes" && (
             <div className="flex flex-1 min-h-0 overflow-hidden h-full">
               {/* Table Section with padding */}
-              <div className={cn("flex-1 min-w-0 px-8 py-6 space-y-4 flex flex-col h-full", selectedNode && "hidden md:flex")}>
+              <div className={cn("flex-1 min-w-0 px-4 md:px-8 py-4 md:py-6 space-y-4 flex flex-col h-full", selectedNode && "hidden md:flex")}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card/50 p-4 rounded-xl border border-border">
                   {/* Left side: Search + Node Count */}
                   <div className="flex items-center gap-4 w-full sm:w-auto">

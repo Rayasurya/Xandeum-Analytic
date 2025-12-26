@@ -47,7 +47,7 @@ function NavButton({ icon, label, active, onClick }: NavButtonProps) {
 
 export function MobileNav({ activeView, onViewChange }: MobileNavProps) {
     return (
-        <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-md border-t border-border flex justify-around items-center md:hidden z-50 safe-area-pb">
+        <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border flex justify-around items-center md:hidden z-[9999]">
             <NavButton
                 icon={<LayoutDashboard className="h-5 w-5" />}
                 label="Dashboard"

@@ -353,9 +353,9 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                         </div>
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            className="p-2 -mr-1 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
                         >
-                            <X className="w-5 h-5" />
+                            <X className="w-6 h-6" />
                         </button>
                     </div>
 

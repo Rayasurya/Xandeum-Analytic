@@ -23,7 +23,24 @@ export async function POST(req: Request) {
         // Capture for fallback usage
         lastUserMessage = messages[messages.length - 1]?.content || "";
 
-        // 2. DEFINE SYSTEM PROMPT (Rich RAG Context)
+        // 2. DETERMINISTIC QUICK ANSWERS (Root Fix for Reliability)
+        // Bypass AI for specific stats questions to ensure always-correct, instant answers.
+        const lowerMsg = lastUserMessage.toLowerCase();
+
+        if (lowerMsg.includes("how many nodes") || lowerMsg.includes("total nodes")) {
+            return new Response(`There are currently **${totalNodes} nodes** in the Xandeum network.`);
+        }
+        if (lowerMsg.includes("active") || lowerMsg.includes("online")) {
+            return new Response(`There are **${activeNodes} active nodes** (${activePct}% of the network).`);
+        }
+        if (lowerMsg.includes("healthy") || lowerMsg.includes("health")) {
+            return new Response(`There are **${healthyCount} healthy nodes** in the network.`);
+        }
+        if (lowerMsg.includes("storage") || lowerMsg.includes("space")) {
+            return new Response(`The total committed network storage is **${context?.totalStorage || "Unknown"}**.`);
+        }
+
+        // 3. DEFINE SYSTEM PROMPT (Rich RAG Context)
         const systemInstruction = `
 ## ROLE
 You are Xandeum Scope AI, a helpful expert assistant for the Xandeum Network. 

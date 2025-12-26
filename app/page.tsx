@@ -1080,14 +1080,25 @@ function HomeContent() {
                 {/* Auto Nudge Element */}
                 <div
                   className={cn(
-                    "absolute top-full left-1/2 -translate-x-1/2 mt-3 w-max max-w-[250px] px-4 py-2 rounded-2xl bg-popover border border-border text-popover-foreground text-xs font-medium shadow-xl pointer-events-none transition-all duration-700 ease-in-out z-50 flex items-center gap-2",
-                    showAiNudge ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                    "absolute top-full left-1/2 -translate-x-1/2 mt-3 w-max max-w-[280px] pl-3 pr-8 py-2 rounded-2xl bg-popover border border-border text-popover-foreground text-xs font-medium shadow-xl transition-all duration-700 ease-in-out z-50 flex items-center gap-2",
+                    showAiNudge ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
                   )}
                 >
                   {/* Chat Tail */}
                   <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-popover border-t border-l border-border rotate-45" />
                   <Sparkles className="h-3 w-3 text-orange-500 mr-0.5 flex-shrink-0" />
                   Ask me anything about Xandeum Nodes
+
+                  {/* Dismiss Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAiNudge(false);
+                    }}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
                 </div>
               </div>
 

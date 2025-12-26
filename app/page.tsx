@@ -2419,7 +2419,7 @@ ${selectedNode?.pubkey}
                                   <div className="text-center hidden sm:block">
                                     <div className="text-xs text-muted-foreground mb-1">Version</div>
                                     <div className="font-mono text-xs">
-                                      {XandeumClient.formatVersion(node.version)}
+                                      {XandeumClient.formatVersion(node.version || null)}
                                     </div>
                                   </div>
                                 </div>

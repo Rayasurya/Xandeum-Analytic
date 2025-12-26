@@ -1826,7 +1826,7 @@ Outdated: ${outdated}
                   <div className="flex-1 overflow-y-auto rounded-md">
                     {/* Mobile Card View */}
                     {isMobile ? (
-                      <div className="p-4 space-y-0 pb-20">
+                      <div className="p-4 space-y-3 pb-20">
                         {filteredNodes.map((node) => {
                           const healthScore = calculateHealthScore(node);
                           const ip = node.gossip?.split(':')[0] || "";

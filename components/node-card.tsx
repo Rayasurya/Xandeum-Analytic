@@ -35,7 +35,7 @@ export function NodeCard({ node, healthScore, isWatched, location, onClick }: No
         <div
             onClick={onClick}
             className={cn(
-                "p-4 bg-card rounded-xl border border-border mb-3 shadow-sm",
+                "p-4 bg-card rounded-xl border border-border shadow-sm",
                 "active:scale-[0.98] transition-all cursor-pointer",
                 "hover:border-primary/50 hover:bg-card/80"
             )}

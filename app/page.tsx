@@ -28,7 +28,9 @@ import {
   ChevronRight,
   X,
   Trophy,
-  Sparkles
+  Sparkles,
+  Star,
+  Trash2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -93,7 +95,7 @@ const LeafletClusterMap = dynamic(
 );
 
 
-type ViewState = "dashboard" | "pnodes" | "analytics" | "map";
+type ViewState = "dashboard" | "pnodes" | "analytics" | "map" | "watchlist";
 
 const formatStorage = (bytes: number) => {
   if (!bytes) return "0 GB";
@@ -232,7 +234,7 @@ function HomeContent() {
   // Get initial view from URL or default to dashboard
   const getViewFromUrl = useCallback((): ViewState => {
     const view = searchParams.get('view');
-    if (view === 'pnodes' || view === 'dashboard' || view === 'map' || view === 'analytics') {
+    if (view === 'pnodes' || view === 'dashboard' || view === 'map' || view === 'analytics' || view === 'watchlist') {
       return view;
     }
     return 'dashboard';
@@ -290,8 +292,55 @@ function HomeContent() {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [showAiNudge, setShowAiNudge] = useState(false);
 
+  // Watchlist State
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [newWatchlistNode, setNewWatchlistNode] = useState("");
+
   const { toast } = useToast();
   const client = new XandeumClient();
+
+  // Load Watchlist from LocalStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("xandeum_watchlist");
+    if (saved) {
+      try {
+        setWatchlist(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse watchlist", e);
+      }
+    }
+  }, []);
+
+  // Save Watchlist to LocalStorage
+  useEffect(() => {
+    localStorage.setItem("xandeum_watchlist", JSON.stringify(watchlist));
+  }, [watchlist]);
+
+  const addToWatchlist = () => {
+    if (!newWatchlistNode) return;
+    if (watchlist.includes(newWatchlistNode)) {
+      toast({
+        title: "Node Already Added",
+        description: "This node is already in your watchlist.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setWatchlist([...watchlist, newWatchlistNode]);
+    setNewWatchlistNode("");
+    toast({
+      title: "Node Added",
+      description: "Node added to your watchlist.",
+    });
+  };
+
+  const removeFromWatchlist = (pubkey: string) => {
+    setWatchlist(watchlist.filter(p => p !== pubkey));
+    toast({
+      title: "Node Removed",
+      description: "Node removed from your watchlist.",
+    });
+  };
 
   useEffect(() => {
     // Initial nudge after 3 seconds
@@ -1007,6 +1056,19 @@ function HomeContent() {
                 >
                   Node Registry
                   {activeView === "pnodes" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveView("watchlist")}
+                  className={cn(
+                    "h-9 px-4 text-sm font-medium transition-all relative items-center gap-2 hidden sm:flex",
+                    activeView === "watchlist" ? "text-foreground bg-secondary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  <Star className="h-4 w-4 text-amber-500 fill-amber-500/20" />
+                  My Nodes
+                  <span className="ml-1 bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 rounded-full border border-primary/20">New</span>
+                  {activeView === "watchlist" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />}
                 </Button>
                 <Button
                   variant="ghost"
@@ -2232,17 +2294,171 @@ ${selectedNode?.pubkey}
 
           {/* VIEW: MAP */}
           {activeView === "map" && (
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <Suspense fallback={
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+              </div>
+            }>
               <LeafletClusterMap
                 nodes={mapNodeData}
                 onNodeClick={(pubkey) => {
-                  const node = nodes.find(n => n.pubkey === pubkey);
-                  if (node) handleNodeClick(node);
+                  // Switch to Registry and select the node
+                  setActiveView("pnodes");
+                  // Wait for render
+                  setTimeout(() => {
+                    const node = nodes.find(n => n.pubkey === pubkey);
+                    if (node) setSelectedNode(node);
+                  }, 100);
                 }}
               />
-            </div>
+            </Suspense>
           )}
 
+          {/* WATCHLIST VIEW */}
+          {activeView === "watchlist" && (
+            <div className="p-6 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
+
+              {/* Header */}
+              <div className="flex flex-col gap-2">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <Star className="h-6 w-6 text-amber-500 fill-amber-500" />
+                  My Nodes
+                </h2>
+                <p className="text-muted-foreground">Track and monitor your favorite pNodes in one place. Data is stored locally.</p>
+              </div>
+
+              {/* Add Node Panel */}
+              <Card className="border-primary/20 bg-primary/5">
+                <CardContent className="p-6">
+                  <h3 className="text-sm font-medium text-primary mb-4 flex items-center gap-2">
+                    <Zap className="h-4 w-4" /> Add a Node to Track
+                  </h3>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Enter pNode pubkey..."
+                        value={newWatchlistNode}
+                        onChange={(e) => setNewWatchlistNode(e.target.value)}
+                        className="bg-background"
+                      />
+                    </div>
+                    <Button onClick={addToWatchlist} disabled={!newWatchlistNode || newWatchlistNode.length < 5}>
+                      <div className="flex items-center gap-2">
+                        <span>+ Add Node</span>
+                      </div>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Nodes List */}
+              <div className="space-y-4">
+                {watchlist.length === 0 ? (
+                  <div className="text-center py-20 border-2 border-dashed border-muted rounded-xl bg-muted/20">
+                    <Star className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-foreground">No Nodes Saved Yet</h3>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto">
+                      Add pNode pubkeys above to start tracking their live performance, health score, and earnings.
+                    </p>
+                    <Button variant="outline" className="mt-6" onClick={() => setActiveView("pnodes")}>
+                      <Search className="h-4 w-4 mr-2" />
+                      Browse All Nodes
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4">
+                    {watchlist.map(pubkey => {
+                      // Hydrate with Live Data
+                      const node = nodes.find(n => n.pubkey === pubkey);
+                      const health = node ? calculateHealthScore(node) : { total: 0, status: "WARNING", breakdown: { version: { score: 0, max: 0 }, uptime: { score: 0, max: 0 }, storage: { score: 0, max: 0 }, rpc: { score: 0, max: 0 } } };
+                      const isOnline = node ? !!(node.rpc || node.tpu) : false;
+
+                      return (
+                        <Card key={pubkey} className="overflow-hidden hover:border-primary/40 transition-all">
+                          <CardContent className="p-0 flex flex-col sm:flex-row h-auto sm:h-24">
+                            {/* Status Bar */}
+                            <div className={cn(
+                              "w-full sm:w-2 h-2 sm:h-auto flex-shrink-0",
+                              isOnline ? "bg-emerald-500" : "bg-red-500"
+                            )} />
+
+                            <div className="flex-1 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+
+                              {/* Identity */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-mono font-bold text-lg truncate text-primary">{formatPubkey(pubkey)}</h3>
+                                  <Badge variant={isOnline ? "secondary" : "destructive"} className={isOnline ? "bg-emerald-500/10 text-emerald-500 border-none" : ""}>
+                                    {isOnline ? "Online" : "Offline"}
+                                  </Badge>
+                                </div>
+                                <div className="text-xs text-muted-foreground font-mono truncate max-w-[300px]">
+                                  {pubkey}
+                                </div>
+                              </div>
+
+                              {/* Metrics */}
+                              {node ? (
+                                <div className="flex items-center gap-8 text-sm">
+                                  <div className="text-center">
+                                    <div className="text-xs text-muted-foreground mb-1">Health</div>
+                                    <div className={cn(
+                                      "font-bold text-lg",
+                                      health.total >= 80 ? "text-emerald-500" :
+                                        health.total >= 50 ? "text-amber-500" : "text-red-500"
+                                    )}>
+                                      {health.total}
+                                    </div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="text-xs text-muted-foreground mb-1">Storage</div>
+                                    <div className="font-medium">
+                                      {formatStorage(node.storage_committed || 0)}
+                                    </div>
+                                  </div>
+                                  <div className="text-center hidden sm:block">
+                                    <div className="text-xs text-muted-foreground mb-1">Version</div>
+                                    <div className="font-mono text-xs">
+                                      {XandeumClient.formatVersion(node.version)}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2 text-amber-500 text-sm">
+                                  <Activity className="h-4 w-4 animate-pulse" />
+                                  Waiting for network discovery...
+                                </div>
+                              )}
+
+                              {/* Actions */}
+                              <div className="flex items-center gap-2 ml-auto">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-muted-foreground hover:text-destructive"
+                                  onClick={() => removeFromWatchlist(pubkey)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                                <Button size="sm" onClick={() => {
+                                  if (node) {
+                                    setActiveView("pnodes");
+                                    setTimeout(() => setSelectedNode(node), 50);
+                                  }
+                                }}>
+                                  View Details
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           {/* AI Chat Widget - controlled from header button */}
           <AIChatWidget
             externalOpen={aiChatOpen}

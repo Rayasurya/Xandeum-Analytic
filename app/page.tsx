@@ -88,6 +88,17 @@ import { StorageDistribution } from "@/components/charts/StorageDistribution";
 import { NodeLeaderboard } from "@/components/charts/NodeLeaderboard";
 import dynamic from "next/dynamic";
 
+// Mobile Components
+import { useMobile } from "@/hooks/use-mobile";
+import { MobileNav } from "@/components/mobile-nav";
+import { NodeCard } from "@/components/node-card";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+
 // Dynamic import for Leaflet (SSR fix)
 const LeafletClusterMap = dynamic(
   () => import("@/components/charts/LeafletClusterMap").then(mod => mod.LeafletClusterMap),
@@ -230,6 +241,9 @@ function HomeContent() {
   // URL-based Navigation (enables browser back/forward)
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Mobile detection for responsive layouts
+  const isMobile = useMobile();
 
   // Get initial view from URL or default to dashboard
   const getViewFromUrl = useCallback((): ViewState => {
@@ -1045,11 +1059,11 @@ function HomeContent() {
                 </div>
               </div>
 
-              {/* Divider */}
-              <div className="h-6 w-px bg-border/60" />
+              {/* Divider - Hide on mobile */}
+              <div className="h-6 w-px bg-border/60 hidden md:block" />
 
-              {/* Navigation Tabs */}
-              <nav className="flex items-center gap-1">
+              {/* Navigation Tabs - Hide on mobile (MobileNav handles navigation) */}
+              <nav className="hidden md:flex items-center gap-1">
                 <Button
                   variant="ghost"
                   onClick={() => setActiveView("dashboard")}
@@ -1810,120 +1824,151 @@ Outdated: ${outdated}
 
                 <Card className="bg-background/50 backdrop-blur-sm border-border overflow-hidden flex flex-col flex-1 min-h-0">
                   <div className="flex-1 overflow-y-auto rounded-md">
-                    <Table className="w-full table-fixed">
-                      <TableHeader>
-                        <TableRow className="hover:bg-transparent border-border">
-                          <TableHead className="w-[4%] bg-muted"></TableHead>
-                          <TableHead className="w-[18%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
-                            Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                          </TableHead>
-                          <TableHead className="w-[20%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
-                          <TableHead className="w-[12%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
-                          <TableHead className="w-[12%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
-                          <TableHead className="w-[16%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
-                          <TableHead className={cn("w-[6%] font-bold text-secondary text-center bg-muted", selectedNode && "hidden")}>Share</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredNodes.length === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={7} className="h-64 text-center">
-                              <div className="flex flex-col items-center justify-center text-muted-foreground gap-3">
-                                <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center">
-                                  <SearchX className="h-6 w-6 opacity-50" />
-                                </div>
-                                <div className="space-y-1">
-                                  <p className="font-medium text-foreground">No nodes found</p>
-                                  <p className="text-xs">No nodes match your filters. Try adjusting your search term or filters.</p>
-                                </div>
-                                <Button variant="outline" size="sm" onClick={() => { setSearchTerm(""); setFilterStatus("all"); setFilterCountry("all"); setFilterVersion("all"); setFilterStorage("all"); setFilterHealth("all"); }} className="mt-2 active:scale-95 transition-all">
-                                  Clear Filters
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          filteredNodes.map((node) => {
-                            const ip = node.gossip?.split(':')[0] || "";
-                            const geo = geoCache[ip];
+                    {/* Mobile Card View */}
+                    {isMobile ? (
+                      <div className="p-4 space-y-0 pb-20">
+                        {filteredNodes.map((node) => {
+                          const healthScore = calculateHealthScore(node);
+                          const ip = node.gossip?.split(':')[0] || "";
+                          const geo = geoCache[ip];
+                          const location = geo ? geo.city || geo.country : undefined;
 
-                            // Format Uptime
-                            let uptimeString = "0s";
-                            if (node.uptime) {
-                              const days = node.uptime / 86400;
-                              if (days > 1) uptimeString = `${days.toFixed(1)}d`;
-                              else {
-                                const hours = node.uptime / 3600;
-                                uptimeString = `${hours.toFixed(1)}h`;
-                              }
-                            }
-
-                            // Format Storage
-                            const committed = formatStorage(node.storage_committed || 0);
-                            const used = formatBytes(node.storage_used || 0);
-
-                            return (
-                              <TableRow
-                                key={node.pubkey}
-                                id={`node-row-${node.pubkey}`}
-                                className={cn(
-                                  "cursor-pointer border-border transition-colors",
-                                  selectedNode?.pubkey === node.pubkey
-                                    ? "bg-primary/10 border-l-2 border-l-primary hover:bg-primary/20"
-                                    : "hover:bg-muted/50"
-                                )}
-                                onClick={() => handleNodeClick(node)}
-                              >
-                                <TableCell className="text-center"><div className={`mx-auto h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
-                                <TableCell>
-                                  <div className="flex flex-col">
-                                    <div className="flex items-center gap-1.5">
-                                      <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
-                                      {watchlist.includes(node.pubkey) && <Star className="h-3 w-3 fill-amber-500 text-amber-500 flex-shrink-0" />}
-                                    </div>
-                                    <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
-                                  </div>
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell font-mono text-xs text-muted-foreground break-all">
-                                  {node.gossip}
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell overflow-hidden">
-                                  <Badge variant="outline" className="bg-secondary/10 text-secondary dark:bg-cyan-950/30 dark:text-cyan-400 border-secondary/30 dark:border-cyan-800/50 font-mono text-xs max-w-full truncate block">
-                                    {(node.version?.split(' ')[0]) || "Unknown"}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="text-right"><span className="font-mono text-sm text-foreground">{uptimeString}</span></TableCell>
-                                <TableCell className="text-right">
-                                  <div className="flex flex-col items-end">
-                                    <span className="font-bold text-sm text-foreground">{committed}</span>
-                                    <span className="text-[10px] text-muted-foreground">
-                                      {((node.storage_committed || 0) / (1024 * 1024)).toFixed(0)} MB Cached
-                                    </span>
-                                  </div>
-                                </TableCell>
-                                <TableCell className={cn("text-center", selectedNode && "hidden")}>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation(); // Don't trigger row click
-                                      const url = `${window.location.origin}?view=pnodes&node=${node.pubkey.slice(0, 8)}`;
-                                      navigator.clipboard.writeText(url);
-                                      toast({
-                                        title: "Link Copied!",
-                                        description: formatPubkey(node.pubkey),
-                                      });
-                                    }}
-                                    className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-primary"
-                                    title="Copy sharable link"
-                                  >
-                                    <Copy className="h-3.5 w-3.5" />
-                                  </button>
-                                </TableCell>
-                              </TableRow>
-                            )
-                          })
+                          return (
+                            <NodeCard
+                              key={node.pubkey}
+                              node={node}
+                              healthScore={healthScore}
+                              isWatched={watchlist.includes(node.pubkey)}
+                              location={location}
+                              onClick={() => handleNodeClick(node)}
+                            />
+                          );
+                        })}
+                        {filteredNodes.length === 0 && (
+                          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                            <SearchX className="h-12 w-12 mb-4 opacity-50" />
+                            <p className="text-lg font-medium">No nodes found</p>
+                            <p className="text-sm">Try adjusting your search or filters</p>
+                          </div>
                         )}
-                      </TableBody>
-                    </Table>
+                      </div>
+                    ) : (
+                      /* Desktop Table View */
+                      <Table className="w-full table-fixed">
+                        <TableHeader>
+                          <TableRow className="hover:bg-transparent border-border">
+                            <TableHead className="w-[4%] bg-muted"></TableHead>
+                            <TableHead className="w-[18%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
+                              Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </TableHead>
+                            <TableHead className="w-[20%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
+                            <TableHead className="w-[12%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
+                            <TableHead className="w-[12%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
+                            <TableHead className="w-[16%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
+                            <TableHead className={cn("w-[6%] font-bold text-secondary text-center bg-muted", selectedNode && "hidden")}>Share</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredNodes.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={7} className="h-64 text-center">
+                                <div className="flex flex-col items-center justify-center text-muted-foreground gap-3">
+                                  <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center">
+                                    <SearchX className="h-6 w-6 opacity-50" />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="font-medium text-foreground">No nodes found</p>
+                                    <p className="text-xs">No nodes match your filters. Try adjusting your search term or filters.</p>
+                                  </div>
+                                  <Button variant="outline" size="sm" onClick={() => { setSearchTerm(""); setFilterStatus("all"); setFilterCountry("all"); setFilterVersion("all"); setFilterStorage("all"); setFilterHealth("all"); }} className="mt-2 active:scale-95 transition-all">
+                                    Clear Filters
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            filteredNodes.map((node) => {
+                              const ip = node.gossip?.split(':')[0] || "";
+                              const geo = geoCache[ip];
+
+                              // Format Uptime
+                              let uptimeString = "0s";
+                              if (node.uptime) {
+                                const days = node.uptime / 86400;
+                                if (days > 1) uptimeString = `${days.toFixed(1)}d`;
+                                else {
+                                  const hours = node.uptime / 3600;
+                                  uptimeString = `${hours.toFixed(1)}h`;
+                                }
+                              }
+
+                              // Format Storage
+                              const committed = formatStorage(node.storage_committed || 0);
+                              const used = formatBytes(node.storage_used || 0);
+
+                              return (
+                                <TableRow
+                                  key={node.pubkey}
+                                  id={`node-row-${node.pubkey}`}
+                                  className={cn(
+                                    "cursor-pointer border-border transition-colors",
+                                    selectedNode?.pubkey === node.pubkey
+                                      ? "bg-primary/10 border-l-2 border-l-primary hover:bg-primary/20"
+                                      : "hover:bg-muted/50"
+                                  )}
+                                  onClick={() => handleNodeClick(node)}
+                                >
+                                  <TableCell className="text-center"><div className={`mx-auto h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
+                                  <TableCell>
+                                    <div className="flex flex-col">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
+                                        {watchlist.includes(node.pubkey) && <Star className="h-3 w-3 fill-amber-500 text-amber-500 flex-shrink-0" />}
+                                      </div>
+                                      <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell font-mono text-xs text-muted-foreground break-all">
+                                    {node.gossip}
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell overflow-hidden">
+                                    <Badge variant="outline" className="bg-secondary/10 text-secondary dark:bg-cyan-950/30 dark:text-cyan-400 border-secondary/30 dark:border-cyan-800/50 font-mono text-xs max-w-full truncate block">
+                                      {(node.version?.split(' ')[0]) || "Unknown"}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="text-right"><span className="font-mono text-sm text-foreground">{uptimeString}</span></TableCell>
+                                  <TableCell className="text-right">
+                                    <div className="flex flex-col items-end">
+                                      <span className="font-bold text-sm text-foreground">{committed}</span>
+                                      <span className="text-[10px] text-muted-foreground">
+                                        {((node.storage_committed || 0) / (1024 * 1024)).toFixed(0)} MB Cached
+                                      </span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className={cn("text-center", selectedNode && "hidden")}>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // Don't trigger row click
+                                        const url = `${window.location.origin}?view=pnodes&node=${node.pubkey.slice(0, 8)}`;
+                                        navigator.clipboard.writeText(url);
+                                        toast({
+                                          title: "Link Copied!",
+                                          description: formatPubkey(node.pubkey),
+                                        });
+                                      }}
+                                      className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-primary"
+                                      title="Copy sharable link"
+                                    >
+                                      <Copy className="h-3.5 w-3.5" />
+                                    </button>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })
+                          )}
+                        </TableBody>
+                      </Table>
+                    )}
                   </div>
                 </Card>
               </div>
@@ -2547,6 +2592,148 @@ ${selectedNode?.pubkey}
                 .map(([ver, count]) => `${ver}: ${count}`),
             }}
           />
+
+          {/* Mobile Navigation - Bottom Tab Bar */}
+          {isMobile && (
+            <MobileNav activeView={activeView} onViewChange={setActiveView} />
+          )}
+
+          {/* Mobile Node Intelligence Drawer (Bottom Sheet) */}
+          {isMobile && (
+            <Drawer open={!!selectedNode} onOpenChange={(open) => !open && handleCloseNodeDetails()}>
+              <DrawerContent className="max-h-[85vh]">
+                <DrawerHeader className="border-b border-border pb-3">
+                  <DrawerTitle className="flex items-center gap-2 text-lg">
+                    <Activity className="h-5 w-5 text-primary" />
+                    Node Intelligence
+                  </DrawerTitle>
+                  <p className="font-mono text-xs text-muted-foreground">
+                    {selectedNode?.pubkey ? `${selectedNode.pubkey.slice(0, 8)}...${selectedNode.pubkey.slice(-8)}` : ""}
+                  </p>
+                </DrawerHeader>
+                {selectedNode && (
+                  <ScrollArea className="flex-1 p-4" style={{ maxHeight: 'calc(85vh - 100px)' }}>
+                    {/* Status & Version */}
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
+                          <Wifi className="inline w-3 h-3 mr-1" /> Status
+                        </Label>
+                        <div className="flex items-center gap-2">
+                          {selectedNode.rpc ? (
+                            <Badge className="bg-emerald-500/20 text-emerald-400 border-none">Online</Badge>
+                          ) : (
+                            <Badge variant="destructive">Offline</Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="space-y-1 text-right">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Version</Label>
+                        <div className="font-mono text-sm text-foreground">
+                          {XandeumClient.formatVersion(selectedNode.version || "Unknown")}
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator className="my-4" />
+
+                    {/* Health Score */}
+                    {(() => {
+                      const healthScore = calculateHealthScore(selectedNode);
+                      return (
+                        <div className="space-y-3 mb-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                              <Activity className="h-4 w-4 text-primary" /> Health Score
+                            </h4>
+                            <Badge className={cn(
+                              "border-none",
+                              healthScore.status === "HEALTHY" && "bg-emerald-500/20 text-emerald-400",
+                              healthScore.status === "WARNING" && "bg-amber-500/20 text-amber-400",
+                              healthScore.status === "CRITICAL" && "bg-red-500/20 text-red-400"
+                            )}>
+                              {healthScore.status}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-3xl font-bold text-foreground">{healthScore.total}</div>
+                            <div className="text-muted-foreground text-sm">/100</div>
+                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className={cn(
+                                  "h-full rounded-full",
+                                  healthScore.total >= 75 && "bg-emerald-500",
+                                  healthScore.total >= 50 && healthScore.total < 75 && "bg-amber-500",
+                                  healthScore.total < 50 && "bg-red-500"
+                                )}
+                                style={{ width: `${healthScore.total}%` }}
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="bg-muted/50 p-2 rounded flex justify-between">
+                              <span className="text-muted-foreground">Version</span>
+                              <span className="font-mono font-bold">{healthScore.breakdown.version.score}/{healthScore.breakdown.version.max}</span>
+                            </div>
+                            <div className="bg-muted/50 p-2 rounded flex justify-between">
+                              <span className="text-muted-foreground">Uptime</span>
+                              <span className="font-mono font-bold">{healthScore.breakdown.uptime.score}/{healthScore.breakdown.uptime.max}</span>
+                            </div>
+                            <div className="bg-muted/50 p-2 rounded flex justify-between">
+                              <span className="text-muted-foreground">Storage</span>
+                              <span className="font-mono font-bold">{healthScore.breakdown.storage.score}/{healthScore.breakdown.storage.max}</span>
+                            </div>
+                            <div className="bg-muted/50 p-2 rounded flex justify-between">
+                              <span className="text-muted-foreground">RPC</span>
+                              <span className="font-mono font-bold">{healthScore.breakdown.rpc.score}/{healthScore.breakdown.rpc.max}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    <Separator className="my-4" />
+
+                    {/* Storage */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Storage</Label>
+                        <div className="font-mono text-lg font-bold text-foreground">
+                          {formatStorage(selectedNode.storage_committed || 0)}
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Pod Credits</Label>
+                        <div className="font-mono text-lg font-bold text-primary">
+                          {(selectedNode.credits || 0).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Watchlist Button */}
+                    <Button
+                      className={cn(
+                        "w-full mt-4",
+                        watchlist.includes(selectedNode.pubkey)
+                          ? "bg-amber-500/20 text-amber-500 border-amber-500/50 hover:bg-amber-500/30"
+                          : "bg-primary hover:bg-orange-600"
+                      )}
+                      onClick={() => {
+                        if (watchlist.includes(selectedNode.pubkey)) {
+                          removeFromWatchlist(selectedNode.pubkey);
+                        } else {
+                          addToWatchlist(selectedNode.pubkey);
+                        }
+                      }}
+                    >
+                      <Star className={cn("h-4 w-4 mr-2", watchlist.includes(selectedNode.pubkey) && "fill-amber-500")} />
+                      {watchlist.includes(selectedNode.pubkey) ? "Remove from Watchlist" : "Add to Watchlist"}
+                    </Button>
+                  </ScrollArea>
+                )}
+              </DrawerContent>
+            </Drawer>
+          )}
 
           <Toaster />
         </main>

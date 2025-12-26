@@ -4,7 +4,7 @@
 
 [**Live Demo**](http://localhost:3000)
 
-![Dashboard Preview](https://github.com/Rayasurya/Xandeum-Analytic/blob/main/public/demo-v2.gif?raw=true)
+![Dashboard Preview](public/demo-final.gif)
 
 ---
 

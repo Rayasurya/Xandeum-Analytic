@@ -505,13 +505,22 @@ function HomeContent() {
     };
   }, []);
 
-  // Deep linking: Load node from URL when data is available
+  // Deep linking: Sync selected node with URL
   useEffect(() => {
     const nodeId = searchParams.get('node');
-    if (nodeId && nodes.length > 0 && !selectedNode) {
-      const foundNode = nodes.find(n => n.pubkey.startsWith(nodeId));
-      if (foundNode) {
-        setSelectedNode(foundNode);
+
+    if (nodes.length > 0) {
+      if (nodeId) {
+        // URL has node: Set selectedNode if needed
+        if (!selectedNode || !selectedNode.pubkey.startsWith(nodeId)) {
+          const foundNode = nodes.find(n => n.pubkey.startsWith(nodeId));
+          if (foundNode) setSelectedNode(foundNode);
+        }
+      } else {
+        // URL has no node: Clear selectedNode if it's set
+        if (selectedNode) {
+          setSelectedNode(null);
+        }
       }
     }
   }, [nodes, searchParams, selectedNode]);
@@ -710,7 +719,7 @@ function HomeContent() {
 
   // Clear node from URL when closing details panel
   const handleCloseNodeDetails = () => {
-    setSelectedNode(null);
+    // Only update URL - let useEffect handle state sync
     const params = new URLSearchParams(searchParams.toString());
     params.delete('node');
     router.push(`?${params.toString()}`, { scroll: false });

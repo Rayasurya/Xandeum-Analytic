@@ -299,6 +299,19 @@ function HomeContent() {
   const { toast } = useToast();
   const client = new XandeumClient();
 
+  // Scroll to selected node when it changes
+  useEffect(() => {
+    if (activeView === "pnodes" && selectedNode) {
+      // Use a small timeout to ensure the DOM is rendered (especially after view switch)
+      setTimeout(() => {
+        const el = document.getElementById(`node-row-${selectedNode.pubkey}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 300);
+    }
+  }, [selectedNode, activeView]);
+
   // Load Watchlist from LocalStorage
   useEffect(() => {
     const saved = localStorage.getItem("xandeum_watchlist");
@@ -1850,6 +1863,7 @@ Outdated: ${outdated}
                             return (
                               <TableRow
                                 key={node.pubkey}
+                                id={`node-row-${node.pubkey}`}
                                 className={cn(
                                   "cursor-pointer border-border transition-colors",
                                   selectedNode?.pubkey === node.pubkey

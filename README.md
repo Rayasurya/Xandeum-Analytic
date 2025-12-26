@@ -2,7 +2,7 @@
 
 **Xandeum Scope** is a powerful, real-time analytics platform designed for the Xandeum storage-enabled blockchain. It goes beyond simple metrics to provide deep insights, AI-powered assistance, and comprehensive network health monitoring.
 
-[**Live Demo**](http://localhost:3000)
+[**Live Demo**](https://xandeum-analytic.vercel.app/?view=dashboard)
 
 ![Dashboard Preview](public/demo-final.gif)
 

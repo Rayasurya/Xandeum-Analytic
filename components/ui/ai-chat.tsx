@@ -320,21 +320,24 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                         "max-md:bottom-0 max-md:right-0 max-md:left-0 max-md:w-full max-md:h-[70vh] max-md:rounded-b-none"
                     )}
                     style={(() => {
-                        // Calculate if there's enough space above the button for the chat window (520px height + 70px offset)
+                        // FORCE TOP POSITION (User Request)
+                        if (hideFloatingButton) {
+                            return { top: 72, right: 20 };
+                        }
+
+                        // Legacy dynamic positioning for standalone usage
                         const buttonBottom = position.y;
-                        const spaceAbove = typeof window !== 'undefined' ? window.innerHeight - buttonBottom - 56 : 600; // 56px is button height
+                        const spaceAbove = typeof window !== 'undefined' ? window.innerHeight - buttonBottom - 56 : 600;
                         const chatHeight = 520;
-                        const hasSpaceAbove = spaceAbove >= chatHeight + 20; // 20px padding
+                        const hasSpaceAbove = spaceAbove >= chatHeight + 20;
 
                         const baseStyle = position.side === 'right'
                             ? { right: 24 }
                             : { left: 24 };
 
                         if (hasSpaceAbove) {
-                            // Open above the button
                             return { ...baseStyle, bottom: buttonBottom + 70 };
                         } else {
-                            // Open below the button (use top instead of bottom)
                             return { ...baseStyle, top: 70 };
                         }
                     })()}

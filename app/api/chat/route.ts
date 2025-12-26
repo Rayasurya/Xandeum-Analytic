@@ -56,6 +56,35 @@ export async function POST(req: Request) {
             return new Response(`The total committed network storage is **${context.totalStorage || "Unknown"}**.`);
         }
 
+        // Greetings - Handle simple conversational inputs
+        const greetings = ["hey", "hello", "hi", "yo", "sup", "hola", "greetings"];
+        const isGreeting = greetings.some(g => lowerMsg === g || lowerMsg.startsWith(g + " ") || lowerMsg.startsWith(g + ",") || lowerMsg.startsWith(g + "!"));
+        if (isGreeting) {
+            return new Response(`Hey there! 👋 I'm the Xandeum Scope AI. I can help you with:
+• **Network stats** - "How many nodes are active?"
+• **Health info** - "Show me unhealthy nodes"
+• **Storage data** - "What's the total storage?"
+
+Or explore the [Documentation](/docs) for in-depth guides!`);
+        }
+
+        // Thanks / Goodbye
+        const thanks = ["thanks", "thank you", "thx", "ty", "appreciate"];
+        const isThanks = thanks.some(t => lowerMsg.includes(t));
+        if (isThanks) {
+            return new Response(`You're welcome! 🙌 Let me know if you have any other questions about the Xandeum network.`);
+        }
+
+        // Generic short messages that aren't questions
+        if (lowerMsg.length < 5 && !lowerMsg.includes("?")) {
+            return new Response(`I'm here to help with Xandeum network analytics! Try asking:
+• "How many nodes are online?"
+• "What's the network health?"
+• "Explain the health score"
+
+Learn more: [Documentation](/docs)`);
+        }
+
         // 3. DEFINE SYSTEM PROMPT (Rich RAG Context)
         const systemInstruction = `
 ## ROLE

@@ -1066,7 +1066,7 @@ function HomeContent() {
                   )}
                 >
                   <Star className="h-4 w-4 text-amber-500 fill-amber-500/20" />
-                  My Nodes
+                  Watchlist
                   <span className="ml-1 bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 rounded-full border border-primary/20">New</span>
                   {activeView === "watchlist" && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-t-sm" />}
                 </Button>
@@ -2322,7 +2322,7 @@ ${selectedNode?.pubkey}
               <div className="flex flex-col gap-2">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                   <Star className="h-6 w-6 text-amber-500 fill-amber-500" />
-                  My Nodes
+                  Watchlist
                 </h2>
                 <p className="text-muted-foreground">Track and monitor your favorite pNodes in one place. Data is stored locally.</p>
               </div>

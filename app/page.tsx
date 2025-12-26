@@ -1877,7 +1877,10 @@ Outdated: ${outdated}
                                 <TableCell className="text-center"><div className={`mx-auto h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
                                 <TableCell>
                                   <div className="flex flex-col">
-                                    <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
+                                      {watchlist.includes(node.pubkey) && <Star className="h-3 w-3 fill-amber-500 text-amber-500 flex-shrink-0" />}
+                                    </div>
                                     <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
                                   </div>
                                 </TableCell>

@@ -2200,7 +2200,7 @@ export default function Home() {
 // Subcomponents
 function DashboardCard({ icon, title, value, subtext, subtextClassName, tooltip, loading }: any) {
   return (
-    <Card className="bg-card/40 border-border shadow-sm hover:bg-muted/50 transition-colors duration-200">
+    <Card className="bg-card/40 border-border shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
           {icon} {title}

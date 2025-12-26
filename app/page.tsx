@@ -2485,8 +2485,14 @@ ${selectedNode?.pubkey}
                                 </Button>
                                 <Button size="sm" onClick={() => {
                                   if (node) {
-                                    setActiveView("pnodes");
-                                    setTimeout(() => setSelectedNode(node), 50);
+                                    // Use URL-based navigation for reliable deep linking and scroll
+                                    const params = new URLSearchParams();
+                                    params.set('view', 'pnodes');
+                                    params.set('node', node.pubkey.slice(0, 8));
+                                    router.push(`?${params.toString()}`, { scroll: false });
+                                    // Also set state immediately for instant UI feedback
+                                    setActiveViewState("pnodes");
+                                    setSelectedNode(node);
                                   }
                                 }}>
                                   View Details

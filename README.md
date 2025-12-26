@@ -4,6 +4,8 @@
 
 [**Live Demo**](https://xandeum-analytic.vercel.app/?view=dashboard)
 
+> ⚠️ **Important:** The live demo may experience deployment delays. For the **complete, up-to-date experience** with all features (Watchlist, AI Chat, Deep Linking, etc.), please **run the application locally** using the instructions in the [How to Run](#%EF%B8%8F-how-to-run) section.
+
 ![Dashboard Preview](public/demo-final.gif)
 
 ---

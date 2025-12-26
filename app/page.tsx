@@ -1216,13 +1216,13 @@ Outdated: ${outdated}
                                   : "bg-red-500/10 border-red-500/30"
                             )}
                             onClick={() => {
-                              // Reset all filters - show all nodes
+                              // Show healthy nodes only (filter out bad health)
                               setSearchTerm("");
                               setFilterStatus("all");
                               setFilterCountry("all");
                               setFilterVersion("all");
                               setFilterStorage("all");
-                              setFilterHealth("all");
+                              setFilterHealth("healthy");
                               setActiveView("pnodes");
                             }}
                           >

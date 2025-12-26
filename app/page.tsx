@@ -2614,7 +2614,7 @@ ${selectedNode?.pubkey}
                   </p>
                 </DrawerHeader>
                 {selectedNode && (
-                  <ScrollArea className="flex-1 p-4" style={{ maxHeight: 'calc(85vh - 100px)' }}>
+                  <div className="overflow-y-auto p-4 pb-8" style={{ maxHeight: 'calc(85vh - 100px)' }}>
                     {/* Status & Version */}
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div className="space-y-1">
@@ -2731,7 +2731,9 @@ ${selectedNode?.pubkey}
                       <Star className={cn("h-4 w-4 mr-2", watchlist.includes(selectedNode.pubkey) && "fill-amber-500")} />
                       {watchlist.includes(selectedNode.pubkey) ? "Remove from Watchlist" : "Add to Watchlist"}
                     </Button>
-                  </ScrollArea>
+                    {/* Bottom buffer for mobile safe area */}
+                    <div className="h-4" />
+                  </div>
                 )}
               </DrawerContent>
             </Drawer>

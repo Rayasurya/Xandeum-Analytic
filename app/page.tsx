@@ -2302,13 +2302,18 @@ ${selectedNode?.pubkey}
               <LeafletClusterMap
                 nodes={mapNodeData}
                 onNodeClick={(pubkey) => {
-                  // Switch to Registry and select the node
-                  setActiveView("pnodes");
-                  // Wait for render
-                  setTimeout(() => {
-                    const node = nodes.find(n => n.pubkey === pubkey);
-                    if (node) setSelectedNode(node);
-                  }, 100);
+                  // 1. Construct URL with both params
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set("view", "pnodes");
+                  params.set("node", pubkey);
+
+                  // 2. Perform Navigation
+                  router.push(`?${params.toString()}`);
+
+                  // 3. Instant UI Update
+                  setActiveViewState("pnodes");
+                  const node = nodes.find(n => n.pubkey === pubkey);
+                  if (node) setSelectedNode(node);
                 }}
               />
             </Suspense>

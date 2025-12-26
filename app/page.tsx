@@ -2377,29 +2377,31 @@ ${selectedNode?.pubkey}
 
           {/* VIEW: MAP */}
           {activeView === "map" && (
-            <Suspense fallback={
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-              </div>
-            }>
-              <LeafletClusterMap
-                nodes={mapNodeData}
-                onNodeClick={(pubkey) => {
-                  // 1. Construct URL with both params
-                  const params = new URLSearchParams(searchParams.toString());
-                  params.set("view", "pnodes");
-                  params.set("node", pubkey);
+            <div className={cn("w-full h-full", isMobile && "pb-16")}>
+              <Suspense fallback={
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                </div>
+              }>
+                <LeafletClusterMap
+                  nodes={mapNodeData}
+                  onNodeClick={(pubkey) => {
+                    // 1. Construct URL with both params
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set("view", "pnodes");
+                    params.set("node", pubkey);
 
-                  // 2. Perform Navigation
-                  router.push(`?${params.toString()}`);
+                    // 2. Perform Navigation
+                    router.push(`?${params.toString()}`);
 
-                  // 3. Instant UI Update
-                  setActiveViewState("pnodes");
-                  const node = nodes.find(n => n.pubkey === pubkey);
-                  if (node) setSelectedNode(node);
-                }}
-              />
-            </Suspense>
+                    // 3. Instant UI Update
+                    setActiveViewState("pnodes");
+                    const node = nodes.find(n => n.pubkey === pubkey);
+                    if (node) setSelectedNode(node);
+                  }}
+                />
+              </Suspense>
+            </div>
           )}
 
           {/* WATCHLIST VIEW */}

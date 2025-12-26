@@ -29,16 +29,30 @@ export async function POST(req: Request) {
         // Bypass AI for specific stats questions to ensure always-correct, instant answers.
         const lowerMsg = lastUserMessage.toLowerCase();
 
-        if (lowerMsg.includes("how many nodes") || lowerMsg.includes("total nodes")) {
+        // Helper to check for quantity intent
+        const isAskingStatus = (msg: string) =>
+            msg.includes("how many") ||
+            msg.includes("how much") ||
+            msg.includes("total") ||
+            msg.includes("count") ||
+            msg.includes("number of") ||
+            msg.includes("status of");
+
+        // Nodes Count
+        if (lowerMsg.includes("nodes") && (isAskingStatus(lowerMsg) || lowerMsg === "nodes")) {
+            if (lowerMsg.includes("active") || lowerMsg.includes("online")) {
+                return new Response(`There are **${activeNodes} active nodes** (${activePct}% of the network).`);
+            }
             return new Response(`There are currently **${totalNodes} nodes** in the Xandeum network.`);
         }
-        if (lowerMsg.includes("active") || lowerMsg.includes("online")) {
-            return new Response(`There are **${activeNodes} active nodes** (${activePct}% of the network).`);
-        }
-        if (lowerMsg.includes("healthy") || lowerMsg.includes("health")) {
+
+        // Network Health
+        if ((lowerMsg.includes("healthy") || lowerMsg.includes("health")) && isAskingStatus(lowerMsg)) {
             return new Response(`There are **${healthyCount} healthy nodes** in the network.`);
         }
-        if (lowerMsg.includes("storage") || lowerMsg.includes("space") || lowerMsg.includes("disk")) {
+
+        // Storage - Be strict to avoid catching "What is storage?"
+        if ((lowerMsg.includes("storage") || lowerMsg.includes("disk")) && (isAskingStatus(lowerMsg) || lowerMsg.includes("available") || lowerMsg.includes("committed"))) {
             return new Response(`The total committed network storage is **${context.totalStorage || "Unknown"}**.`);
         }
 
@@ -73,8 +87,9 @@ ${XANDEUM_KNOWLEDGE_BASE}
         }));
 
         // 5. CONFIGURE MODEL
+        // Switched to 'gemini-pro' for better stability (1.5-flash was returning 404s)
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-pro",
             systemInstruction: systemInstruction,
             safetySettings: [
                 { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -89,7 +104,7 @@ ${XANDEUM_KNOWLEDGE_BASE}
             history: history,
             generationConfig: {
                 maxOutputTokens: 1000,
-                temperature: 0.2, // Lower temperature for more factual responses
+                temperature: 0.2,
             }
         });
 
@@ -126,10 +141,9 @@ ${XANDEUM_KNOWLEDGE_BASE}
             docTitle = "Getting Started Guide";
         }
 
-        // Return a helpful response even on error, but try to be useful.
-        // If it was a stats question that failed, try to answer it here if possible, otherwise fallback.
+        // Return a SHORT, POLITE fallback as requested
         return new Response(
-            `I encountered an issue connecting to the AI service (${error.message || "Unknown Error"}). \n\nHowever, you can find detailed information in the official documentation here: [${docTitle}](${docLink})`,
+            `I apologize, but I cannot help you with that request right now.\n\nYou can find detailed information here: [${docTitle}](${docLink})`,
             { status: 200 }
         );
     }

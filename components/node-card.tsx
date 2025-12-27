@@ -13,6 +13,7 @@ interface NodeCardProps {
     isWatched: boolean;
     location?: string;
     onClick: () => void;
+    className?: string; // For onboarding tour targeting
 }
 
 function formatPubkey(key: string): string {
@@ -28,7 +29,7 @@ function formatStorage(bytes: number): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 }
 
-export function NodeCard({ node, healthScore, isWatched, location, onClick }: NodeCardProps) {
+export function NodeCard({ node, healthScore, isWatched, location, onClick, className }: NodeCardProps) {
     const isOnline = !!node.rpc;
 
     return (
@@ -37,7 +38,8 @@ export function NodeCard({ node, healthScore, isWatched, location, onClick }: No
             className={cn(
                 "p-4 bg-card rounded-xl border border-border shadow-sm",
                 "active:scale-[0.98] transition-all cursor-pointer",
-                "hover:border-primary/50 hover:bg-card/80"
+                "hover:border-primary/50 hover:bg-card/80",
+                className
             )}
         >
             {/* Header: Pubkey + Status */}

@@ -1083,7 +1083,7 @@ function HomeContent() {
               <div className="h-6 w-px bg-border/60 hidden md:block" />
 
               {/* Navigation Tabs - Hide on mobile (MobileNav handles navigation) */}
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="view-tabs-desktop hidden md:flex items-center gap-1">
                 <Button
                   variant="ghost"
                   onClick={() => setActiveView("dashboard")}
@@ -1169,7 +1169,7 @@ function HomeContent() {
                           setShowAiNudge(false); // Dismiss nudge on click
                         }}
                         className={cn(
-                          "h-9 px-4 rounded-md inline-flex items-center justify-center gap-2",
+                          "ai-chat-button h-9 px-4 rounded-md inline-flex items-center justify-center gap-2",
                           "text-white font-medium text-sm",
                           "bg-gradient-to-r from-orange-500 to-pink-500",
                           "ai-shimmer-btn", // Shimmer overlay
@@ -1846,8 +1846,8 @@ Outdated: ${outdated}
                   <div className="flex-1 overflow-y-auto rounded-md">
                     {/* Mobile Card View */}
                     {isMobile ? (
-                      <div className="p-4 space-y-3 pb-20">
-                        {filteredNodes.map((node) => {
+                      <div className="mobile-stats-cards p-4 space-y-3 pb-20">
+                        {filteredNodes.map((node, index) => {
                           const healthScore = calculateHealthScore(node);
                           const ip = node.gossip?.split(':')[0] || "";
                           const geo = geoCache[ip];
@@ -1861,6 +1861,7 @@ Outdated: ${outdated}
                               isWatched={watchlist.includes(node.pubkey)}
                               location={location}
                               onClick={() => handleNodeClick(node)}
+                              className={index === 0 ? "node-card-first" : undefined}
                             />
                           );
                         })}

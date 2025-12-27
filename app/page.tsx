@@ -166,7 +166,12 @@ export interface HealthScore {
   };
 }
 
-export const calculateHealthScore = (node: any, maxNetworkCredits: number, sortedVersions: string[] = []): HealthScore => {
+// Helper to compare SemVer-like version strings
+const compareVersions = (v1: string, v2: string) => {
+  return v1.localeCompare(v2, undefined, { numeric: true, sensitivity: 'base' });
+};
+
+export const calculateHealthScore = (node: any, maxNetworkCredits: number, sortedVersions: string[] = [], mostCommonVersion: string = ""): HealthScore => {
   let versionScore = 0;
   let uptimeScore = 0;
   let storageScore = 0;
@@ -176,27 +181,35 @@ export const calculateHealthScore = (node: any, maxNetworkCredits: number, sorte
   let weightCredits = 0.20;
   let weightVersion = 0.15;
 
-  // 1. Version Score (15%) - Dynamic Rank Based
+  // 1. Version Score (15%) - Majority Rules
+  // The version running on the most nodes is the "Standard".
+  // Nodes on Standard or Newer get 100. Nodes on Older get penalized.
   const currentVersion = node?.version?.split(" ")[0] || "";
 
-  if (sortedVersions.length > 0) {
-    const rank = sortedVersions.indexOf(currentVersion);
-    if (rank === -1) {
-      versionScore = 0; // Unknown or very old version not in active list
+  if (mostCommonVersion && currentVersion) {
+    if (currentVersion === mostCommonVersion) {
+      versionScore = 100; // Exact match with majority
+    } else if (compareVersions(currentVersion, mostCommonVersion) > 0) {
+      versionScore = 100; // Newer than majority (Leading edge)
     } else {
-      // Rank 0 = 100.
-      // Last Rank = 0.
-      // Step = 100 / (length - 1)
-      if (sortedVersions.length === 1) {
-        versionScore = 100;
+      // Older than majority
+      // Find distance in the sorted list
+      const majorIndex = sortedVersions.indexOf(mostCommonVersion);
+      const currentIndex = sortedVersions.indexOf(currentVersion);
+
+      if (majorIndex !== -1 && currentIndex !== -1) {
+        // Calculate penalty based on how many versions behind
+        const versionLag = Math.max(0, currentIndex - majorIndex);
+        versionScore = Math.max(0, 100 - (versionLag * 30)); // -30 points per version step behind
       } else {
-        const step = 100 / (sortedVersions.length - 1);
-        versionScore = Math.max(0, 100 - (rank * step));
+        versionScore = 0; // Version not found in list (Unknown)
       }
     }
-  } else {
-    // Fallback if no sorted list provided
-    versionScore = 0;
+  } else if (sortedVersions.length > 0) {
+    // Fallback if no majority detected (e.g. tie), use Top version as standard
+    const rank = sortedVersions.indexOf(currentVersion);
+    if (rank === 0) versionScore = 100;
+    else versionScore = Math.max(0, 100 - (rank * 20));
   }
 
   // 2. Uptime Score (35%) - Sigmoid Vitality Curve
@@ -204,9 +217,14 @@ export const calculateHealthScore = (node: any, maxNetworkCredits: number, sorte
   const uptimeDays = uptimeSeconds / 86400;
   uptimeScore = 100 / (1 + Math.exp(-2.0 * (uptimeDays - 0.5)));
 
-  // 3. Storage Score (30%) - Logarithmic Scale
+  // 3. Storage Score (30%) - Tuned Logarithmic Scale
+  // Tuned: 1TB = 100. 500GB = ~85. 100GB = ~50.
   const storageTB = (node?.storage_committed || 0) / (1024 * 1024 * 1024 * 1024);
-  storageScore = Math.min(100, 50 * Math.log2(storageTB + 1) * 2);
+  // Formula: 25 * log2(15 * TB + 1). 
+  // If TB=1 -> 25 * log2(16) = 25 * 4 = 100.
+  // If TB=0.5 -> 25 * log2(8.5) = 25 * 3.08 = 77.
+  // If TB=0.1 -> 25 * log2(2.5) = 25 * 1.32 = 33.
+  storageScore = Math.min(100, 25 * Math.log2((15 * storageTB) + 1));
 
   // 4. Credits Score (20%) - Dynamic Scaling relative to Network Max
   // This ensures the top performer always gets 100, and others are scored relative to the best.
@@ -738,6 +756,8 @@ function HomeContent() {
   const activeVersionsCount = useMemo(() => {
     return new Set(nodes.map(n => n.version?.split(' ')[0])).size;
   }, [nodes]);
+
+
 
   const filteredNodes = useMemo(() => {
     let result = nodes.filter(node => {
@@ -1351,7 +1371,7 @@ function HomeContent() {
                               <span className={cn(
                                 "text-5xl font-black",
                                 (() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total >= 70).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 80) return "text-emerald-400";
                                   if (healthyPct >= 60) return "text-primary";
                                   if (healthyPct >= 40) return "text-amber-400";
@@ -1359,7 +1379,7 @@ function HomeContent() {
                                 })()
                               )}>
                                 {(() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total >= 70).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 90) return "A+";
                                   if (healthyPct >= 80) return "A";
                                   if (healthyPct >= 70) return "B+";
@@ -1371,7 +1391,7 @@ function HomeContent() {
                                 })()}
                               </span>
                               <span className="text-lg text-muted-foreground font-mono">
-                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100) : 0}/100
+                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total >= 70).length / stats.total) * 100) : 0}/100
                               </span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
@@ -1395,8 +1415,8 @@ function HomeContent() {
 
                                   try {
                                     // Prepare data
-                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100) : 0;
-                                    const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total < 70).length;
+                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total >= 70).length / stats.total) * 100) : 0;
+                                    const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total < 70).length;
                                     const mostCommon = getMostCommonVersion(nodes);
                                     const outdated = nodes.filter(n => n.version !== mostCommon).length;
                                     const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
@@ -1518,7 +1538,7 @@ Outdated: ${outdated}
                               "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all flex flex-col justify-between h-full",
                               (() => {
                                 const atRisk = nodes.filter(n => {
-                                  const score = calculateHealthScore(n, maxNetworkCredits, sortedVersions);
+                                  const score = calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion);
                                   return score.total < 70;
                                 }).length;
                                 if (atRisk === 0) return "bg-emerald-500/10 border-emerald-500/30";
@@ -1546,7 +1566,7 @@ Outdated: ${outdated}
                                   return <span className="text-lg">🔴</span>;
                                 })()}
                                 <span className="text-2xl font-bold text-foreground">
-                                  {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total < 70).length}
+                                  {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total < 70).length}
                                 </span>
                               </div>
                               <span className="text-xs text-primary font-medium">View →</span>
@@ -2948,6 +2968,7 @@ ${selectedNode?.pubkey}
             totalNetworkCredits={nodes.reduce((sum, n) => sum + (n.credits || 0), 0)}
             node={selectedNode}
             sortedVersions={sortedVersions}
+            mostCommonVersion={mostCommonVersion}
           />
         </main>
       </div >

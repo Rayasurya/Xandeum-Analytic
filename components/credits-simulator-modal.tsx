@@ -38,6 +38,7 @@ interface CreditsSimulatorModalProps {
     totalNetworkCredits: number;
     node: PNodeInfo | null;
     sortedVersions: string[];
+    mostCommonVersion: string;
 }
 
 export function CreditsSimulatorModal({
@@ -46,7 +47,8 @@ export function CreditsSimulatorModal({
     currentCredits,
     totalNetworkCredits,
     node,
-    sortedVersions
+    sortedVersions,
+    mostCommonVersion
 }: CreditsSimulatorModalProps) {
     const [baseCredits, setBaseCredits] = useState<string>(currentCredits.toString());
     const [selectedBoosts, setSelectedBoosts] = useState<Set<string>>(new Set());
@@ -89,12 +91,12 @@ export function CreditsSimulatorModal({
         // Validator Consensus Score Impact
         // 1. Current Score
         const currentScore = node
-            ? calculateHealthScore(node, totalNetworkCredits, sortedVersions).total
+            ? calculateHealthScore(node, totalNetworkCredits, sortedVersions, mostCommonVersion).total
             : 0;
 
         // 2. Projected Score
         const projectedScore = node
-            ? calculateHealthScore({ ...node, credits: projected }, adjustedTotalNetwork, sortedVersions).total
+            ? calculateHealthScore({ ...node, credits: projected }, adjustedTotalNetwork, sortedVersions, mostCommonVersion).total
             : 0;
 
         return { multiplier, projected, share, currentScore, projectedScore };

@@ -2298,14 +2298,18 @@ Outdated: ${outdated}
                                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">RPC Port</div>
                                   <div className="font-mono text-foreground">{selectedNode?.rpc_port || "N/A"}</div>
                                 </div>
-                                <div className="bg-muted/30 p-2 rounded border border-border/50">
-                                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Shred Ver</div>
-                                  <div className="font-mono text-foreground">{selectedNode?.shredVersion ?? "N/A"}</div>
-                                </div>
-                                <div className="bg-muted/30 p-2 rounded border border-border/50">
-                                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Feat Set</div>
-                                  <div className="font-mono text-foreground">{selectedNode?.featureSet ?? "N/A"}</div>
-                                </div>
+                                {selectedNode?.shredVersion && (
+                                  <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Shred Ver</div>
+                                    <div className="font-mono text-foreground">{selectedNode.shredVersion}</div>
+                                  </div>
+                                )}
+                                {selectedNode?.featureSet && (
+                                  <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Feat Set</div>
+                                    <div className="font-mono text-foreground">{selectedNode.featureSet}</div>
+                                  </div>
+                                )}
                               </div>
                             </div>
 

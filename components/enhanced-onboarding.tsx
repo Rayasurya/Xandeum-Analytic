@@ -25,12 +25,10 @@ export function EnhancedOnboarding() {
 
     // Check if user has seen onboarding before
     useEffect(() => {
-        const hasSeenOnboarding = localStorage.getItem("xandeum_onboarding_v2_seen");
-        if (!hasSeenOnboarding) {
-            // Delay to let the page load completely
-            const timer = setTimeout(() => setShowWelcome(true), 1500);
-            return () => clearTimeout(timer);
-        }
+        // FORCE SHOW for review: const hasSeenOnboarding = localStorage.getItem("xandeum_onboarding_v2_seen");
+        // Delay to let the page load completely
+        const timer = setTimeout(() => setShowWelcome(true), 1500);
+        return () => clearTimeout(timer);
     }, []);
 
     // Device-aware features

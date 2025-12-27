@@ -2364,6 +2364,129 @@ Outdated: ${outdated}
                                 </div>
                               </div>
                             </div>
+
+                            <Separator className="bg-border my-4" />
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 text-foreground">
+                              <Button
+                                onClick={handleExportHtml}
+                                className="flex-1 bg-primary hover:bg-orange-600 active:scale-95 text-primary-foreground font-bold h-10 transition-all text-xs sm:text-sm"
+                                size="sm"
+                              >
+                                <Download className="mr-2 h-4 w-4" /> Export HTML
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="flex-1 h-10 font-bold active:scale-95 transition-all text-xs sm:text-sm"
+                                size="sm"
+                                onClick={() => {
+                                  const healthScore = calculateHealthScore(selectedNode, mostCommonVersion);
+                                  const uptimeSeconds = selectedNode?.uptime || 0;
+                                  const days = Math.floor(uptimeSeconds / 86400);
+                                  const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+
+                                  const metrics: string[] = [];
+                                  if (selectedNode?.version) metrics.push(`• Version: ${XandeumClient.formatVersion(selectedNode.version)}`);
+                                  if (uptimeSeconds > 0) metrics.push(`• Uptime: ${days}d ${hours}h`);
+                                  if (selectedNode?.storage_committed && selectedNode.storage_committed > 0) metrics.push(`• Storage Committed: ${formatStorage(selectedNode.storage_committed)}`);
+                                  if (selectedNode?.credits && selectedNode.credits > 0) metrics.push(`• Credits: ${selectedNode.credits.toLocaleString()}`);
+
+                                  const locationParts: string[] = [];
+                                  if (geoData?.city) locationParts.push(geoData.city);
+                                  if (geoData?.country) locationParts.push(geoData.country);
+                                  if (geoData?.lat && geoData?.lon) locationParts.push(`${geoData.lat}, ${geoData.lon}`);
+
+                                  const statusEmoji = healthScore.status === "HEALTHY" ? "🟢" : healthScore.status === "WARNING" ? "🟡" : "🔴";
+
+                                  let detailsText = `${statusEmoji} XANDEUM NODE REPORT
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 Node ID
+${selectedNode?.pubkey}
+
+📊 Health: ${healthScore.total}/100 (${healthScore.status})
+┌─ Version: ${healthScore.breakdown.version.score}/${healthScore.breakdown.version.max}
+├─ Uptime: ${healthScore.breakdown.uptime.score}/${healthScore.breakdown.uptime.max}
+├─ Storage: ${healthScore.breakdown.storage.score}/${healthScore.breakdown.storage.max}
+└─ RPC: ${healthScore.breakdown.rpc.score}/${healthScore.breakdown.rpc.max}`;
+
+                                  if (metrics.length > 0) detailsText += `\n\n📈 Metrics\n${metrics.join('\n')}`;
+
+                                  detailsText += `\n\n🔗 Network
+• Gossip: ${selectedNode?.gossip || "N/A"}`;
+                                  if (selectedNode?.rpc) detailsText += `\n• RPC: ${selectedNode.rpc}`;
+
+                                  if (locationParts.length > 0) {
+                                    detailsText += `\n\n🌍 Location: ${locationParts.join(', ')}`;
+                                    if (geoData?.org || geoData?.isp) detailsText += `\n• Provider: ${geoData.org || geoData.isp}`;
+                                  }
+
+                                  navigator.clipboard.writeText(detailsText).then(() => {
+                                    toast({
+                                      title: "Copied to Clipboard",
+                                      description: "Node report copied successfully.",
+                                    });
+                                  });
+                                }}
+                              >
+                                <Copy className="mr-2 h-4 w-4" /> Copy All
+                              </Button>
+                            </div>
+
+                            <Separator className="bg-border my-4" />
+
+                            {/* Raw JSON Stream */}
+                            <div>
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-primary" /> RAW_JSON_STREAM
+                                </h4>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+                                  onClick={() => {
+                                    const jsonData = JSON.stringify({
+                                      pubkey: selectedNode?.pubkey,
+                                      gossip: selectedNode?.gossip,
+                                      rpc: selectedNode?.rpc,
+                                      version: selectedNode?.version,
+                                      storage_committed: selectedNode?.storage_committed,
+                                      storage_used: selectedNode?.storage_used,
+                                      storage_usage_percent: selectedNode?.storage_usage_percent,
+                                      uptime: selectedNode?.uptime,
+                                      credits: selectedNode?.credits,
+                                      health_score: calculateHealthScore(selectedNode, mostCommonVersion).total,
+                                    }, null, 2);
+                                    navigator.clipboard.writeText(jsonData).then(() => {
+                                      toast({
+                                        title: "JSON Copied",
+                                        description: "Raw node data copied to clipboard.",
+                                      });
+                                    });
+                                  }}
+                                >
+                                  <Copy className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                              <div className="bg-muted/50 rounded-lg border border-border p-3 font-mono text-[10px] text-muted-foreground overflow-x-auto max-h-40 overflow-y-auto">
+                                <pre className="whitespace-pre-wrap break-all">
+                                  {JSON.stringify({
+                                    pubkey: selectedNode?.pubkey,
+                                    gossip: selectedNode?.gossip,
+                                    rpc: selectedNode?.rpc,
+                                    version: selectedNode?.version,
+                                    storage_committed: selectedNode?.storage_committed,
+                                    storage_used: selectedNode?.storage_used,
+                                    storage_usage_percent: selectedNode?.storage_usage_percent,
+                                    uptime: selectedNode?.uptime,
+                                    credits: selectedNode?.credits,
+                                    health_score: calculateHealthScore(selectedNode).total,
+                                  }, null, 2)}
+                                </pre>
+                              </div>
+                            </div>
                           </div>
                         </ScrollArea>
                       );

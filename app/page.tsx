@@ -1351,7 +1351,7 @@ function HomeContent() {
                               <span className={cn(
                                 "text-5xl font-black",
                                 (() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 80) return "text-emerald-400";
                                   if (healthyPct >= 60) return "text-primary";
                                   if (healthyPct >= 40) return "text-amber-400";
@@ -1359,7 +1359,7 @@ function HomeContent() {
                                 })()
                               )}>
                                 {(() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 90) return "A+";
                                   if (healthyPct >= 80) return "A";
                                   if (healthyPct >= 70) return "B+";
@@ -1518,7 +1518,7 @@ Outdated: ${outdated}
                               "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all flex flex-col justify-between h-full",
                               (() => {
                                 const atRisk = nodes.filter(n => {
-                                  const score = calculateHealthScore(n, maxNetworkCredits);
+                                  const score = calculateHealthScore(n, maxNetworkCredits, sortedVersions);
                                   return score.total < 70;
                                 }).length;
                                 if (atRisk === 0) return "bg-emerald-500/10 border-emerald-500/30";
@@ -1540,13 +1540,13 @@ Outdated: ${outdated}
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
                                 {(() => {
-                                  const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length;
+                                  const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total < 70).length;
                                   if (atRisk === 0) return <span className="text-lg">✅</span>;
                                   if (atRisk <= 5) return <span className="text-lg">⚠️</span>;
                                   return <span className="text-lg">🔴</span>;
                                 })()}
                                 <span className="text-2xl font-bold text-foreground">
-                                  {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length}
+                                  {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total < 70).length}
                                 </span>
                               </div>
                               <span className="text-xs text-primary font-medium">View →</span>
@@ -2940,7 +2940,7 @@ ${selectedNode?.pubkey}
           )}
 
           <Toaster />
-          <EnhancedOnboarding />
+          <EnhancedOnboarding onStart={() => setActiveView('dashboard')} />
           <CreditsSimulatorModal
             isOpen={isSimulatorOpen}
             onClose={() => setIsSimulatorOpen(false)}

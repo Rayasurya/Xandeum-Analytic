@@ -17,7 +17,7 @@ const Joyride = dynamic(() => import("react-joyride"), { ssr: false });
 // Type for tour callback
 type JoyrideCallback = (data: CallBackProps) => void;
 
-export function EnhancedOnboarding() {
+export function EnhancedOnboarding({ onStart }: { onStart?: () => void }) {
     const [showWelcome, setShowWelcome] = useState(false);
     const [runTour, setRunTour] = useState(false);
     const [stepIndex, setStepIndex] = useState(0);
@@ -232,6 +232,7 @@ export function EnhancedOnboarding() {
 
     // Start the interactive tour
     const handleStartTour = () => {
+        if (onStart) onStart();
         setShowWelcome(false);
         // Small delay to let the dialog close
         setTimeout(() => {

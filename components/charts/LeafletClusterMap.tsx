@@ -15,6 +15,8 @@ interface NodeLocation {
     city?: string;
     country?: string;
     isOnline: boolean;
+    version?: string;
+    credits?: number;
 }
 
 interface LeafletClusterMapProps {
@@ -475,9 +477,6 @@ export function LeafletClusterMap({ nodes, onNodeClick }: LeafletClusterMapProps
                                 icon={createMarkerIcon(node, getMarkerSize(node.storageCommitted))}
                                 // @ts-ignore - Custom property for cluster calculations
                                 nodeData={node}
-                                eventHandlers={{
-                                    click: () => onNodeClick?.(node.pubkey),
-                                }}
                             >
                                 <Tooltip
                                     direction="top"
@@ -491,6 +490,60 @@ export function LeafletClusterMap({ nodes, onNodeClick }: LeafletClusterMapProps
                                         <div>💾 Storage: {formatStorageShort(node.storageCommitted)}</div>
                                     </div>
                                 </Tooltip>
+                                <Popup className="node-popup" closeButton={true}>
+                                    <div className="min-w-[200px] p-1">
+                                        {/* Header */}
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-xs font-mono text-muted-foreground">
+                                                {node.pubkey.substring(0, 8)}...{node.pubkey.slice(-4)}
+                                            </span>
+                                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${node.isOnline ? 'bg-emerald-500/20 text-emerald-600' : 'bg-gray-500/20 text-gray-600'}`}>
+                                                {node.isOnline ? 'Online' : 'Offline'}
+                                            </span>
+                                        </div>
+
+                                        {/* Metrics Grid */}
+                                        <div className="grid grid-cols-2 gap-2 mb-3">
+                                            <div className="bg-muted/50 p-2 rounded">
+                                                <div className="text-[10px] text-muted-foreground">Health</div>
+                                                <div className={`font-bold ${node.healthScore >= 80 ? 'text-emerald-600' : node.healthScore >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                                                    {Math.round(node.healthScore)}%
+                                                </div>
+                                            </div>
+                                            <div className="bg-muted/50 p-2 rounded">
+                                                <div className="text-[10px] text-muted-foreground">Storage</div>
+                                                <div className="font-bold text-foreground">{formatStorageShort(node.storageCommitted)}</div>
+                                            </div>
+                                            {node.version && (
+                                                <div className="bg-muted/50 p-2 rounded">
+                                                    <div className="text-[10px] text-muted-foreground">Version</div>
+                                                    <div className="font-mono text-xs text-foreground">{node.version.split(' ')[0]}</div>
+                                                </div>
+                                            )}
+                                            {node.credits !== undefined && node.credits > 0 && (
+                                                <div className="bg-muted/50 p-2 rounded">
+                                                    <div className="text-[10px] text-muted-foreground">Credits</div>
+                                                    <div className="font-bold text-primary">{node.credits.toLocaleString()}</div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Location */}
+                                        {(node.city || node.country) && (
+                                            <div className="text-xs text-muted-foreground mb-3">
+                                                📍 {[node.city, node.country].filter(Boolean).join(', ')}
+                                            </div>
+                                        )}
+
+                                        {/* View Full Details Button */}
+                                        <button
+                                            onClick={() => onNodeClick?.(node.pubkey)}
+                                            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-2 rounded text-sm font-medium transition-colors"
+                                        >
+                                            View Full Details →
+                                        </button>
+                                    </div>
+                                </Popup>
                             </Marker>
                         ))}
                     </MarkerClusterGroup>
@@ -501,9 +554,6 @@ export function LeafletClusterMap({ nodes, onNodeClick }: LeafletClusterMapProps
                             key={node.pubkey}
                             position={[node.lat, node.lng] as LatLngExpression}
                             icon={createMarkerIcon(node, getMarkerSize(node.storageCommitted))}
-                            eventHandlers={{
-                                click: () => onNodeClick?.(node.pubkey),
-                            }}
                         >
                             <Tooltip
                                 direction="top"
@@ -516,6 +566,60 @@ export function LeafletClusterMap({ nodes, onNodeClick }: LeafletClusterMapProps
                                     <div>💾 Storage: {formatStorageShort(node.storageCommitted)}</div>
                                 </div>
                             </Tooltip>
+                            <Popup className="node-popup" closeButton={true}>
+                                <div className="min-w-[200px] p-1">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-xs font-mono text-muted-foreground">
+                                            {node.pubkey.substring(0, 8)}...{node.pubkey.slice(-4)}
+                                        </span>
+                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${node.isOnline ? 'bg-emerald-500/20 text-emerald-600' : 'bg-gray-500/20 text-gray-600'}`}>
+                                            {node.isOnline ? 'Online' : 'Offline'}
+                                        </span>
+                                    </div>
+
+                                    {/* Metrics Grid */}
+                                    <div className="grid grid-cols-2 gap-2 mb-3">
+                                        <div className="bg-muted/50 p-2 rounded">
+                                            <div className="text-[10px] text-muted-foreground">Health</div>
+                                            <div className={`font-bold ${node.healthScore >= 80 ? 'text-emerald-600' : node.healthScore >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                                                {Math.round(node.healthScore)}%
+                                            </div>
+                                        </div>
+                                        <div className="bg-muted/50 p-2 rounded">
+                                            <div className="text-[10px] text-muted-foreground">Storage</div>
+                                            <div className="font-bold text-foreground">{formatStorageShort(node.storageCommitted)}</div>
+                                        </div>
+                                        {node.version && (
+                                            <div className="bg-muted/50 p-2 rounded">
+                                                <div className="text-[10px] text-muted-foreground">Version</div>
+                                                <div className="font-mono text-xs text-foreground">{node.version.split(' ')[0]}</div>
+                                            </div>
+                                        )}
+                                        {node.credits !== undefined && node.credits > 0 && (
+                                            <div className="bg-muted/50 p-2 rounded">
+                                                <div className="text-[10px] text-muted-foreground">Credits</div>
+                                                <div className="font-bold text-primary">{node.credits.toLocaleString()}</div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Location */}
+                                    {(node.city || node.country) && (
+                                        <div className="text-xs text-muted-foreground mb-3">
+                                            📍 {[node.city, node.country].filter(Boolean).join(', ')}
+                                        </div>
+                                    )}
+
+                                    {/* View Full Details Button */}
+                                    <button
+                                        onClick={() => onNodeClick?.(node.pubkey)}
+                                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-2 rounded text-sm font-medium transition-colors"
+                                    >
+                                        View Full Details →
+                                    </button>
+                                </div>
+                            </Popup>
                         </Marker>
                     ))
                 )}

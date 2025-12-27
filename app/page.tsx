@@ -690,6 +690,8 @@ function HomeContent() {
         city: geo?.city,
         country: geo?.country,
         isOnline: !!(node.rpc || node.tpu), // Fixed: OR instead of AND
+        version: node.version || undefined,
+        credits: node.credits || 0,
       };
     }).filter(n => n.lat !== 0 && n.lng !== 0); // Only include nodes with valid geo
   }, [nodes, geoCache]);

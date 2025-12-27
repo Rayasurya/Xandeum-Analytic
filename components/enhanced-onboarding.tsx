@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
-    Network, Sparkles, Map, MessageSquare, Star, Monitor, Smartphone,
-    ArrowRight, X, ChevronRight, LayoutDashboard, Table
+    Sparkles, Map, Monitor, Smartphone,
+    ArrowRight, ChevronRight
 } from "lucide-react";
 import type { CallBackProps, Step, Styles } from "react-joyride";
 
@@ -27,8 +27,8 @@ export function EnhancedOnboarding() {
     useEffect(() => {
         const hasSeenOnboarding = localStorage.getItem("xandeum_onboarding_v2_seen");
         if (!hasSeenOnboarding) {
-            // Small delay to let the page load
-            const timer = setTimeout(() => setShowWelcome(true), 800);
+            // Delay to let the page load completely
+            const timer = setTimeout(() => setShowWelcome(true), 1500);
             return () => clearTimeout(timer);
         }
     }, []);
@@ -62,64 +62,54 @@ export function EnhancedOnboarding() {
             highlight: "Maximum data visibility and control!"
         };
 
-    // Tour steps - different for mobile vs desktop
+    // Tour steps - Focus on elements visible in Dashboard view first
+    // Then guide to switching views
     const tourSteps: Step[] = isMobile
         ? [
             {
-                target: ".mobile-stats-cards",
+                target: ".dashboard-stats-row",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">Network Overview</h3>
+                        <h3 className="font-bold text-foreground">📊 Network Stats</h3>
                         <p className="text-sm text-muted-foreground">
-                            These cards show the network health at a glance - total nodes, active nodes, and total storage.
+                            Real-time overview: total nodes, active nodes, health status, and at-risk alerts.
                         </p>
-                        <p className="text-xs text-primary font-medium">Tap any card for details!</p>
+                        <p className="text-xs text-primary font-medium">Tap any card to filter by that metric!</p>
                     </div>
                 ),
-                placement: "bottom",
+                placement: "bottom" as const,
                 disableBeacon: true,
+                disableScrolling: true,
             },
             {
                 target: ".mobile-nav",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">Navigation Bar</h3>
+                        <h3 className="font-bold text-foreground">🧭 Navigation Bar</h3>
                         <p className="text-sm text-muted-foreground">
-                            Quick access to all views: Dashboard, Nodes, Map, Watchlist, and Docs.
+                            Switch views: Dashboard, Nodes, Watchlist, Map, and Docs. All just one tap away!
                         </p>
-                        <p className="text-xs text-primary font-medium">Tap to switch views instantly!</p>
+                        <p className="text-xs text-primary font-medium">Try tapping "Nodes" to see the node list!</p>
                     </div>
                 ),
-                placement: "top",
+                placement: "top" as const,
                 disableBeacon: true,
-            },
-            {
-                target: ".node-card-first",
-                content: (
-                    <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">Node Cards</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Each card shows a node's health, status, and storage. Tap to see full details in the intelligence drawer.
-                        </p>
-                        <p className="text-xs text-primary font-medium">Try tapping a node!</p>
-                    </div>
-                ),
-                placement: "top",
-                disableBeacon: true,
+                disableScrolling: true,
             },
             {
                 target: ".ai-chat-button",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">AI Assistant</h3>
+                        <h3 className="font-bold text-foreground">🤖 AI Assistant</h3>
                         <p className="text-sm text-muted-foreground">
-                            Ask anything about nodes, health scores, or network stats. Your personal analytics assistant!
+                            Ask anything! "Which nodes have low health?", "Show storage stats", "Explain credits"
                         </p>
-                        <p className="text-xs text-primary font-medium">Tap to start chatting!</p>
+                        <p className="text-xs text-primary font-medium">Your personal analytics assistant!</p>
                     </div>
                 ),
-                placement: "left",
+                placement: "left" as const,
                 disableBeacon: true,
+                disableScrolling: true,
             },
         ]
         : [
@@ -127,43 +117,31 @@ export function EnhancedOnboarding() {
                 target: ".dashboard-stats-row",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">Network Dashboard</h3>
+                        <h3 className="font-bold text-foreground">📊 Network Dashboard</h3>
                         <p className="text-sm text-muted-foreground">
-                            Real-time network stats: total nodes, active nodes, health distribution, and total storage capacity.
+                            Real-time stats: total nodes, active nodes, health distribution, and storage capacity.
                         </p>
                         <p className="text-xs text-primary font-medium">Click any stat for deeper insights!</p>
                     </div>
                 ),
-                placement: "bottom",
+                placement: "bottom" as const,
                 disableBeacon: true,
+                disableScrolling: true,
             },
             {
                 target: ".view-tabs-desktop",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">View Tabs</h3>
+                        <h3 className="font-bold text-foreground">🗂️ View Tabs</h3>
                         <p className="text-sm text-muted-foreground">
-                            Switch between Node Registry (table), Global Map (visualization), and Watchlist (favorites).
+                            Switch between Dashboard, Node Registry (table), Watchlist, and Global Map.
                         </p>
-                        <p className="text-xs text-primary font-medium">Try the Map view for global visualization!</p>
+                        <p className="text-xs text-primary font-medium">Try "Node Registry" to see all nodes!</p>
                     </div>
                 ),
-                placement: "bottom",
+                placement: "bottom" as const,
                 disableBeacon: true,
-            },
-            {
-                target: ".node-table",
-                content: (
-                    <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">Node Registry</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Full sortable table with health scores, storage, uptime, and version. Click column headers to sort!
-                        </p>
-                        <p className="text-xs text-primary font-medium">Click a row to open Node Intelligence!</p>
-                    </div>
-                ),
-                placement: "top",
-                disableBeacon: true,
+                disableScrolling: true,
             },
             {
                 target: ".ai-chat-button",
@@ -176,8 +154,9 @@ export function EnhancedOnboarding() {
                         <p className="text-xs text-primary font-medium">Click to start a conversation!</p>
                     </div>
                 ),
-                placement: "left",
+                placement: "left" as const,
                 disableBeacon: true,
+                disableScrolling: true,
             },
         ];
 
@@ -186,7 +165,7 @@ export function EnhancedOnboarding() {
         options: {
             arrowColor: "hsl(var(--card))",
             backgroundColor: "hsl(var(--card))",
-            overlayColor: "rgba(0, 0, 0, 0.75)",
+            overlayColor: "rgba(0, 0, 0, 0.7)",
             primaryColor: "hsl(var(--primary))",
             textColor: "hsl(var(--foreground))",
             zIndex: 10000,
@@ -194,15 +173,21 @@ export function EnhancedOnboarding() {
         tooltip: {
             borderRadius: "12px",
             padding: "16px",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        },
+        tooltipContainer: {
+            textAlign: "left" as const,
         },
         buttonNext: {
             backgroundColor: "hsl(var(--primary))",
             color: "hsl(var(--primary-foreground))",
             borderRadius: "8px",
             padding: "8px 16px",
+            fontWeight: 600,
         },
         buttonBack: {
             color: "hsl(var(--muted-foreground))",
+            marginRight: "8px",
         },
         buttonSkip: {
             color: "hsl(var(--muted-foreground))",
@@ -214,16 +199,30 @@ export function EnhancedOnboarding() {
 
     // Handle Joyride callback
     const handleJoyrideCallback: JoyrideCallback = useCallback((data) => {
-        const { status, index, type } = data;
+        const { status, action, index, type } = data;
 
+        // Handle finish/skip
         if (status === "finished" || status === "skipped") {
             setRunTour(false);
             setStepIndex(0);
             localStorage.setItem("xandeum_onboarding_v2_seen", "true");
+            return;
         }
 
+        // Handle step transitions (both Next and Back)
         if (type === "step:after") {
-            setStepIndex(index + 1);
+            if (action === "next") {
+                setStepIndex(index + 1);
+            } else if (action === "prev") {
+                setStepIndex(index - 1);
+            }
+        }
+
+        // Handle close button on individual steps
+        if (action === "close") {
+            setRunTour(false);
+            setStepIndex(0);
+            localStorage.setItem("xandeum_onboarding_v2_seen", "true");
         }
     }, []);
 
@@ -231,7 +230,10 @@ export function EnhancedOnboarding() {
     const handleStartTour = () => {
         setShowWelcome(false);
         // Small delay to let the dialog close
-        setTimeout(() => setRunTour(true), 300);
+        setTimeout(() => {
+            setStepIndex(0);
+            setRunTour(true);
+        }, 400);
     };
 
     // Skip onboarding
@@ -315,14 +317,18 @@ export function EnhancedOnboarding() {
                 continuous
                 showProgress
                 showSkipButton
-                scrollToFirstStep
+                disableScrolling
                 spotlightClicks
                 disableOverlayClose
+                hideCloseButton={false}
                 styles={joyrideStyles}
+                floaterProps={{
+                    disableAnimation: false,
+                }}
                 locale={{
                     back: "Back",
                     close: "Close",
-                    last: "Finish",
+                    last: "Got it!",
                     next: "Next",
                     skip: "Skip Tour",
                 }}

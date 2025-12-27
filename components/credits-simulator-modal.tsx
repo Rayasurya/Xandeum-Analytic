@@ -215,9 +215,8 @@ export function CreditsSimulatorModal({
                                     <ArrowRight className="w-4 h-4 text-muted-foreground" />
                                     <div className={cn(
                                         "text-3xl font-black",
-                                        projectedScore >= 90 ? "text-emerald-500" :
-                                            projectedScore >= 70 ? "text-emerald-400" :
-                                                projectedScore >= 30 ? "text-amber-400" : "text-red-400"
+                                        projectedScore >= 70 ? "text-emerald-500" :
+                                            projectedScore >= 30 ? "text-amber-400" : "text-red-400"
                                     )}>
                                         {projectedScore}
                                     </div>

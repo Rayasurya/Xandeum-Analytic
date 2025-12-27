@@ -1395,8 +1395,8 @@ function HomeContent() {
 
                                   try {
                                     // Prepare data
-                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100) : 0;
-                                    const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length;
+                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100) : 0;
+                                    const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total < 70).length;
                                     const mostCommon = getMostCommonVersion(nodes);
                                     const outdated = nodes.filter(n => n.version !== mostCommon).length;
                                     const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
@@ -1410,7 +1410,7 @@ function HomeContent() {
 📊 *Nodes*
 Total: ${stats.total}
 Active: ${stats.active}
-Healthy: ${nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length}
+Healthy: ${nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length}
 At-Risk: ${atRisk}
 
 💾 Storage: ${totalStorage}
@@ -1935,10 +1935,10 @@ Outdated: ${outdated}
                             <TableHead className="w-[18%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
                             <TableHead className="w-[10%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
                             <TableHead className="w-[10%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
-                            <TableHead className="w-[7%] font-bold text-secondary text-center bg-muted cursor-pointer" onClick={() => handleSort("health")}>
+                            <TableHead className="w-[10%] font-bold text-secondary text-center bg-muted cursor-pointer" onClick={() => handleSort("health")}>
                               Health {sortConfig?.key === "health" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                             </TableHead>
-                            <TableHead className="w-[14%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
+                            <TableHead className="w-[15%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
                             <TableHead className={cn("w-[6%] font-bold text-secondary text-center bg-muted", selectedNode && "hidden")}>Share</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -2019,8 +2019,8 @@ Outdated: ${outdated}
                                     <div
                                       className={cn(
                                         "relative mx-auto h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold",
-                                        healthScore.total >= 80 ? "bg-emerald-500/20 text-emerald-500" :
-                                          healthScore.total >= 50 ? "bg-amber-500/20 text-amber-500" : "bg-red-500/20 text-red-500"
+                                        healthScore.total >= 70 ? "bg-emerald-500/20 text-emerald-500" :
+                                          healthScore.total >= 30 ? "bg-amber-500/20 text-amber-500" : "bg-red-500/20 text-red-500"
                                       )}
                                       title={`Health: ${healthScore.total}/100 (${healthScore.status})`}
                                     >
@@ -2225,7 +2225,7 @@ Outdated: ${outdated}
 
                                   {/* Score Display */}
                                   <div className="flex items-center gap-3">
-                                    <div className={`text-4xl font-black ${healthScore.total >= 80 ? 'text-emerald-500' : healthScore.total >= 50 ? 'text-amber-500' : 'text-red-500'}`}>
+                                    <div className={`text-4xl font-black ${healthScore.total >= 70 ? 'text-emerald-500' : healthScore.total >= 30 ? 'text-amber-500' : 'text-red-500'}`}>
                                       {healthScore.total}
                                     </div>
                                     <div className="flex-1 space-y-1">
@@ -2249,7 +2249,7 @@ Outdated: ${outdated}
 
                                   {/* Breakdown Grids - Vitality Algorithm Weights */}
                                   <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <TooltipProvider>
+                                    <TooltipProvider delayDuration={100}>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
@@ -2266,7 +2266,7 @@ Outdated: ${outdated}
                                       </Tooltip>
                                     </TooltipProvider>
 
-                                    <TooltipProvider>
+                                    <TooltipProvider delayDuration={100}>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
@@ -2283,7 +2283,7 @@ Outdated: ${outdated}
                                       </Tooltip>
                                     </TooltipProvider>
 
-                                    <TooltipProvider>
+                                    <TooltipProvider delayDuration={100}>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
@@ -2311,7 +2311,7 @@ Outdated: ${outdated}
                                       </Tooltip>
                                     </TooltipProvider>
 
-                                    <TooltipProvider>
+                                    <TooltipProvider delayDuration={100}>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">

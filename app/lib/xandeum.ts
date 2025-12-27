@@ -118,7 +118,12 @@ export class XandeumClient {
                 const creditRes = await fetch("/api/podcredits");
                 if (creditRes.ok) {
                     const creditData = await creditRes.json();
-                    const creditList = Array.isArray(creditData) ? creditData : (creditData.credits || []);
+
+                    // FIXED: API returns { "pods_credits": [...] }, handling that case
+                    const creditList = Array.isArray(creditData)
+                        ? creditData
+                        : (creditData.pods_credits || creditData.credits || []);
+
                     const creditMap = new Map<string, number>();
 
                     if (Array.isArray(creditList)) {

@@ -69,7 +69,7 @@ export function EnhancedOnboarding() {
                 target: ".mobile-stats-cards",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">📊 Network Overview</h3>
+                        <h3 className="font-bold text-foreground">Network Overview</h3>
                         <p className="text-sm text-muted-foreground">
                             These cards show the network health at a glance - total nodes, active nodes, and total storage.
                         </p>
@@ -83,7 +83,7 @@ export function EnhancedOnboarding() {
                 target: ".mobile-nav",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">🧭 Navigation Bar</h3>
+                        <h3 className="font-bold text-foreground">Navigation Bar</h3>
                         <p className="text-sm text-muted-foreground">
                             Quick access to all views: Dashboard, Nodes, Map, Watchlist, and Docs.
                         </p>
@@ -97,7 +97,7 @@ export function EnhancedOnboarding() {
                 target: ".node-card-first",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">🖥️ Node Cards</h3>
+                        <h3 className="font-bold text-foreground">Node Cards</h3>
                         <p className="text-sm text-muted-foreground">
                             Each card shows a node's health, status, and storage. Tap to see full details in the intelligence drawer.
                         </p>
@@ -111,7 +111,7 @@ export function EnhancedOnboarding() {
                 target: ".ai-chat-button",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">🤖 AI Assistant</h3>
+                        <h3 className="font-bold text-foreground">AI Assistant</h3>
                         <p className="text-sm text-muted-foreground">
                             Ask anything about nodes, health scores, or network stats. Your personal analytics assistant!
                         </p>
@@ -127,7 +127,7 @@ export function EnhancedOnboarding() {
                 target: ".dashboard-stats-row",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">📊 Network Dashboard</h3>
+                        <h3 className="font-bold text-foreground">Network Dashboard</h3>
                         <p className="text-sm text-muted-foreground">
                             Real-time network stats: total nodes, active nodes, health distribution, and total storage capacity.
                         </p>
@@ -141,7 +141,7 @@ export function EnhancedOnboarding() {
                 target: ".view-tabs-desktop",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">🗂️ View Tabs</h3>
+                        <h3 className="font-bold text-foreground">View Tabs</h3>
                         <p className="text-sm text-muted-foreground">
                             Switch between Node Registry (table), Global Map (visualization), and Watchlist (favorites).
                         </p>
@@ -155,7 +155,7 @@ export function EnhancedOnboarding() {
                 target: ".node-table",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">📋 Node Registry</h3>
+                        <h3 className="font-bold text-foreground">Node Registry</h3>
                         <p className="text-sm text-muted-foreground">
                             Full sortable table with health scores, storage, uptime, and version. Click column headers to sort!
                         </p>

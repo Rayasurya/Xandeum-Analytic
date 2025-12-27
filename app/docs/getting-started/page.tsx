@@ -25,7 +25,7 @@ export default function GettingStartedPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="p-4 rounded-lg bg-card border border-border">
                         <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
-                            <Shield className="h-4 w-4 text-emerald-500" /> Validator Layer
+                            <Shield className="h-4 w-4 text-primary" /> Validator Layer
                         </h3>
                         <p className="text-sm text-muted-foreground">
                             Participates in the consensus protocol, votes on blocks, and processes transactions. Requires high single-core CPU performance and low latency.
@@ -33,7 +33,7 @@ export default function GettingStartedPage() {
                     </div>
                     <div className="p-4 rounded-lg bg-card border border-border">
                         <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
-                            <Server className="h-4 w-4 text-blue-500" /> Storage Layer
+                            <Server className="h-4 w-4 text-secondary" /> Storage Layer
                         </h3>
                         <p className="text-sm text-muted-foreground">
                             Manages "pDisks" - cryptographically verifiable storage sectors. Requires high I/O throughput (IOPS) and massive capacity (TB/PB scale).
@@ -98,7 +98,7 @@ export default function GettingStartedPage() {
                 <div className="space-y-6">
                     <div>
                         <h3 className="text-lg font-semibold text-foreground mb-2">1. Prepare Environment</h3>
-                        <pre className="bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto border border-border font-mono text-sm">
+                        <pre className="bg-muted text-muted-foreground p-4 rounded-lg overflow-x-auto border border-border font-mono text-sm">
                             {`# Update system packages
 sudo apt-get update && sudo apt-get upgrade -y
 
@@ -110,7 +110,7 @@ sudo apt-get install -y curl git ufw jq build-essential`}
                     <div>
                         <h3 className="text-lg font-semibold text-foreground mb-2">2. Install Xandeum CLI</h3>
                         <p className="text-sm text-muted-foreground mb-2">Use the official bootstrap script to install the binary and systemd services.</p>
-                        <pre className="bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto border border-border font-mono text-sm">
+                        <pre className="bg-muted text-muted-foreground p-4 rounded-lg overflow-x-auto border border-border font-mono text-sm">
                             {`sh -c "$(curl -sSfL https://sh.xandeum.network/install.sh)"`}
                         </pre>
                     </div>
@@ -120,7 +120,7 @@ sudo apt-get install -y curl git ufw jq build-essential`}
                         <p className="text-sm text-muted-foreground mb-2">
                             Xandeum requires specific ports for Gossip (Transaction propagation) and TPU (Transaction Processing).
                         </p>
-                        <pre className="bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto border border-border font-mono text-sm">
+                        <pre className="bg-muted text-muted-foreground p-4 rounded-lg overflow-x-auto border border-border font-mono text-sm">
                             {`# Open RPC Port
 sudo ufw allow 8899/tcp
 
@@ -140,7 +140,7 @@ sudo ufw enable`}
             </section>
 
             {/* Next Steps */}
-            <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-orange-500/10 border border-primary/20">
+            <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20">
                 <h3 className="text-lg font-bold text-foreground mb-2">Configure Your Node</h3>
                 <p className="text-muted-foreground mb-4">
                     Once installed, you must optimize your node for the Health Score algorithm to maximize rewards.

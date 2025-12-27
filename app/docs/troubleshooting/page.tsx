@@ -65,19 +65,19 @@ export default function TroubleshootingPage() {
                 </p>
 
                 <div className="grid gap-4">
-                    <div className="p-4 bg-slate-950 rounded-lg border border-border">
-                        <h3 className="font-semibold text-slate-50 mb-2">Monitor Live Logs</h3>
-                        <pre className="text-xs font-mono text-emerald-400 overflow-x-auto">
+                    <div className="p-4 bg-muted rounded-lg border border-border">
+                        <h3 className="font-semibold text-foreground mb-2">Monitor Live Logs</h3>
+                        <pre className="text-xs font-mono text-primary overflow-x-auto">
                             sudo journalctl -u xandeum-validator -f -o cat
                         </pre>
-                        <p className="text-xs text-slate-400 mt-2">
+                        <p className="text-xs text-muted-foreground mt-2">
                             Shows real-time output. Look for <span className="text-red-400">ERROR</span> or <span className="text-yellow-400">WARN</span> flags.
                         </p>
                     </div>
 
-                    <div className="p-4 bg-slate-950 rounded-lg border border-border">
-                        <h3 className="font-semibold text-slate-50 mb-2">Grep for Specific Errors</h3>
-                        <pre className="text-xs font-mono text-emerald-400 overflow-x-auto">
+                    <div className="p-4 bg-muted rounded-lg border border-border">
+                        <h3 className="font-semibold text-foreground mb-2">Grep for Specific Errors</h3>
+                        <pre className="text-xs font-mono text-primary overflow-x-auto">
                             # Check for panic events
                             sudo journalctl -u xandeum-validator | grep "panic"
 
@@ -103,20 +103,20 @@ export default function TroubleshootingPage() {
                             <h4 className="font-bold text-foreground text-sm">Check RPC Port Visibility</h4>
                             <code className="text-xs text-muted-foreground">nc -zv &lt;YOUR_IP&gt; 8899</code>
                         </div>
-                        <span className="text-xs bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded">Expected: Succeeded</span>
+                        <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded">Expected: Succeeded</span>
                     </div>
                     <div className="p-3 bg-muted/50 rounded flex items-center justify-between border border-border">
                         <div>
                             <h4 className="font-bold text-foreground text-sm">Check Gossip Throughput</h4>
                             <code className="text-xs text-muted-foreground">xandeum-validator gossip --monitor</code>
                         </div>
-                        <span className="text-xs bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded">Target: &gt; 2Mbps</span>
+                        <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded">Target: &gt; 2Mbps</span>
                     </div>
                 </div>
             </section>
 
             {/* Support */}
-            <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-orange-500/10 border border-primary/20">
+            <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20">
                 <h3 className="text-lg font-bold text-foreground mb-2">Still Stuck?</h3>
                 <p className="text-muted-foreground mb-4">
                     If diagnostics fail, ask our AI assistant or join the Discord developer channel.

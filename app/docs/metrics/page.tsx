@@ -65,8 +65,8 @@ export default function MetricsPage() {
                             Lifecycle of a storage unit:
                         </p>
                         <ul className="text-xs text-muted-foreground space-y-1">
-                            <li><span className="text-emerald-500 font-mono">Active</span>: Earning rewards, responding to proofs.</li>
-                            <li><span className="text-yellow-500 font-mono">Sealing</span>: Currently generating cryptographic data.</li>
+                            <li><span className="text-secondary font-mono">Active</span>: Earning rewards, responding to proofs.</li>
+                            <li><span className="text-primary font-mono">Sealing</span>: Currently generating cryptographic data.</li>
                             <li><span className="text-red-500 font-mono">Faulty</span>: Failed a Proof of Storage challenge.</li>
                         </ul>
                     </div>
@@ -83,7 +83,7 @@ export default function MetricsPage() {
                 <div className="space-y-4">
                     <div>
                         <h3 className="font-bold text-foreground flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-emerald-500" /> Block Propagation (Gossip)
+                            <Clock className="w-4 h-4 text-primary" /> Block Propagation (Gossip)
                         </h3>
                         <p className="text-sm text-muted-foreground mt-1">
                             Time taken for a block produced by the leader to reach 80% of the cluster. Ideally <strong>&lt; 800ms</strong>. High propagation time indicates poor peering or network congestion.
@@ -92,7 +92,7 @@ export default function MetricsPage() {
 
                     <div>
                         <h3 className="font-bold text-foreground flex items-center gap-2">
-                            <Hash className="w-4 h-4 text-blue-500" /> Skip Rate
+                            <Hash className="w-4 h-4 text-secondary" /> Skip Rate
                         </h3>
                         <p className="text-sm text-muted-foreground mt-1">
                             Percentage of blocks a validator failed to vote on.
@@ -107,7 +107,7 @@ export default function MetricsPage() {
             </section>
 
             {/* Next Steps */}
-            <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-orange-500/10 border border-primary/20">
+            <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20">
                 <h3 className="text-lg font-bold text-foreground mb-2">Understand the Impact</h3>
                 <p className="text-muted-foreground mb-4">
                     See how these metrics directly influence your Node Health Score and ultimate APY.

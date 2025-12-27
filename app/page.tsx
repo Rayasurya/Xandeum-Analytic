@@ -166,7 +166,7 @@ export interface HealthScore {
   };
 }
 
-export const calculateHealthScore = (node: any, maxNetworkCredits: number, targetVersion: string = "0.8.0"): HealthScore => {
+export const calculateHealthScore = (node: any, maxNetworkCredits: number, sortedVersions: string[] = []): HealthScore => {
   let versionScore = 0;
   let uptimeScore = 0;
   let storageScore = 0;
@@ -176,13 +176,26 @@ export const calculateHealthScore = (node: any, maxNetworkCredits: number, targe
   let weightCredits = 0.20;
   let weightVersion = 0.15;
 
-  // 1. Version Score (15%) - Strict Majority Matching
+  // 1. Version Score (15%) - Dynamic Rank Based
   const currentVersion = node?.version?.split(" ")[0] || "";
-  if (currentVersion === targetVersion) {
-    versionScore = 100;
-  } else if (currentVersion.split('.').slice(0, 2).join('.') === targetVersion.split('.').slice(0, 2).join('.')) {
-    versionScore = 50; // Major.Minor match
+
+  if (sortedVersions.length > 0) {
+    const rank = sortedVersions.indexOf(currentVersion);
+    if (rank === -1) {
+      versionScore = 0; // Unknown or very old version not in active list
+    } else {
+      // Rank 0 = 100.
+      // Last Rank = 0.
+      // Step = 100 / (length - 1)
+      if (sortedVersions.length === 1) {
+        versionScore = 100;
+      } else {
+        const step = 100 / (sortedVersions.length - 1);
+        versionScore = Math.max(0, 100 - (rank * step));
+      }
+    }
   } else {
+    // Fallback if no sorted list provided
     versionScore = 0;
   }
 
@@ -284,6 +297,16 @@ function HomeContent() {
   // Compute majority version for health scoring
   const mostCommonVersion = useMemo(() => getMostCommonVersion(nodes), [nodes]);
   const maxNetworkCredits = useMemo(() => Math.max(...nodes.map(n => n.credits || 0), 0), [nodes]);
+
+  // Compute sorted unique active versions for rank-based scoring
+  const sortedVersions = useMemo(() => {
+    const versions = new Set<string>();
+    nodes.forEach(n => {
+      if (n.version) versions.add(n.version.split(" ")[0]);
+    });
+    // Sort descending (semver-ish: 1.0.0 > 0.9.0)
+    return Array.from(versions).sort((a, b) => b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' }));
+  }, [nodes]);
 
   // UI State
   const [loading, setLoading] = useState(true);
@@ -1348,7 +1371,7 @@ function HomeContent() {
                                 })()}
                               </span>
                               <span className="text-lg text-muted-foreground font-mono">
-                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100) : 0}/100
+                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions).total >= 70).length / stats.total) * 100) : 0}/100
                               </span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
@@ -1959,7 +1982,7 @@ Outdated: ${outdated}
 
                               // Calculate Health Score
                               // Calculate Health Score
-                              const healthScore = calculateHealthScore(node, maxNetworkCredits, mostCommonVersion);
+                              const healthScore = calculateHealthScore(node, maxNetworkCredits, sortedVersions);
 
                               return (
                                 <TableRow
@@ -2183,7 +2206,7 @@ Outdated: ${outdated}
 
                             {/* Validator Consensus Score (The Algorithm) */}
                             {(() => {
-                              const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits, mostCommonVersion);
+                              const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits, sortedVersions);
                               return (
                                 <div className="space-y-3">
                                   <div className="flex items-center justify-between">
@@ -2411,7 +2434,7 @@ Outdated: ${outdated}
                                 className="flex-1 h-10 font-bold active:scale-95 transition-all text-xs sm:text-sm"
                                 size="sm"
                                 onClick={() => {
-                                  const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits, mostCommonVersion);
+                                  const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits, sortedVersions);
                                   const uptimeSeconds = selectedNode?.uptime || 0;
                                   const days = Math.floor(uptimeSeconds / 86400);
                                   const hours = Math.floor((uptimeSeconds % 86400) / 3600);
@@ -2487,7 +2510,7 @@ ${selectedNode?.pubkey}
                                       storage_usage_percent: selectedNode?.storage_usage_percent,
                                       uptime: selectedNode?.uptime,
                                       credits: selectedNode?.credits,
-                                      health_score: calculateHealthScore(selectedNode, maxNetworkCredits, mostCommonVersion).total,
+                                      health_score: calculateHealthScore(selectedNode, maxNetworkCredits, sortedVersions).total,
                                     }, null, 2);
                                     navigator.clipboard.writeText(jsonData).then(() => {
                                       toast({
@@ -2924,6 +2947,7 @@ ${selectedNode?.pubkey}
             currentCredits={selectedNode?.credits || 0}
             totalNetworkCredits={nodes.reduce((sum, n) => sum + (n.credits || 0), 0)}
             node={selectedNode}
+            sortedVersions={sortedVersions}
           />
         </main>
       </div >

@@ -1,122 +1,80 @@
-"use client";
 
-import { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import {
-    Book, ChevronRight, Menu, X, Home, Activity, BarChart3, Wrench, HelpCircle, ArrowLeft
-} from "lucide-react";
+import { ArrowLeft, Book, ShieldCheck, Zap, Database, Map as MapIcon, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const navigation = [
-    { name: "Getting Started", href: "/docs/getting-started", icon: Home },
-    { name: "Health Score", href: "/docs/health-score", icon: Activity },
-    { name: "Metrics Guide", href: "/docs/metrics", icon: BarChart3 },
-    { name: "Troubleshooting", href: "/docs/troubleshooting", icon: Wrench },
-    { name: "FAQ", href: "/docs/faq", icon: HelpCircle },
-];
 
 export default function DocsLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const pathname = usePathname();
-
     return (
-        <div className="min-h-screen bg-background">
-            {/* Mobile menu button */}
-            <div className="md:hidden fixed top-4 left-4 z-50">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="bg-card border-border"
-                >
-                    {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </Button>
-            </div>
+        <div className="min-h-screen bg-[#050505] text-gray-300 font-sans selection:bg-emerald-500/30">
 
-            {/* Mobile sidebar overlay */}
-            {sidebarOpen && (
-                <div
-                    className="md:hidden fixed inset-0 bg-black/50 z-40"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
+            {/* Sidebar Navigation */}
+            <aside className="fixed left-0 top-0 h-full w-64 border-r border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl hidden md:flex flex-col">
+                <div className="p-6 border-b border-white/5">
+                    <Link href="/" className="flex items-center gap-2 text-white font-bold tracking-tight mb-1">
+                        <ArrowLeft className="w-4 h-4 text-emerald-500" />
+                        Back to App
+                    </Link>
+                    <div className="text-xs text-gray-500 font-mono mt-2">NEURAL CORE MANUAL v1.0</div>
+                </div>
 
-            {/* Sidebar */}
-            <aside
-                className={cn(
-                    "fixed top-0 left-0 z-40 h-screen w-64 bg-card border-r border-border transition-transform duration-300",
-                    sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-                )}
-            >
-                <div className="flex flex-col h-full">
-                    {/* Logo */}
-                    <div className="h-16 flex items-center gap-3 px-6 border-b border-border">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center">
-                            <Book className="h-4 w-4 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="font-bold text-foreground">Xandeum Docs</h1>
-                            <p className="text-[10px] text-muted-foreground">pNode Analytics Guide</p>
-                        </div>
-                    </div>
+                <nav className="flex-1 p-4 space-y-1">
+                    <NavItem href="/docs" icon={<Book className="w-4 h-4" />} label="Introduction" active />
 
-                    {/* Back to Dashboard */}
-                    <div className="px-4 py-3 border-b border-border">
-                        <Link
-                            href="/"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                            Back to Dashboard
-                        </Link>
-                    </div>
+                    <div className="pt-4 pb-2 px-2 text-[10px] uppercase tracking-widest text-gray-600 font-bold">The Core Algorithms</div>
+                    <NavItem href="/docs/health-score" icon={<ShieldCheck className="w-4 h-4" />} label="Validator Consensus" />
+                    <NavItem href="/docs/rewards" icon={<Zap className="w-4 h-4" />} label="Yield & Rewards" />
 
-                    {/* Navigation */}
-                    <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-                        {navigation.map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    onClick={() => setSidebarOpen(false)}
-                                    className={cn(
-                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
-                                        isActive
-                                            ? "bg-primary/10 text-primary border-l-2 border-primary"
-                                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                                    )}
-                                >
-                                    <item.icon className="h-4 w-4" />
-                                    {item.name}
-                                    {isActive && <ChevronRight className="h-4 w-4 ml-auto" />}
-                                </Link>
-                            );
-                        })}
-                    </nav>
+                    <div className="pt-4 pb-2 px-2 text-[10px] uppercase tracking-widest text-gray-600 font-bold">Infrastructure</div>
+                    <NavItem href="/docs/storage" icon={<Database className="w-4 h-4" />} label="Storage Metrics" />
+                    <NavItem href="/docs/geo" icon={<MapIcon className="w-4 h-4" />} label="Network Map" />
+                </nav>
 
-                    {/* Footer */}
-                    <div className="px-4 py-4 border-t border-border">
-                        <div className="text-xs text-muted-foreground">
-                            <p>Xandeum Scope v1.0</p>
-                            <p className="mt-1">© 2025 Xandeum Network</p>
-                        </div>
+                <div className="p-4 border-t border-white/5 bg-white/5">
+                    <div className="text-xs text-gray-400">
+                        Need help? <br />
+                        <span className="text-emerald-400 cursor-pointer hover:underline">Chat with AI Assistant</span>
                     </div>
                 </div>
             </aside>
 
-            {/* Main content */}
-            <main className="md:ml-64 min-h-screen">
-                <div className="max-w-4xl mx-auto px-6 py-12 md:py-16">
+            {/* Mobile Header */}
+            <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-md sticky top-0 z-50">
+                <div className="text-sm font-bold text-white">Neural Core Docs</div>
+                <Button variant="ghost" size="sm"><Menu className="w-5 h-5" /></Button>
+            </div>
+
+            {/* Main Content Area */}
+            <main className="md:pl-64 min-h-screen relative">
+                {/* Simple background pattern */}
+                <div className="absolute inset-0 z-0 opacity-20 pointer-events-none"
+                    style={{ backgroundImage: 'radial-gradient(circle at 50% 0%, #10b98120 0%, transparent 50%)' }} />
+
+                <div className="relative z-10 max-w-4xl mx-auto p-6 md:p-12 lg:p-16">
                     {children}
                 </div>
             </main>
         </div>
+    );
+}
+
+function NavItem({ href, icon, label, active = false }: { href: string; icon: React.ReactNode; label: string; active?: boolean }) {
+    return (
+        <Link
+            href={href}
+            className={`
+        flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200 group
+        ${active ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}
+      `}
+        >
+            <span className={`opacity-70 group-hover:opacity-100 transition-opacity ${active ? 'text-emerald-500' : ''}`}>
+                {icon}
+            </span>
+            {label}
+        </Link>
     );
 }

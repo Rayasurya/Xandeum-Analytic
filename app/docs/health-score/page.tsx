@@ -1,111 +1,239 @@
-import { HeartPulse, ShieldCheck, Activity, AlertTriangle, ArrowRight, Gauge, Layers } from "lucide-react";
-import Link from "next/link";
 
-export default function HealthScorePage() {
+"use client";
+
+import React, { useState } from 'react';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    ReferenceLine
+} from 'recharts';
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ShieldCheck, ChevronRight, Activity, Database, Server } from 'lucide-react';
+import { cn } from "@/lib/utils";
+
+// --- Math Helpers ---
+const calculateUptimeScore = (days: number) => {
+    // Sigmoid: 100 / (1 + exp(-2 * (days - 0.5)))
+    // Adjusted for visual playground: Midpoint at 7 days, Slope 0.5
+    return 100 / (1 + Math.exp(-0.5 * (days - 7)));
+};
+
+const calculateStorageScore = (tb: number) => {
+    // Logarithmic: 50 * log2(TB + 1). Cap at 100.
+    return Math.min(100, 50 * Math.log2(tb + 1));
+};
+
+export default function HealthScoreDocs() {
+    const [activeStep, setActiveStep] = useState(1);
+    const [uptimeDays, setUptimeDays] = useState(7); // Default midpoint
+    const [storageTB, setStorageTB] = useState(1);
+
+    // Generate Chart Data for Uptime
+    const uptimeData = Array.from({ length: 30 }, (_, i) => {
+        const d = i;
+        return { day: d, score: calculateUptimeScore(d), current: d === uptimeDays };
+    });
+
+    // Generate Chart Data for Storage
+    const storageData = Array.from({ length: 20 }, (_, i) => {
+        return { tb: i, score: calculateStorageScore(i), current: i === Math.floor(storageTB) }
+    });
+
     return (
-        <div className="space-y-8 max-w-4xl">
+        <div className="max-w-3xl mx-auto space-y-16 pb-20">
+
             {/* Header */}
-            <div>
-                <div className="text-sm text-primary font-medium mb-2">Technical Documentation</div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground">Health Score Algorithm</h1>
-                <p className="text-muted-foreground mt-2 text-lg">
-                    Comprehensive breakdown of the 0-100 scoring model used to grade pNode performance and determine reward eligibility.
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 text-emerald-500 font-mono text-xs uppercase tracking-widest">
+                    <ShieldCheck className="w-4 h-4" />
+                    Algorithm No. 001
+                </div>
+                <h1 className="text-4xl font-bold text-white">Validator Consensus Score</h1>
+                <p className="text-gray-400 text-lg">
+                    This isn't just a number. It's a measure of your reliability, contribution, and alignment with the network.
+                    Let's break down how we calculate it.
                 </p>
             </div>
 
-            {/* The Formula */}
-            <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                    <Gauge className="h-6 w-6 text-primary" />
-                    The Scoring Algorithm
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                    The Node Health Score ($H$) is a weighted sum of four key performance indicators. It is recalculated every <strong>Epoch (approx 2 days)</strong>.
-                </p>
-
-                <div className="p-6 rounded-lg bg-card border border-border">
-                    <div className="text-center mb-6">
-                        <code className="text-xl md:text-2xl font-mono bg-slate-950 text-emerald-400 p-3 rounded-lg border border-emerald-500/30">
-                            H = (0.4 × U) + (0.3 × S) + (0.2 × R) + (0.1 × V)
-                        </code>
+            {/* STEP 1: UPTIME (Interactable) */}
+            <section className={cn(
+                "space-y-8 p-8 rounded-2xl border transition-all duration-500",
+                activeStep >= 1 ? "bg-[#0a0a0a] border-emerald-500/20 opacity-100" : "opacity-30 border-white/5 blur-sm"
+            )}>
+                <div className="flex items-start gap-4">
+                    <div className="p-3 bg-emerald-500/10 rounded-lg">
+                        <Activity className="w-6 h-6 text-emerald-400" />
                     </div>
-
-                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
-                        <div className="p-3 bg-muted/50 rounded border border-border">
-                            <h4 className="font-bold flex items-center gap-2"><Activity className="w-4 h-4 text-emerald-500" /> U: Uptime (40%)</h4>
-                            <p className="text-xs text-muted-foreground mt-1">Percentage of time the node was reachable via Gossip over the last epoch.</p>
-                        </div>
-                        <div className="p-3 bg-muted/50 rounded border border-border">
-                            <h4 className="font-bold flex items-center gap-2"><Layers className="w-4 h-4 text-purple-500" /> S: Storage (30%)</h4>
-                            <p className="text-xs text-muted-foreground mt-1">Consistency of Proof of Storage challenges passed vs attempted.</p>
-                        </div>
-                        <div className="p-3 bg-muted/50 rounded border border-border">
-                            <h4 className="font-bold flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-blue-500" /> R: RPC (20%)</h4>
-                            <p className="text-xs text-muted-foreground mt-1">Availability of the HTTP/JSON-RPC API on port 8899.</p>
-                        </div>
-                        <div className="p-3 bg-muted/50 rounded border border-border">
-                            <h4 className="font-bold flex items-center gap-2"><HeartPulse className="w-4 h-4 text-indigo-500" /> V: Version (10%)</h4>
-                            <p className="text-xs text-muted-foreground mt-1">Binary freshness (100% for latest, 50% for N-1, 0% for older).</p>
-                        </div>
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-bold text-white">1. The Foundation: Uptime (35%)</h2>
+                        <p className="text-gray-400">
+                            We use a <span className="text-white font-bold">Sigmoid Function</span>, not a linear counter.
+                            Why? Because consistency matters most in the first few days.
+                        </p>
                     </div>
                 </div>
+
+                {/* Interactive Playground */}
+                <div className="bg-black/40 rounded-xl p-6 border border-white/5 space-y-6">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Simulation</span>
+                        <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">
+                            Score: {Math.round(calculateUptimeScore(uptimeDays))} / 100
+                        </Badge>
+                    </div>
+
+                    <div className="h-[200px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={uptimeData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                                <XAxis dataKey="day" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333' }}
+                                    itemStyle={{ color: '#10b981' }}
+                                />
+                                <Line type="monotone" dataKey="score" stroke="#10b981" strokeWidth={3} dot={false} />
+                                <ReferenceLine x={uptimeDays} stroke="white" strokeDasharray="3 3" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="flex justify-between text-xs text-gray-500 font-mono">
+                            <span>0 Days</span>
+                            <span className="text-white font-bold">Current: {uptimeDays} Days</span>
+                            <span>30 Days</span>
+                        </div>
+                        <Slider
+                            value={[uptimeDays]}
+                            max={30}
+                            step={1}
+                            onValueChange={(val) => setUptimeDays(val[0])}
+                            className="py-4"
+                        />
+                    </div>
+                </div>
+
+                {activeStep === 1 && (
+                    <Button onClick={() => setActiveStep(2)} className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10">
+                        Next: Add Storage Impact <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
+                )}
             </section>
 
-            {/* Thresholds & Penalties */}
-            <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                    <AlertTriangle className="h-6 w-6 text-primary" />
-                    Grading & Rewards
-                </h2>
-                <div className="overflow-hidden rounded-lg border border-border">
-                    <table className="w-full text-sm">
-                        <thead className="bg-muted">
-                            <tr>
-                                <th className="p-3 text-left font-bold text-foreground">Grade</th>
-                                <th className="p-3 text-left font-bold text-foreground">Score Range</th>
-                                <th className="p-3 text-left font-bold text-foreground">Reward Multiplier</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border">
-                            <tr className="bg-card">
-                                <td className="p-3 font-bold text-emerald-500">Healthy</td>
-                                <td className="p-3 font-mono">75 - 100</td>
-                                <td className="p-3 text-muted-foreground">1.0x (Full Reward)</td>
-                            </tr>
-                            <tr className="bg-card/50">
-                                <td className="p-3 font-bold text-yellow-500">Warning</td>
-                                <td className="p-3 font-mono">50 - 74</td>
-                                <td className="p-3 text-muted-foreground">0.5x (Halved Reward)</td>
-                            </tr>
-                            <tr className="bg-card">
-                                <td className="p-3 font-bold text-red-500">Critical</td>
-                                <td className="p-3 font-mono">0 - 49</td>
-                                <td className="p-3 text-muted-foreground">0.0x (No Reward)</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            {/* STEP 2: STORAGE (Logarithmic) */}
+            <section className={cn(
+                "space-y-8 p-8 rounded-2xl border transition-all duration-500",
+                activeStep >= 2 ? "bg-[#0a0a0a] border-blue-500/20 opacity-100" : "opacity-30 border-white/5 blur-sm"
+            )}>
+                <div className="flex items-start gap-4">
+                    <div className="p-3 bg-blue-500/10 rounded-lg">
+                        <Database className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-bold text-white">2. The Scale: Storage (30%)</h2>
+                        <p className="text-gray-400">
+                            Storage scoring is <span className="text-white font-bold">Logarithmic</span>.
+                            Adding your first 1TB is a huge milestone. Adding your 100th TB has diminishing returns.
+                        </p>
+                    </div>
                 </div>
-                <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 mt-4">
-                    <h3 className="text-sm font-bold text-red-500 mb-1">Slashing Contitions (Penalties)</h3>
-                    <p className="text-sm text-muted-foreground">
-                        If a node produces invalid blocks (malicious behavior) or stays offline for &gt; 50% of an epoch, it may be <strong>Jailed</strong> (removed from validator set) and lose a portion of its staked SOL/XAND.
-                    </p>
+
+                {/* Storage Playground */}
+                <div className="bg-black/40 rounded-xl p-6 border border-white/5 space-y-6">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Simulation</span>
+                        <Badge variant="outline" className="text-blue-400 border-blue-500/30">
+                            Score: {Math.round(calculateStorageScore(storageTB))} / 100
+                        </Badge>
+                    </div>
+
+                    <div className="h-[200px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={storageData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                                <XAxis dataKey="tb" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333' }}
+                                    itemStyle={{ color: '#3b82f6' }}
+                                />
+                                <Line type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={3} dot={false} />
+                                <ReferenceLine x={storageTB} stroke="white" strokeDasharray="3 3" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="flex justify-between text-xs text-gray-500 font-mono">
+                            <span>0 TB</span>
+                            <span className="text-white font-bold">Current: {storageTB} TB</span>
+                            <span>20 TB</span>
+                        </div>
+                        <Slider
+                            value={[storageTB]}
+                            max={20}
+                            step={0.5}
+                            onValueChange={(val) => setStorageTB(val[0])}
+                            className="py-4"
+                        />
+                    </div>
+                </div>
+
+                {activeStep === 2 && (
+                    <Button onClick={() => setActiveStep(3)} className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10">
+                        Next: Final Consensus <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
+                )}
+            </section>
+
+            {/* STEP 3: VERSION & CONSENSUS */}
+            <section className={cn(
+                "space-y-8 p-8 rounded-2xl border transition-all duration-500",
+                activeStep >= 3 ? "bg-[#0a0a0a] border-purple-500/20 opacity-100" : "opacity-30 border-white/5 blur-sm"
+            )}>
+                <div className="flex items-start gap-4">
+                    <div className="p-3 bg-purple-500/10 rounded-lg">
+                        <Server className="w-6 h-6 text-purple-400" />
+                    </div>
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-bold text-white">3. The Consensus: Version Rank (15%)</h2>
+                        <p className="text-gray-400">
+                            We rank all active versions in the network. If you are on the <span className="text-white font-bold">Latest Version</span>,
+                            you get 100 points. Older versions lose points progressively.
+                        </p>
+                        <div className="pt-4 grid grid-cols-2 gap-4">
+                            <div className="p-4 rounded bg-white/5 border border-white/10 text-center">
+                                <div className="text-xs text-gray-500 uppercase tracking-widest mb-1">Rank 1 (Latest)</div>
+                                <div className="text-2xl font-black text-purple-400">100 Pts</div>
+                            </div>
+                            <div className="p-4 rounded bg-white/5 border border-white/10 text-center opacity-50">
+                                <div className="text-xs text-gray-500 uppercase tracking-widest mb-1">Rank 2 (Old)</div>
+                                <div className="text-2xl font-black text-gray-400">~75 Pts</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* Next Steps */}
-            <section className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-orange-500/10 border border-primary/20">
-                <h3 className="text-lg font-bold text-foreground mb-2">Score Too Low?</h3>
-                <p className="text-muted-foreground mb-4">
-                    Use the troubleshooting guide to identify which component is dragging your score down.
-                </p>
-                <Link
-                    href="/docs/troubleshooting"
-                    className="inline-flex items-center gap-2 text-primary hover:text-orange-500 font-medium transition-colors"
-                >
-                    Diagnose Node Issues <ArrowRight className="h-4 w-4" />
-                </Link>
-            </section>
+            {/* FINAL CTA */}
+            {activeStep >= 3 && (
+                <div className="p-8 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                    <h3 className="text-2xl font-bold text-white">Ready to Optimize?</h3>
+                    <p className="text-gray-400">Check your node's real-time score on the dashboard.</p>
+                    <Button asChild className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8">
+                        <a href="/">Go to Dashboard</a>
+                    </Button>
+                </div>
+            )}
+
         </div>
     );
 }

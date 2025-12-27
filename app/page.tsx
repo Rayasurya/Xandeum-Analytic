@@ -32,6 +32,7 @@ import {
   Star,
   Trash2,
   TrendingUp,
+  ShieldCheck,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -154,7 +155,7 @@ const getMostCommonVersion = (nodes: any[]): string => {
 };
 
 // Health Score Calculation (0-100)
-interface HealthScore {
+export interface HealthScore {
   total: number;
   status: "HEALTHY" | "WARNING" | "CRITICAL";
   breakdown: {
@@ -165,7 +166,7 @@ interface HealthScore {
   };
 }
 
-const calculateHealthScore = (node: any, maxNetworkCredits: number, targetVersion: string = "0.8.0"): HealthScore => {
+export const calculateHealthScore = (node: any, maxNetworkCredits: number, targetVersion: string = "0.8.0"): HealthScore => {
   let versionScore = 0;
   let uptimeScore = 0;
   let storageScore = 0;
@@ -2180,16 +2181,16 @@ Outdated: ${outdated}
 
                             <Separator className="bg-border" />
 
-                            {/* Vitality Score (The Algorithm) */}
+                            {/* Validator Consensus Score (The Algorithm) */}
                             {(() => {
                               const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits, mostCommonVersion);
                               return (
                                 <div className="space-y-3">
                                   <div className="flex items-center justify-between">
-                                    <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
-                                      <Activity className="h-4 w-4 text-primary" /> Vitality Score
-                                    </h4>
-                                    <Badge className={cn(
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                      <ShieldCheck className="w-4 h-4 text-primary" />
+                                      Validator Consensus Score
+                                    </h3>  <Badge className={cn(
                                       "border-none cursor-default",
                                       healthScore.status === "HEALTHY" && "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20",
                                       healthScore.status === "WARNING" && "bg-amber-500/20 text-amber-400 hover:bg-amber-500/20",
@@ -2922,6 +2923,7 @@ ${selectedNode?.pubkey}
             onClose={() => setIsSimulatorOpen(false)}
             currentCredits={selectedNode?.credits || 0}
             totalNetworkCredits={nodes.reduce((sum, n) => sum + (n.credits || 0), 0)}
+            node={selectedNode}
           />
         </main>
       </div >

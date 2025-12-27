@@ -4,9 +4,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calculator, Zap, TrendingUp, BarChart3, AlertCircle } from 'lucide-react';
+import { Calculator, Zap, TrendingUp, BarChart3, AlertCircle, ShieldCheck, ArrowRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { PNodeInfo } from '@/app/lib/xandeum';
+import { calculateHealthScore } from '@/app/page';
 
 interface Boost {
     id: string;
@@ -34,13 +36,15 @@ interface CreditsSimulatorModalProps {
     onClose: () => void;
     currentCredits: number;
     totalNetworkCredits: number;
+    node: PNodeInfo | null;
 }
 
 export function CreditsSimulatorModal({
     isOpen,
     onClose,
     currentCredits,
-    totalNetworkCredits
+    totalNetworkCredits,
+    node
 }: CreditsSimulatorModalProps) {
     const [baseCredits, setBaseCredits] = useState<string>(currentCredits.toString());
     const [selectedBoosts, setSelectedBoosts] = useState<Set<string>>(new Set());
@@ -80,10 +84,21 @@ export function CreditsSimulatorModal({
         const adjustedTotalNetwork = (totalNetworkCredits - oldContribution) + projected;
         const share = adjustedTotalNetwork > 0 ? (projected / adjustedTotalNetwork) * 100 : 0;
 
-        return { multiplier, projected, share };
+        // Validator Consensus Score Impact
+        // 1. Current Score
+        const currentScore = node
+            ? calculateHealthScore(node, totalNetworkCredits).total
+            : 0;
+
+        // 2. Projected Score
+        const projectedScore = node
+            ? calculateHealthScore({ ...node, credits: projected }, adjustedTotalNetwork).total
+            : 0;
+
+        return { multiplier, projected, share, currentScore, projectedScore };
     };
 
-    const { multiplier, projected, share } = calculateMetrics();
+    const { multiplier, projected, share, currentScore, projectedScore } = calculateMetrics();
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -94,7 +109,7 @@ export function CreditsSimulatorModal({
                         Yield Forecast Calculator
                     </DialogTitle>
                     <DialogDescription>
-                        Simulate the impact of multipliers on your node's earning potential.
+                        Simulate the impact of multipliers on your node's earning potential and consensus score.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -180,6 +195,33 @@ export function CreditsSimulatorModal({
                                 </div>
                                 <p className="text-[11px] text-muted-foreground mt-2 leading-tight">
                                     Percent of the total daily network rewards pool this node would capture.
+                                </p>
+                            </div>
+
+                            <Separator />
+
+                            {/* Validator Score Impact */}
+                            <div>
+                                <div className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                    <ShieldCheck className="w-3 h-3" />
+                                    Score Impact
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="text-xl font-bold text-muted-foreground line-through decoration-border">
+                                        {currentScore}
+                                    </div>
+                                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                                    <div className={cn(
+                                        "text-3xl font-black",
+                                        projectedScore >= 90 ? "text-emerald-500" :
+                                            projectedScore >= 70 ? "text-emerald-400" :
+                                                projectedScore >= 30 ? "text-amber-400" : "text-red-400"
+                                    )}>
+                                        {projectedScore}
+                                    </div>
+                                </div>
+                                <p className="text-[11px] text-muted-foreground mt-2 leading-tight">
+                                    Higher credit balance improves your Validator Consensus Score.
                                 </p>
                             </div>
 

@@ -54,6 +54,13 @@ The platform includes a built-in documentation hub (`/docs`) covering:
 *   **Health Score**: The exact math behind the grading system.
 *   **Troubleshooting**: Error codes, Log analysis (`journalctl`), and Network tools (`nc`, `curl`).
 
+### 📱 Mobile-First Experience
+Fully responsive design optimized for touch interactions on mobile devices:
+*   **Bottom Tab Navigation**: Sticky navigation bar for quick access to Dashboard, Nodes, Watchlist, Map, and Docs.
+*   **Card-Based Node List**: Swipeable cards replace complex tables on small screens, showing Health Score, Storage, and Location at a glance.
+*   **Bottom Sheet Drawer**: Node Intelligence panel slides up as a native-feeling sheet, with swipe-to-dismiss support.
+*   **Touch-Optimized Controls**: Larger tap targets for buttons, swipe-up to dismiss toasts, and mobile back gesture to close panels.
+
 ---
 
 ## 🛠️ Tech Stack

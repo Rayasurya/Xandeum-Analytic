@@ -2215,15 +2215,15 @@ Outdated: ${outdated}
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
                                             <div className="flex items-center justify-between mb-1">
-                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Uptime (35%)</span>
-                                              <span className="font-mono font-bold text-foreground group-hover:text-primary">{healthScore.breakdown.uptime.score}</span>
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Uptime (Weight: 35%)</span>
+                                              <span className="font-mono font-bold text-foreground group-hover:text-blue-500">{healthScore.breakdown.uptime.score}</span>
                                             </div>
                                             <div className="h-1 bg-background rounded-full overflow-hidden">
-                                              <div className="h-full bg-primary/70" style={{ width: `${healthScore.breakdown.uptime.score}%` }} />
+                                              <div className="h-full bg-blue-500/70" style={{ width: `${healthScore.breakdown.uptime.score}%` }} />
                                             </div>
                                           </div>
                                         </TooltipTrigger>
-                                        <TooltipContent side="left"><p>Sigmoid decay: rewards &gt;7 days consistency</p></TooltipContent>
+                                        <TooltipContent side="left"><p>Vitality Sigmoid: Rewards 12h+ consistency</p></TooltipContent>
                                       </Tooltip>
                                     </TooltipProvider>
 
@@ -2232,11 +2232,11 @@ Outdated: ${outdated}
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
                                             <div className="flex items-center justify-between mb-1">
-                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Storage (30%)</span>
-                                              <span className="font-mono font-bold text-foreground group-hover:text-secondary">{healthScore.breakdown.storage.score}</span>
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Storage (Weight: 30%)</span>
+                                              <span className="font-mono font-bold text-foreground group-hover:text-purple-500">{healthScore.breakdown.storage.score}</span>
                                             </div>
                                             <div className="h-1 bg-background rounded-full overflow-hidden">
-                                              <div className="h-full bg-secondary/70" style={{ width: `${healthScore.breakdown.storage.score}%` }} />
+                                              <div className="h-full bg-purple-500/70" style={{ width: `${healthScore.breakdown.storage.score}%` }} />
                                             </div>
                                           </div>
                                         </TooltipTrigger>
@@ -2249,7 +2249,7 @@ Outdated: ${outdated}
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
                                             <div className="flex items-center justify-between mb-1">
-                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Credits (20%)</span>
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Credits (Weight: 20%)</span>
                                               <span className="font-mono font-bold text-foreground group-hover:text-amber-500">{healthScore.breakdown.rpc.score}</span>
                                             </div>
                                             <div className="h-1 bg-background rounded-full overflow-hidden">
@@ -2266,7 +2266,7 @@ Outdated: ${outdated}
                                         <TooltipTrigger asChild>
                                           <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
                                             <div className="flex items-center justify-between mb-1">
-                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Version (15%)</span>
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Version (Weight: 15%)</span>
                                               <span className="font-mono font-bold text-foreground group-hover:text-emerald-500">{healthScore.breakdown.version.score}</span>
                                             </div>
                                             <div className="h-1 bg-background rounded-full overflow-hidden">

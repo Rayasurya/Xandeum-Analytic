@@ -36,118 +36,113 @@ export class XandeumClient {
      * Uses standard getClusterNodes which returns nodes interacting via gossip.
      */
     async getPNodes(): Promise<PNodeInfo[]> {
+        let nodes: PNodeInfo[] = [];
+
         try {
-            // 1. Static Dataset (GitHub Actions / "Serverless" Approach)
-            // If the URL points to a JSON file, we treat it as a static snapshot.
+            // 1. Static Dataset
             if (XANDEUM_CONFIG.MESH_API_URL && XANDEUM_CONFIG.MESH_API_URL.endsWith('.json')) {
-                console.log('Fetching pNodes from static dataset:', XANDEUM_CONFIG.MESH_API_URL);
                 try {
                     const res = await fetch(XANDEUM_CONFIG.MESH_API_URL, { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
-                        // The scraper saves as { nodes: [...] }, so we return data.nodes
                         if (data.nodes && Array.isArray(data.nodes)) {
-                            // Map raw JSON to PNodeInfo structure and deduplicate by pubkey
-                            const mappedNodes = data.nodes.map((n: any) => ({
+                            nodes = data.nodes.map((n: any) => ({
                                 ...n,
                                 rpc: n.rpc || (n.rpc_port && n.address ? `${n.address.split(':')[0]}:${n.rpc_port}` : null),
                                 gossip: n.gossip || n.address
                             }));
-
-                            // Deduplicate using a Map
-                            const uniqueNodes = new Map();
-                            mappedNodes.forEach((n: any) => {
-                                if (n.pubkey && !uniqueNodes.has(n.pubkey)) {
-                                    uniqueNodes.set(n.pubkey, n);
-                                }
-                            });
-
-                            return Array.from(uniqueNodes.values());
                         }
                     }
                 } catch (e) {
-                    console.warn('Failed to fetch from static dataset, falling back...', e);
+                    console.warn('Failed to fetch from static dataset:', e);
                 }
             }
 
-            // 2. Dedicated Backend API (VPS Approach)
-            // If text is set but not a .json file, assume it's an API endpoint
-            if (XANDEUM_CONFIG.MESH_API_URL && !XANDEUM_CONFIG.MESH_API_URL.endsWith('.json')) {
-                console.log('Fetching pNodes from Mesh Backend:', XANDEUM_CONFIG.MESH_API_URL);
+            // 2. Dedicated Backend API
+            else if (XANDEUM_CONFIG.MESH_API_URL && !XANDEUM_CONFIG.MESH_API_URL.endsWith('.json')) {
                 try {
                     const res = await fetch(`${XANDEUM_CONFIG.MESH_API_URL}/api/pnodes`);
                     if (res.ok) {
                         const data = await res.json();
-                        return Array.isArray(data) ? data : (data.nodes || []);
+                        nodes = Array.isArray(data) ? data : (data.nodes || []);
                     }
                 } catch (e) {
-                    console.warn('Failed to fetch from Mesh Backend, falling back...', e);
+                    console.warn('Failed to fetch from Mesh Backend:', e);
                 }
             }
 
-            // 3. Fallback: Client-Side Discovery (Limited on Vercel)
-            console.log('Performing client-side pNode discovery (fallback)...');
+            // 3. Client-Side Fallback (if no nodes found yet)
+            if (nodes.length === 0) {
+                console.log('Performing client-side pNode discovery (fallback)...');
+                const clusterNodes = await this.connection.getClusterNodes();
+                const nodeMap = new Map<string, PNodeInfo>();
+                clusterNodes.forEach(n => nodeMap.set(n.pubkey, n));
 
-            // Initial cluster nodes from RPC
-            const clusterNodes = await this.connection.getClusterNodes();
-            let allNodes: PNodeInfo[] = [...clusterNodes];
-            const nodeMap = new Map<string, PNodeInfo>();
-            clusterNodes.forEach(n => nodeMap.set(n.pubkey, n));
+                const MESH_SEEDS = [
+                    "173.212.203.145", "173.212.220.65", "161.97.97.41",
+                    "192.190.136.36", "192.190.136.37", "192.190.136.38",
+                    "45.84.138.15", "173.249.3.118"
+                ];
 
-            // Seeds to query
-            const MESH_SEEDS = [
-                "173.212.203.145", "173.212.220.65", "161.97.97.41",
-                "192.190.136.36", "192.190.136.37", "192.190.136.38",
-                "45.84.138.15", "173.249.3.118"
-            ];
+                for (const seedIp of MESH_SEEDS.slice(0, 3)) {
+                    try {
+                        const url = `/api/pnodestats?ip=${seedIp}`;
+                        const response = await fetch(url, { headers: { "Content-Type": "application/json" } });
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.result && Array.isArray(data.result.pods)) {
+                                data.result.pods.forEach((pod: any) => {
+                                    const existing = nodeMap.get(pod.pubkey) || { pubkey: pod.pubkey } as PNodeInfo;
+                                    nodeMap.set(pod.pubkey, {
+                                        ...existing,
+                                        gossip: existing.gossip || pod.address,
+                                        rpc: existing.rpc || (pod.rpc_port ? `${pod.address.split(':')[0]}:${pod.rpc_port}` : null),
+                                        version: pod.version ? `${pod.version} (Heidelberg)` : (existing.version ?? null),
+                                        storage_committed: pod.storage_committed,
+                                        storage_used: pod.storage_used,
+                                        storage_usage_percent: pod.storage_usage_percent,
+                                        uptime: pod.uptime
+                                    });
+                                });
+                                break;
+                            }
+                        }
+                    } catch (e) { /* ignore */ }
+                }
+                nodes = Array.from(nodeMap.values());
+            }
 
-            // Fetch Pod Credits first
-            let creditMap = new Map<string, number>();
+            // 4. ALWAYS Fetch & Merge Pod Credits
+            // This ensures we have credit data regardless of where the node list came from
             try {
                 const creditRes = await fetch("/api/podcredits");
                 if (creditRes.ok) {
                     const creditData = await creditRes.json();
                     const creditList = Array.isArray(creditData) ? creditData : (creditData.credits || []);
+                    const creditMap = new Map<string, number>();
+
                     if (Array.isArray(creditList)) {
                         creditList.forEach((c: any) => {
                             const key = c.pod_id || c.pubkey;
                             if (key) creditMap.set(key, c.credits || c.total_credits || 0);
                         });
                     }
+
+                    // Merge credits into nodes
+                    nodes = nodes.map(n => ({
+                        ...n,
+                        credits: creditMap.get(n.pubkey) || 0
+                    }));
                 }
             } catch (e) { console.warn("Failed to fetch credits:", e); }
 
-            // Query seeds (limited parallelism to avoid timeouts)
-            // We only need ONE good seed to get the mesh, but we query a few to be safe
-            for (const seedIp of MESH_SEEDS.slice(0, 3)) {
-                try {
-                    const url = `/api/pnodestats?ip=${seedIp}`;
-                    const response = await fetch(url, { headers: { "Content-Type": "application/json" } });
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.result && Array.isArray(data.result.pods)) {
-                            data.result.pods.forEach((pod: any) => {
-                                const existing = nodeMap.get(pod.pubkey) || { pubkey: pod.pubkey } as PNodeInfo;
-                                nodeMap.set(pod.pubkey, {
-                                    ...existing,
-                                    gossip: existing.gossip || pod.address,
-                                    rpc: existing.rpc || (pod.rpc_port ? `${pod.address.split(':')[0]}:${pod.rpc_port}` : null),
-                                    version: pod.version ? `${pod.version} (Heidelberg)` : (existing.version ?? null),
-                                    storage_committed: pod.storage_committed,
-                                    storage_used: pod.storage_used,
-                                    storage_usage_percent: pod.storage_usage_percent,
-                                    uptime: pod.uptime,
-                                    credits: creditMap.get(pod.pubkey) || 0
-                                });
-                            });
-                            // If we successfully got data, we can likely stop or just continue to merge more
-                            break;
-                        }
-                    }
-                } catch (e) { /* ignore */ }
-            }
+            // Deduplicate final list just in case
+            const uniqueMap = new Map();
+            nodes.forEach(n => {
+                if (n.pubkey && !uniqueMap.has(n.pubkey)) uniqueMap.set(n.pubkey, n);
+            });
 
-            return Array.from(nodeMap.values());
+            return Array.from(uniqueMap.values());
 
         } catch (error) {
             console.error("Failed to fetch pNodes:", error);

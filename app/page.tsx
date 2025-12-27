@@ -1877,14 +1877,17 @@ Outdated: ${outdated}
                       <Table className="w-full table-fixed">
                         <TableHeader>
                           <TableRow className="hover:bg-transparent border-border">
-                            <TableHead className="w-[4%] bg-muted"></TableHead>
-                            <TableHead className="w-[18%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
+                            <TableHead className="w-[3%] bg-muted"></TableHead>
+                            <TableHead className="w-[7%] font-bold text-secondary text-center bg-muted cursor-pointer" onClick={() => handleSort("health")}>
+                              Health {sortConfig?.key === "health" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </TableHead>
+                            <TableHead className="w-[16%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
                               Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                             </TableHead>
-                            <TableHead className="w-[20%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
-                            <TableHead className="w-[12%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
-                            <TableHead className="w-[12%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
-                            <TableHead className="w-[16%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
+                            <TableHead className="w-[18%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
+                            <TableHead className="w-[10%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
+                            <TableHead className="w-[10%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
+                            <TableHead className="w-[14%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
                             <TableHead className={cn("w-[6%] font-bold text-secondary text-center bg-muted", selectedNode && "hidden")}>Share</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -1926,6 +1929,9 @@ Outdated: ${outdated}
                               const committed = formatStorage(node.storage_committed || 0);
                               const used = formatBytes(node.storage_used || 0);
 
+                              // Calculate Health Score
+                              const healthScore = calculateHealthScore(node);
+
                               return (
                                 <TableRow
                                   key={node.pubkey}
@@ -1939,6 +1945,40 @@ Outdated: ${outdated}
                                   onClick={() => handleNodeClick(node)}
                                 >
                                   <TableCell className="text-center"><div className={`mx-auto h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
+                                  <TableCell className="text-center">
+                                    <div
+                                      className={cn(
+                                        "relative mx-auto h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold",
+                                        healthScore.total >= 80 ? "bg-emerald-500/20 text-emerald-500" :
+                                          healthScore.total >= 50 ? "bg-amber-500/20 text-amber-500" : "bg-red-500/20 text-red-500"
+                                      )}
+                                      title={`Health: ${healthScore.total}/100 (${healthScore.status})`}
+                                    >
+                                      {/* Background ring */}
+                                      <svg className="absolute inset-0 h-full w-full -rotate-90">
+                                        <circle
+                                          cx="18"
+                                          cy="18"
+                                          r="15"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeOpacity="0.2"
+                                          strokeWidth="3"
+                                        />
+                                        <circle
+                                          cx="18"
+                                          cy="18"
+                                          r="15"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="3"
+                                          strokeLinecap="round"
+                                          strokeDasharray={`${(healthScore.total / 100) * 94.25} 94.25`}
+                                        />
+                                      </svg>
+                                      <span className="relative z-10">{healthScore.total}</span>
+                                    </div>
+                                  </TableCell>
                                   <TableCell>
                                     <div className="flex flex-col">
                                       <div className="flex items-center gap-1.5">

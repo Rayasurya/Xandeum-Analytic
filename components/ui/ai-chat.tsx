@@ -285,7 +285,7 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                     onMouseDown={handleMouseDown}
                     onClick={() => !hasDragged && setIsOpen(!isOpen)}
                     className={cn(
-                        "fixed z-50 w-14 h-14 rounded-full shadow-lg",
+                        "ai-chat-button fixed z-50 w-14 h-14 rounded-full shadow-lg",
                         (isSnapping || !isDragging) && "transition-all duration-300 ease-out", // Animate when snapping or not dragging
                         "bg-gradient-to-br from-primary to-orange-600 hover:from-orange-600 hover:to-primary",
                         "flex items-center justify-center text-white",

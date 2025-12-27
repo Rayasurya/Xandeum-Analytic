@@ -98,7 +98,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { OnboardingModal } from "@/components/onboarding-modal";
+import { EnhancedOnboarding } from "@/components/enhanced-onboarding";
 
 // Dynamic import for Leaflet (SSR fix)
 const LeafletClusterMap = dynamic(
@@ -1244,7 +1244,7 @@ function HomeContent() {
                 {/* Top Section - Swapped order: Network Intelligence first, then Hero Metrics */}
                 <div className="flex flex-col-reverse gap-6">
                   {/* Hero Metrics */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="dashboard-stats-row grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <DashboardCard
                       icon={<Server className="w-3 h-3 text-secondary" />}
                       title="Total Nodes"
@@ -1874,7 +1874,7 @@ Outdated: ${outdated}
                       </div>
                     ) : (
                       /* Desktop Table View */
-                      <Table className="w-full table-fixed">
+                      <Table className="node-table w-full table-fixed">
                         <TableHeader>
                           <TableRow className="hover:bg-transparent border-border">
                             <TableHead className="w-[3%] bg-muted"></TableHead>
@@ -2865,7 +2865,7 @@ ${selectedNode?.pubkey}
           )}
 
           <Toaster />
-          <OnboardingModal />
+          <EnhancedOnboarding />
         </main>
       </div>
     </div>

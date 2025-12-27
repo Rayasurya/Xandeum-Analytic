@@ -98,6 +98,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { OnboardingModal } from "@/components/onboarding-modal";
 
 // Dynamic import for Leaflet (SSR fix)
 const LeafletClusterMap = dynamic(
@@ -2757,6 +2758,7 @@ ${selectedNode?.pubkey}
           )}
 
           <Toaster />
+          <OnboardingModal />
         </main>
       </div>
     </div>

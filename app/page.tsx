@@ -718,8 +718,24 @@ function HomeContent() {
   const filteredNodes = useMemo(() => {
     let result = nodes.filter(node => {
       // 1. Search Filter
-      const matchesSearch = (node.pubkey?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-        (node.gossip && node.gossip.includes(searchTerm));
+      let matchesSearch = true;
+      if (searchTerm) {
+        const lowerSearch = searchTerm.toLowerCase();
+        const ip = node.gossip?.split(':')[0] || "";
+        const geo = geoCache[ip];
+
+        matchesSearch = (
+          (node.pubkey?.toLowerCase() || "").includes(lowerSearch) ||
+          (node.gossip && node.gossip.toLowerCase().includes(lowerSearch)) ||
+          (node.version && node.version.toLowerCase().includes(lowerSearch)) ||
+          (node.shredVersion && node.shredVersion.toString().includes(lowerSearch)) ||
+          (geo?.city && geo.city.toLowerCase().includes(lowerSearch)) ||
+          (geo?.country && geo.country.toLowerCase().includes(lowerSearch)) ||
+          (geo?.isp && geo.isp.toLowerCase().includes(lowerSearch)) ||
+          (geo?.org && geo.org.toLowerCase().includes(lowerSearch)) ||
+          (geo?.as && geo.as.toLowerCase().includes(lowerSearch))
+        );
+      }
 
       // 2. Status Filter
       let matchesStatus = true;
@@ -1311,7 +1327,7 @@ function HomeContent() {
                               <span className={cn(
                                 "text-5xl font-black",
                                 (() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 80) return "text-emerald-400";
                                   if (healthyPct >= 60) return "text-primary";
                                   if (healthyPct >= 40) return "text-amber-400";
@@ -1319,7 +1335,7 @@ function HomeContent() {
                                 })()
                               )}>
                                 {(() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 90) return "A+";
                                   if (healthyPct >= 80) return "A";
                                   if (healthyPct >= 70) return "B+";
@@ -1331,7 +1347,7 @@ function HomeContent() {
                                 })()}
                               </span>
                               <span className="text-lg text-muted-foreground font-mono">
-                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100) : 0}/100
+                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100) : 0}/100
                               </span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
@@ -1355,8 +1371,8 @@ function HomeContent() {
 
                                   try {
                                     // Prepare data
-                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100) : 0;
-                                    const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length;
+                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length / stats.total) * 100) : 0;
+                                    const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length;
                                     const mostCommon = getMostCommonVersion(nodes);
                                     const outdated = nodes.filter(n => n.version !== mostCommon).length;
                                     const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
@@ -1370,7 +1386,7 @@ function HomeContent() {
 📊 *Nodes*
 Total: ${stats.total}
 Active: ${stats.active}
-Healthy: ${nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length}
+Healthy: ${nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 70).length}
 At-Risk: ${atRisk}
 
 💾 Storage: ${totalStorage}
@@ -1479,7 +1495,7 @@ Outdated: ${outdated}
                               (() => {
                                 const atRisk = nodes.filter(n => {
                                   const score = calculateHealthScore(n, maxNetworkCredits);
-                                  return score.total < 75;
+                                  return score.total < 70;
                                 }).length;
                                 if (atRisk === 0) return "bg-emerald-500/10 border-emerald-500/30";
                                 if (atRisk <= 5) return "bg-amber-500/10 border-amber-500/30";
@@ -1500,19 +1516,19 @@ Outdated: ${outdated}
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
                                 {(() => {
-                                  const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length;
+                                  const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length;
                                   if (atRisk === 0) return <span className="text-lg">✅</span>;
                                   if (atRisk <= 5) return <span className="text-lg">⚠️</span>;
                                   return <span className="text-lg">🔴</span>;
                                 })()}
                                 <span className="text-2xl font-bold text-foreground">
-                                  {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length}
+                                  {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length}
                                 </span>
                               </div>
                               <span className="text-xs text-primary font-medium">View →</span>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length === 0
+                              {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length === 0
                                 ? "All nodes healthy!"
                                 : "Nodes at risk"}
                             </p>
@@ -1822,14 +1838,14 @@ Outdated: ${outdated}
                           onCheckedChange={() => setFilterHealth(filterHealth === "at_risk" ? "all" : "at_risk")}
                           className="text-xs py-1"
                         >
-                          🔴 At Risk (&lt;75)
+                          🔴 At Risk (&lt;70)
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuCheckboxItem
                           checked={filterHealth === "healthy"}
                           onCheckedChange={() => setFilterHealth(filterHealth === "healthy" ? "all" : "healthy")}
                           className="text-xs py-1"
                         >
-                          🟢 Healthy (≥75)
+                          🟢 Healthy (≥70)
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuCheckboxItem
                           checked={filterHealth === "warning"}
@@ -2197,8 +2213,8 @@ Outdated: ${outdated}
                                         <div
                                           className={cn(
                                             "h-full rounded-full transition-all duration-1000 ease-out",
-                                            healthScore.total >= 75 && "bg-emerald-500",
-                                            healthScore.total >= 50 && healthScore.total < 75 && "bg-amber-500",
+                                            healthScore.total >= 70 && "bg-emerald-500",
+                                            healthScore.total >= 30 && healthScore.total < 70 && "bg-amber-500",
                                             healthScore.total < 50 && "bg-red-500"
                                           )}
                                           style={{ width: `${healthScore.total}%` }}
@@ -2806,8 +2822,8 @@ ${selectedNode?.pubkey}
                               <div
                                 className={cn(
                                   "h-full rounded-full",
-                                  healthScore.total >= 75 && "bg-emerald-500",
-                                  healthScore.total >= 50 && healthScore.total < 75 && "bg-amber-500",
+                                  healthScore.total >= 70 && "bg-emerald-500",
+                                  healthScore.total >= 30 && healthScore.total < 70 && "bg-amber-500",
                                   healthScore.total < 50 && "bg-red-500"
                                 )}
                                 style={{ width: `${healthScore.total}%` }}

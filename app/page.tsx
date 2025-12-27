@@ -165,7 +165,7 @@ interface HealthScore {
   };
 }
 
-const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): HealthScore => {
+const calculateHealthScore = (node: any, maxNetworkCredits: number, targetVersion: string = "0.8.0"): HealthScore => {
   let versionScore = 0;
   let uptimeScore = 0;
   let storageScore = 0;
@@ -186,30 +186,22 @@ const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): Healt
   }
 
   // 2. Uptime Score (35%) - Sigmoid Vitality Curve
-  // Rewards consistency: >12h rapidly approaches 100
   const uptimeSeconds = node?.uptime || 0;
   const uptimeDays = uptimeSeconds / 86400;
-  // Formula: Centered at 0.5 days (12h), Slope 2.0 (Steep rise)
   uptimeScore = 100 / (1 + Math.exp(-2.0 * (uptimeDays - 0.5)));
 
   // 3. Storage Score (30%) - Logarithmic Scale
-  // 50 * log2(TB + 1)
   const storageTB = (node?.storage_committed || 0) / (1024 * 1024 * 1024 * 1024);
-  storageScore = Math.min(100, 50 * Math.log2(storageTB + 1) * 2); // Optimized multiplier for reasonable TB values (0.5TB -> ~30, 2TB -> ~80)
-  // Adjusting to user's desired "Logarithmic" feel: if 1TB is target, log2(2) = 1 * 50 = 50. 
-  // If 3TB (max?) -> log2(4) = 2 * 50 = 100. So 3TB = 100 score. 
+  storageScore = Math.min(100, 50 * Math.log2(storageTB + 1) * 2);
 
-  // 4. Credits Score (20%) - Linear Growth
-  // Target: 2.5M credits = 100 (Estimate)
+  // 4. Credits Score (20%) - Dynamic Scaling relative to Network Max
+  // This ensures the top performer always gets 100, and others are scored relative to the best.
+  // Fixes "Single Digit" issue caused by unrealistic fixed targets.
   const credits = node?.credits || 0;
-  if (credits > 0) {
-    creditsScore = Math.min(100, (credits / 2500000) * 100);
-  } else {
-    // Failover Re-weighting if credits missing
-    weightUptime = 0.45;
-    weightStorage = 0.35;
-    weightVersion = 0.20;
-    weightCredits = 0;
+  if (maxNetworkCredits > 0) {
+    creditsScore = Math.min(100, (credits / maxNetworkCredits) * 100);
+  } else if (credits > 0) {
+    creditsScore = 100; // Fallback if max is 0 but node has credits
   }
 
   // RPC Bonus
@@ -224,10 +216,11 @@ const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): Healt
     (creditsScore * weightCredits)
   );
 
+  // New Thresholds: >70 Excellent, <30 Critical
   let status: "HEALTHY" | "WARNING" | "CRITICAL" = "HEALTHY";
-  if (total < 50) {
+  if (total < 30) {
     status = "CRITICAL";
-  } else if (total < 75) {
+  } else if (total < 70) {
     status = "WARNING";
   }
 
@@ -238,7 +231,7 @@ const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): Healt
       version: { score: Math.round(versionScore), max: 100 },
       uptime: { score: Math.round(uptimeScore), max: 100 },
       storage: { score: Math.round(storageScore), max: 100 },
-      rpc: { score: Math.round(creditsScore), max: 100 }, // Mapping Credits to the 4th slot (labeled as Credits in UI)
+      rpc: { score: Math.round(creditsScore), max: 100 },
     },
   };
 };
@@ -289,6 +282,7 @@ function HomeContent() {
 
   // Compute majority version for health scoring
   const mostCommonVersion = useMemo(() => getMostCommonVersion(nodes), [nodes]);
+  const maxNetworkCredits = useMemo(() => Math.max(...nodes.map(n => n.credits || 0), 0), [nodes]);
 
   // UI State
   const [loading, setLoading] = useState(true);
@@ -696,7 +690,7 @@ function HomeContent() {
     return nodes.map(node => {
       const ip = node.gossip?.split(':')[0];
       const geo = ip ? geoCache[ip] : null;
-      const health = calculateHealthScore(node);
+      const health = calculateHealthScore(node, maxNetworkCredits);
       return {
         pubkey: node.pubkey,
         lat: geo?.lat || 0,
@@ -772,7 +766,7 @@ function HomeContent() {
       // 6. Health Filter
       let matchesHealth = true;
       if (filterHealth !== "all") {
-        const health = calculateHealthScore(node);
+        const health = calculateHealthScore(node, maxNetworkCredits);
         if (filterHealth === "healthy" && health.status !== "HEALTHY") matchesHealth = false;
         if (filterHealth === "warning" && health.status !== "WARNING") matchesHealth = false;
         if (filterHealth === "critical" && health.status !== "CRITICAL") matchesHealth = false;
@@ -944,7 +938,7 @@ function HomeContent() {
       <div class="label">Health Score</div>
       <div class="value">
         ${(() => {
-        const h = calculateHealthScore(selectedNode);
+        const h = calculateHealthScore(selectedNode, maxNetworkCredits);
         const className = h.status === 'HEALTHY' ? 'healthy' : h.status === 'WARNING' ? 'warning' : 'critical';
         return `<span class="status-badge ${className}">${h.total}/100 (${h.status})</span>`;
       })()}
@@ -1317,7 +1311,7 @@ function HomeContent() {
                               <span className={cn(
                                 "text-5xl font-black",
                                 (() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 80) return "text-emerald-400";
                                   if (healthyPct >= 60) return "text-primary";
                                   if (healthyPct >= 40) return "text-amber-400";
@@ -1325,7 +1319,7 @@ function HomeContent() {
                                 })()
                               )}>
                                 {(() => {
-                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100 : 0;
+                                  const healthyPct = stats.total > 0 ? (nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100 : 0;
                                   if (healthyPct >= 90) return "A+";
                                   if (healthyPct >= 80) return "A";
                                   if (healthyPct >= 70) return "B+";
@@ -1337,7 +1331,7 @@ function HomeContent() {
                                 })()}
                               </span>
                               <span className="text-lg text-muted-foreground font-mono">
-                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0}/100
+                                {stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100) : 0}/100
                               </span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">Based on healthy node ratio</p>
@@ -1361,8 +1355,8 @@ function HomeContent() {
 
                                   try {
                                     // Prepare data
-                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n).total >= 75).length / stats.total) * 100) : 0;
-                                    const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
+                                    const healthyPct = stats.total > 0 ? Math.round((nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length / stats.total) * 100) : 0;
+                                    const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length;
                                     const mostCommon = getMostCommonVersion(nodes);
                                     const outdated = nodes.filter(n => n.version !== mostCommon).length;
                                     const totalStorage = formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0));
@@ -1376,7 +1370,7 @@ function HomeContent() {
 📊 *Nodes*
 Total: ${stats.total}
 Active: ${stats.active}
-Healthy: ${nodes.filter(n => calculateHealthScore(n).total >= 75).length}
+Healthy: ${nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total >= 75).length}
 At-Risk: ${atRisk}
 
 💾 Storage: ${totalStorage}
@@ -1484,7 +1478,7 @@ Outdated: ${outdated}
                               "p-4 rounded-lg border cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all flex flex-col justify-between h-full",
                               (() => {
                                 const atRisk = nodes.filter(n => {
-                                  const score = calculateHealthScore(n);
+                                  const score = calculateHealthScore(n, maxNetworkCredits);
                                   return score.total < 75;
                                 }).length;
                                 if (atRisk === 0) return "bg-emerald-500/10 border-emerald-500/30";
@@ -1506,19 +1500,19 @@ Outdated: ${outdated}
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
                                 {(() => {
-                                  const atRisk = nodes.filter(n => calculateHealthScore(n).total < 75).length;
+                                  const atRisk = nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length;
                                   if (atRisk === 0) return <span className="text-lg">✅</span>;
                                   if (atRisk <= 5) return <span className="text-lg">⚠️</span>;
                                   return <span className="text-lg">🔴</span>;
                                 })()}
                                 <span className="text-2xl font-bold text-foreground">
-                                  {nodes.filter(n => calculateHealthScore(n).total < 75).length}
+                                  {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length}
                                 </span>
                               </div>
                               <span className="text-xs text-primary font-medium">View →</span>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              {nodes.filter(n => calculateHealthScore(n).total < 75).length === 0
+                              {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 75).length === 0
                                 ? "All nodes healthy!"
                                 : "Nodes at risk"}
                             </p>
@@ -1864,7 +1858,7 @@ Outdated: ${outdated}
                     {isMobile ? (
                       <div className="mobile-stats-cards p-4 space-y-3 pb-20">
                         {filteredNodes.map((node, index) => {
-                          const healthScore = calculateHealthScore(node);
+                          const healthScore = calculateHealthScore(node, maxNetworkCredits);
                           const ip = node.gossip?.split(':')[0] || "";
                           const geo = geoCache[ip];
                           const location = geo ? geo.city || geo.country : undefined;
@@ -1948,7 +1942,7 @@ Outdated: ${outdated}
 
                               // Calculate Health Score
                               // Calculate Health Score
-                              const healthScore = calculateHealthScore(node, mostCommonVersion);
+                              const healthScore = calculateHealthScore(node, maxNetworkCredits, mostCommonVersion);
 
                               return (
                                 <TableRow
@@ -2172,7 +2166,7 @@ Outdated: ${outdated}
 
                             {/* Vitality Score (The Algorithm) */}
                             {(() => {
-                              const healthScore = calculateHealthScore(selectedNode, mostCommonVersion);
+                              const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits, mostCommonVersion);
                               return (
                                 <div className="space-y-3">
                                   <div className="flex items-center justify-between">
@@ -2400,7 +2394,7 @@ Outdated: ${outdated}
                                 className="flex-1 h-10 font-bold active:scale-95 transition-all text-xs sm:text-sm"
                                 size="sm"
                                 onClick={() => {
-                                  const healthScore = calculateHealthScore(selectedNode, mostCommonVersion);
+                                  const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits, mostCommonVersion);
                                   const uptimeSeconds = selectedNode?.uptime || 0;
                                   const days = Math.floor(uptimeSeconds / 86400);
                                   const hours = Math.floor((uptimeSeconds % 86400) / 3600);
@@ -2476,7 +2470,7 @@ ${selectedNode?.pubkey}
                                       storage_usage_percent: selectedNode?.storage_usage_percent,
                                       uptime: selectedNode?.uptime,
                                       credits: selectedNode?.credits,
-                                      health_score: calculateHealthScore(selectedNode, mostCommonVersion).total,
+                                      health_score: calculateHealthScore(selectedNode, maxNetworkCredits, mostCommonVersion).total,
                                     }, null, 2);
                                     navigator.clipboard.writeText(jsonData).then(() => {
                                       toast({
@@ -2501,7 +2495,7 @@ ${selectedNode?.pubkey}
                                     storage_usage_percent: selectedNode?.storage_usage_percent,
                                     uptime: selectedNode?.uptime,
                                     credits: selectedNode?.credits,
-                                    health_score: calculateHealthScore(selectedNode).total,
+                                    health_score: calculateHealthScore(selectedNode, maxNetworkCredits).total,
                                   }, null, 2)}
                                 </pre>
                               </div>
@@ -2608,7 +2602,7 @@ ${selectedNode?.pubkey}
                     {watchlist.map(pubkey => {
                       // Hydrate with Live Data
                       const node = nodes.find(n => n.pubkey === pubkey);
-                      const health = node ? calculateHealthScore(node) : { total: 0, status: "WARNING", breakdown: { version: { score: 0, max: 0 }, uptime: { score: 0, max: 0 }, storage: { score: 0, max: 0 }, rpc: { score: 0, max: 0 } } };
+                      const health = node ? calculateHealthScore(node, maxNetworkCredits) : { total: 0, status: "WARNING", breakdown: { version: { score: 0, max: 0 }, uptime: { score: 0, max: 0 }, storage: { score: 0, max: 0 }, rpc: { score: 0, max: 0 } } };
                       const isOnline = node ? !!(node.rpc || node.tpu) : false;
 
                       return (
@@ -2712,12 +2706,12 @@ ${selectedNode?.pubkey}
               totalNodes: stats.total,
               activeNodes: stats.active,
               totalStorage: formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0)),
-              healthyCount: nodes.filter(n => calculateHealthScore(n).status === "HEALTHY").length,
-              warningCount: nodes.filter(n => calculateHealthScore(n).status === "WARNING").length,
-              criticalCount: nodes.filter(n => calculateHealthScore(n).status === "CRITICAL").length,
+              healthyCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).status === "HEALTHY").length,
+              warningCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).status === "WARNING").length,
+              criticalCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).status === "CRITICAL").length,
               lastUpdated: new Date().toLocaleTimeString(),
               atRiskNodes: nodes
-                .map(n => ({ pubkey: n.pubkey.slice(0, 8) + "..." + n.pubkey.slice(-4), health: calculateHealthScore(n) }))
+                .map(n => ({ pubkey: n.pubkey.slice(0, 8) + "..." + n.pubkey.slice(-4), health: calculateHealthScore(n, maxNetworkCredits) }))
                 .filter(n => n.health.status !== "HEALTHY")
                 .slice(0, 10)
                 .map(n => `${n.pubkey}: ${n.health.total}/100 (${n.health.status})`),
@@ -2789,7 +2783,7 @@ ${selectedNode?.pubkey}
 
                     {/* Health Score */}
                     {(() => {
-                      const healthScore = calculateHealthScore(selectedNode);
+                      const healthScore = calculateHealthScore(selectedNode, maxNetworkCredits);
                       return (
                         <div className="space-y-3 mb-4">
                           <div className="flex items-center justify-between">

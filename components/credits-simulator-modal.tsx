@@ -4,8 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calculator, Zap, Trophy, TrendingUp } from 'lucide-react';
+import { Calculator, Zap, TrendingUp, BarChart3, AlertCircle } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 interface Boost {
     id: string;
@@ -75,9 +76,6 @@ export function CreditsSimulatorModal({
         const projected = base * multiplier;
 
         // Network Share Calculation
-        // We remove the OLD credit contribution of this node from total, and add the NEW projected one
-        // AdjustedTotal = (Total - OldBase + Projected)
-        // Share = Projected / AdjustedTotal
         const oldContribution = currentCredits || 0;
         const adjustedTotalNetwork = (totalNetworkCredits - oldContribution) + projected;
         const share = adjustedTotalNetwork > 0 ? (projected / adjustedTotalNetwork) * 100 : 0;
@@ -89,42 +87,46 @@ export function CreditsSimulatorModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-2xl bg-black border border-amber-500/30 text-amber-50 shadow-[0_0_50px_rgba(245,158,11,0.1)]">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-xl font-bold text-amber-500">
-                        <Calculator className="w-6 h-6" />
-                        STOINC SIMULATOR
+            <DialogContent className="sm:max-w-3xl bg-background border border-border shadow-xl">
+                <DialogHeader className="pb-4 border-b border-border">
+                    <DialogTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
+                        <BarChart3 className="w-5 h-5 text-primary" />
+                        Yield Forecast Calculator
                     </DialogTitle>
-                    <DialogDescription className="text-amber-500/60">
-                        Forecast your earnings potential by applying network boosts.
+                    <DialogDescription>
+                        Simulate the impact of multipliers on your node's earning potential.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4">
-                    {/* Left Column: Inputs */}
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <Label className="text-xs uppercase font-bold tracking-wider text-amber-500/80">Base Reputation Credits</Label>
-                            <Input
-                                type="number"
-                                value={baseCredits}
-                                onChange={(e) => setBaseCredits(e.target.value)}
-                                className="bg-zinc-900/50 border-amber-500/20 text-white font-mono text-lg focus:border-amber-500/50 focus:ring-amber-500/20"
-                            />
-                            <p className="text-[10px] text-zinc-500">
-                                Defaults to current node credits. Adjust to simulate hardware upgrades.
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:divide-x divide-border">
+                    {/* Left Column: Configuration (Inputs) */}
+                    <div className="md:col-span-7 p-6 space-y-6">
+                        <div className="space-y-3">
+                            <Label className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Base Performance</Label>
+                            <div className="relative">
+                                <Input
+                                    type="number"
+                                    value={baseCredits}
+                                    onChange={(e) => setBaseCredits(e.target.value)}
+                                    className="pl-9 font-mono text-lg bg-muted/30"
+                                />
+                                <Zap className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            </div>
+                            <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                                <AlertCircle className="w-3 h-3" />
+                                This is your node's raw credit score before multipliers.
                             </p>
                         </div>
 
-                        <div className="space-y-3">
+                        <Separator />
+
+                        <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <Label className="text-xs uppercase font-bold tracking-wider text-amber-500/80 flex items-center gap-1">
-                                    <Zap className="w-3 h-3" /> Apply Boosts
-                                </Label>
-                                <span className="text-[10px] text-zinc-500">Multipliers stack</span>
+                                <Label className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Active Multipliers</Label>
+                                <span className="text-xs font-mono font-medium text-primary">Total: {multiplier.toFixed(1)}x</span>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {BOOSTS.map(boost => {
                                     const isActive = selectedBoosts.has(boost.id);
                                     return (
@@ -132,14 +134,14 @@ export function CreditsSimulatorModal({
                                             key={boost.id}
                                             onClick={() => toggleBoost(boost.id)}
                                             className={cn(
-                                                "px-2 py-2 rounded text-xs font-medium border transition-all duration-200 flex flex-col items-center justify-center gap-1",
+                                                "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 flex items-center gap-1.5",
                                                 isActive
-                                                    ? "bg-amber-500 text-black border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]"
-                                                    : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-amber-500/30 hover:text-amber-500/70"
+                                                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                                    : "bg-muted/50 border-input text-muted-foreground hover:border-primary/50 hover:text-foreground"
                                             )}
                                         >
-                                            <span>{boost.label}</span>
-                                            <span className={cn("text-[10px] font-bold opacity-80", isActive ? "text-black" : "text-amber-500")}>
+                                            {boost.label}
+                                            <span className={cn("opacity-70 text-[10px]", isActive ? "text-primary-foreground" : "text-muted-foreground")}>
                                                 x{boost.multiplier}
                                             </span>
                                         </button>
@@ -149,57 +151,46 @@ export function CreditsSimulatorModal({
                         </div>
                     </div>
 
-                    {/* Right Column: Outcomes */}
-                    <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-6 flex flex-col justify-between relative overflow-hidden">
-                        {/* Background Glow */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[50px] rounded-full pointer-events-none" />
+                    {/* Right Column: Results (Forecast) */}
+                    <div className="md:col-span-5 p-6 bg-muted/10 flex flex-col justify-center">
+                        <div className="space-y-8">
 
-                        <div className="space-y-6 relative z-10">
-                            <div className="text-center">
-                                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Total Boost Factor</div>
-                                <div className="text-4xl font-black text-white flex items-center justify-center gap-1">
-                                    <Zap className="w-6 h-6 text-amber-500 fill-amber-500" />
-                                    <span>{multiplier.toLocaleString(undefined, { maximumFractionDigits: 1 })}x</span>
+                            {/* Projected Credits */}
+                            <div>
+                                <div className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-2">Projected Credits</div>
+                                <div className="text-3xl font-black text-foreground tracking-tight font-mono">
+                                    {projected.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                 </div>
-                            </div>
-
-                            <div className="space-y-1">
-                                <div className="flex justify-between items-baseline">
-                                    <span className="text-sm text-zinc-400">Projected Credits</span>
-                                    <span className="text-2xl font-bold text-amber-400 font-mono">
-                                        {projected.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                                    </span>
-                                </div>
-                                <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
-                                    {/* Visual bar just for flavor */}
-                                    <div className="h-full bg-amber-500 transition-all duration-500" style={{ width: '100%' }} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-8 relative z-10 bg-black/40 rounded-lg p-4 border border-amber-500/20 backdrop-blur-sm">
-                            <div className="flex items-start gap-3">
-                                <Trophy className="w-8 h-8 text-amber-500 shrink-0" />
-                                <div>
-                                    <div className="text-xs uppercase font-bold text-amber-500/80 mb-1">Est. Network Share</div>
-                                    <div className="text-3xl font-bold text-white tracking-tight">
-                                        {share.toPrecision(4)}%
+                                <div className="flex items-center gap-2 mt-2">
+                                    <div className="text-xs font-medium text-emerald-500 flex items-center bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                                        <TrendingUp className="w-3 h-3 mr-1" />
+                                        +{(projected - (parseFloat(baseCredits) || 0)).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                     </div>
-                                    <div className="text-[10px] text-zinc-500 mt-1">
-                                        of Global Epoch Rewards
-                                    </div>
+                                    <span className="text-[10px] text-muted-foreground">gain</span>
                                 </div>
                             </div>
-                        </div>
 
+                            <Separator />
+
+                            {/* Network Share */}
+                            <div>
+                                <div className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-2">Est. Daily Yield Share</div>
+                                <div className="text-4xl font-black text-primary tracking-tighter">
+                                    {share.toPrecision(4)}%
+                                </div>
+                                <p className="text-[11px] text-muted-foreground mt-2 leading-tight">
+                                    Percent of the total daily network rewards pool this node would capture.
+                                </p>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-zinc-800">
-                    <Button variant="ghost" onClick={onClose} className="text-zinc-500 hover:text-white">Close Simulator</Button>
-                    <Button className="bg-amber-500 text-black hover:bg-amber-400 font-bold">
-                        <TrendingUp className="w-4 h-4 mr-2" />
-                        Apply Strategy Plan
+                <div className="p-4 border-t border-border bg-muted/5 flex justify-end gap-2">
+                    <Button variant="outline" onClick={onClose}>Close</Button>
+                    <Button className="font-bold">
+                        Apply Strategies
                     </Button>
                 </div>
             </DialogContent>

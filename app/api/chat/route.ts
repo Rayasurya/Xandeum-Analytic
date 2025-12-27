@@ -122,9 +122,9 @@ ${XANDEUM_KNOWLEDGE_BASE}
         }));
 
         // 5. CONFIGURE MODEL
-        // Switched to 'gemini-pro' for better stability (1.5-flash was returning 404s)
+        // Using gemini-1.5-flash for speed and better system instruction support
         const model = genAI.getGenerativeModel({
-            model: "gemini-pro",
+            model: "gemini-1.5-flash",
             systemInstruction: systemInstruction,
             safetySettings: [
                 { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },

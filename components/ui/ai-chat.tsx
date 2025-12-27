@@ -268,47 +268,52 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
             {/* AI Nudge Tooltip */}
             {showNudge && !isOpen && !isDragging && !hideFloatingButton && (
                 <div
-                    className="fixed z-50 animate-fade-in"
+                    className="fixed z-50 animate-in fade-in slide-in-from-bottom-2 duration-500"
                     style={position.side === 'right'
-                        ? { right: 96, bottom: position.y + 7 }
-                        : { left: 96, bottom: position.y + 7 }
+                        ? { right: 96, bottom: position.y + 12 }
+                        : { left: 96, bottom: position.y + 12 }
                     }
                 >
-                    <div className="relative bg-card border border-border rounded-xl px-4 py-2 shadow-lg">
+                    <div className="relative bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/50 rounded-2xl px-5 py-3 shadow-xl">
                         <button
                             onClick={() => setShowNudge(false)}
-                            className="absolute -top-2 -right-2 w-5 h-5 bg-muted hover:bg-muted-foreground/20 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors text-xs"
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-muted hover:bg-muted/80 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-sm"
                         >
-                            ×
+                            <X className="w-3 h-3" />
                         </button>
-                        <div className="flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-primary" />
-                            <span className="text-sm font-medium text-foreground">Ask me anything!</span>
+                        <div className="flex items-center gap-3">
+                            <div className="p-1.5 bg-primary/10 rounded-full animate-pulse">
+                                <Sparkles className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-foreground">Need insights?</p>
+                                <p className="text-xs text-muted-foreground">Ask me about network health...</p>
+                            </div>
                         </div>
                         {/* Arrow pointing to button */}
                         <div className={cn(
                             "absolute top-1/2 -translate-y-1/2",
                             position.side === 'right' ? "right-0 translate-x-full" : "left-0 -translate-x-full rotate-180"
                         )}>
-                            <div className="w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-border" />
+                            <div className="w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[10px] border-l-border/50" />
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Floating Chat Button (Draggable) - Hidden when hideFloatingButton is true */}
+            {/* Floating Chat Button (Draggable) */}
             {!hideFloatingButton && (
                 <button
                     onMouseDown={handleMouseDown}
                     onClick={() => !hasDragged && setIsOpen(!isOpen)}
                     className={cn(
-                        "ai-chat-button fixed z-50 w-14 h-14 rounded-full shadow-lg",
-                        (isSnapping || !isDragging) && "transition-all duration-300 ease-out", // Animate when snapping or not dragging
-                        "bg-gradient-to-br from-primary to-orange-600 hover:from-orange-600 hover:to-primary",
-                        "flex items-center justify-center text-white",
-                        isDragging ? "cursor-grabbing scale-110" : "cursor-grab hover:scale-110",
-                        "active:scale-95",
-                        isOpen && "rotate-90"
+                        "ai-chat-button fixed z-50 w-14 h-14 rounded-full shadow-2xl shadow-primary/20",
+                        (isSnapping || !isDragging) && "transition-all duration-300 cubic-bezier(0.34, 1.56, 0.64, 1)", // Bouncy spring
+                        "bg-gradient-to-tr from-primary to-orange-500 hover:brightness-110",
+                        "flex items-center justify-center text-white border-4 border-background/20 backdrop-blur-sm",
+                        isDragging ? "cursor-grabbing scale-110" : "cursor-grab hover:scale-105",
+                        "active:scale-90",
+                        isOpen && "rotate-90 scale-90 bg-zinc-800 from-zinc-800 to-zinc-800"
                     )}
                     style={isDragging && dragPos
                         ? { left: dragPos.x, top: dragPos.y }
@@ -320,7 +325,7 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                     {isOpen ? (
                         <X className="w-6 h-6" />
                     ) : (
-                        <Bot className="w-6 h-6" />
+                        <Bot className="w-7 h-7" />
                     )}
                 </button>
             )}
@@ -329,23 +334,23 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
             {isOpen && (
                 <div
                     className={cn(
-                        "fixed z-50 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden",
-                        "flex flex-col",
+                        "fixed z-50 flex flex-col overflow-hidden",
+                        "bg-background/80 backdrop-blur-xl border border-white/10 dark:border-white/5 shadow-2xl",
+                        "rounded-[2rem]",
                         // Desktop size
-                        "w-[380px] h-[520px]",
+                        "w-[400px] h-[600px]",
                         // Mobile - full width bottom sheet
-                        "max-md:bottom-0 max-md:right-0 max-md:left-0 max-md:w-full max-md:h-[70vh] max-md:rounded-b-none"
+                        "max-md:bottom-0 max-md:right-0 max-md:left-0 max-md:w-full max-md:h-[85vh] max-md:rounded-b-none max-md:rounded-t-[2rem]",
+                        // Entry animation
+                        "animate-in slide-in-from-bottom-10 fade-in duration-300"
                     )}
                     style={(() => {
-                        // FORCE TOP POSITION (User Request)
                         if (hideFloatingButton) {
                             return { top: 72, right: 20 };
                         }
-
-                        // Legacy dynamic positioning for standalone usage
                         const buttonBottom = position.y;
                         const spaceAbove = typeof window !== 'undefined' ? window.innerHeight - buttonBottom - 56 : 600;
-                        const chatHeight = 520;
+                        const chatHeight = 600;
                         const hasSpaceAbove = spaceAbove >= chatHeight + 20;
 
                         const baseStyle = position.side === 'right'
@@ -353,41 +358,44 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                             : { left: 24 };
 
                         if (hasSpaceAbove) {
-                            return { ...baseStyle, bottom: buttonBottom + 70 };
+                            return { ...baseStyle, bottom: buttonBottom + 75 };
                         } else {
-                            return { ...baseStyle, top: 70 };
+                            return { ...baseStyle, top: 80 };
                         }
                     })()}
                 >
                     {/* Header */}
-                    <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-primary/10 to-orange-500/10 border-b border-border">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center">
-                            <Sparkles className="w-4 h-4 text-white" />
+                    <div className="flex items-center gap-4 px-6 py-4 border-b border-border/40 bg-white/5 dark:bg-black/5 backdrop-blur-md sticky top-0 z-10">
+                        <div className="relative">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-orange-400 flex items-center justify-center shadow-lg shadow-primary/20">
+                                <Sparkles className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-background rounded-full animate-pulse" />
                         </div>
                         <div className="flex-1">
-                            <h3 className="font-semibold text-sm text-foreground">Xandeum Scope AI</h3>
-                            <p className="text-[10px] text-muted-foreground">Network Analytics Assistant</p>
+                            <h3 className="font-bold text-base text-foreground tracking-tight">Xandeum Assistant</h3>
+                            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Online • v1.5 Flash</p>
                         </div>
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="p-2 -mr-1 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+                            className="p-2 -mr-2 text-muted-foreground/70 hover:text-foreground transition-colors hover:bg-muted/50 rounded-full"
                         >
-                            <X className="w-6 h-6" />
+                            <X className="w-5 h-5" />
                         </button>
                     </div>
 
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar scroll-smooth">
                         {/* Welcome Message */}
                         {messages.length === 0 && (
-                            <div className="flex gap-3">
-                                <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                                    <Bot className="w-4 h-4 text-primary" />
+                            <div className="flex gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-1">
+                                    <Bot className="w-5 h-5 text-muted-foreground" />
                                 </div>
-                                <div className="bg-orange-50 dark:bg-primary/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
-                                    <p className="text-sm text-foreground whitespace-pre-line">
+                                <div className="bg-muted/30 border border-muted/50 rounded-2xl rounded-tl-sm px-5 py-4 max-w-[85%] shadow-sm">
+                                    <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-line">
                                         {WELCOME_MESSAGE.split("**").map((part, i) =>
-                                            i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+                                            i % 2 === 1 ? <strong key={i} className="text-foreground">{part}</strong> : part
                                         )}
                                     </p>
                                 </div>
@@ -399,14 +407,16 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                             <div
                                 key={message.id}
                                 className={cn(
-                                    "flex gap-3",
-                                    message.role === "user" && "flex-row-reverse"
+                                    "flex gap-3 group animate-in fade-in slide-in-from-bottom-2 duration-300",
+                                    message.role === "user" ? "flex-row-reverse" : "flex-row"
                                 )}
                             >
                                 <div
                                     className={cn(
-                                        "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0",
-                                        message.role === "user" ? "bg-primary" : "bg-muted"
+                                        "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-auto mb-1 shadow-sm",
+                                        message.role === "user"
+                                            ? "bg-gradient-to-br from-primary to-orange-600"
+                                            : "bg-white dark:bg-zinc-800 border border-border"
                                     )}
                                 >
                                     {message.role === "user" ? (
@@ -417,22 +427,19 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                                 </div>
                                 <div
                                     className={cn(
-                                        "rounded-2xl px-4 py-3 max-w-[85%]",
+                                        "px-5 py-3 max-w-[85%] shadow-sm text-sm leading-relaxed",
                                         message.role === "user"
-                                            ? "bg-orange-600 text-white rounded-tr-sm"
-                                            : "bg-orange-50 dark:bg-primary/10 text-foreground rounded-tl-sm"
+                                            ? "bg-primary text-primary-foreground rounded-[1.25rem] rounded-tr-sm"
+                                            : "bg-white dark:bg-zinc-800 border border-border/50 text-foreground rounded-[1.25rem] rounded-tl-sm"
                                     )}
                                 >
-                                    <div
-                                        className={cn(
-                                            "text-sm whitespace-pre-wrap",
-                                            // Ensure links inside have generic styles if not overridden
-                                            "[&>a]:underline [&>a]:underline-offset-2 [&>a]:font-medium"
-                                        )}
-                                    >
+                                    <div className={cn(
+                                        "whitespace-pre-wrap",
+                                        "[&>a]:underline [&>a]:underline-offset-4 [&>a]:decoration-white/30 hover:[&>a]:decoration-white/100"
+                                    )}>
                                         {(() => {
-                                            // Helper to parse markdown links and bold
                                             const content = message.content;
+                                            // Simple markdown link parser
                                             const parts = [];
                                             const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
                                             let lastIndex = 0;
@@ -458,19 +465,16 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className={cn(
-                                                                "transition-colors",
-                                                                message.role === "user"
-                                                                    ? "text-white/90 hover:text-white"
-                                                                    : "text-primary hover:text-orange-700"
+                                                                "font-medium transition-opacity",
+                                                                message.role === "user" ? "text-white" : "text-primary hover:opacity-80 decoration-primary/30"
                                                             )}
                                                         >
                                                             {part.text}
                                                         </a>
                                                     );
                                                 }
-                                                // Handle Bold text
                                                 return part.content?.split("**").map((subPart, j) =>
-                                                    j % 2 === 1 ? <strong key={`${i}-${j}`}>{subPart}</strong> : subPart
+                                                    j % 2 === 1 ? <strong key={`${i}-${j}`} className="font-bold">{subPart}</strong> : subPart
                                                 );
                                             });
                                         })()}
@@ -481,63 +485,77 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
 
                         {/* Loading Indicator */}
                         {isLoading && (
-                            <div className="flex gap-3">
-                                <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <div className="flex gap-4 animate-in fade-in duration-300">
+                                <div className="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 border border-border flex items-center justify-center flex-shrink-0 mt-auto mb-1">
                                     <Bot className="w-4 h-4 text-primary" />
                                 </div>
-                                <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
-                                    <div className="flex gap-1">
-                                        <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                                        <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                                        <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                                <div className="bg-white dark:bg-zinc-800 border border-border/50 rounded-[1.25rem] rounded-tl-sm px-4 py-3 shadow-sm">
+                                    <div className="flex gap-1.5 items-center h-5">
+                                        <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                                        <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                                        <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" />
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        <div ref={messagesEndRef} />
+                        <div ref={messagesEndRef} className="h-2" />
                     </div>
 
-                    {/* Suggestions */}
+                    {/* Suggestions Area */}
                     {messages.length === 0 && !isLoading && (
-                        <div className="px-4 pb-2 flex flex-wrap gap-2">
-                            {SUGGESTIONS.map((suggestion) => (
-                                <button
-                                    key={suggestion}
-                                    onClick={() => handleSuggestionClick(suggestion)}
-                                    className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                                >
-                                    {suggestion}
-                                </button>
-                            ))}
+                        <div className="px-5 pb-3">
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-3 pl-1">Suggested Questions</p>
+                            <div className="flex flex-wrap gap-2">
+                                {SUGGESTIONS.map((suggestion) => (
+                                    <button
+                                        key={suggestion}
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                        className="text-xs px-3 py-2 rounded-xl bg-muted/50 hover:bg-primary/10 border border-border/50 hover:border-primary/20 text-foreground transition-all duration-200 active:scale-95 text-left"
+                                    >
+                                        {suggestion}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     )}
 
-                    {/* Input */}
-                    <form
-                        ref={formRef}
-                        id="chat-form"
-                        onSubmit={handleSubmit}
-                        className="p-3 border-t border-border bg-background/50"
-                    >
-                        <div className="flex gap-2">
-                            <Input
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                placeholder="Ask about the network..."
-                                className="flex-1 bg-muted border-0 focus-visible:ring-1 focus-visible:ring-primary"
-                                disabled={isLoading}
-                            />
+                    {/* Input Area */}
+                    <div className="p-4 bg-white/5 dark:bg-black/5 backdrop-blur-md border-t border-border/40">
+                        <form
+                            ref={formRef}
+                            id="chat-form"
+                            onSubmit={handleSubmit}
+                            className="relative flex items-end gap-2"
+                        >
+                            <div className="relative flex-1">
+                                <Input
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    placeholder="Type a message..."
+                                    className="pr-4 py-6 bg-muted/50 border-transparent focus:bg-background focus:border-primary/30 rounded-2xl shadow-inner transition-all placeholder:text-muted-foreground/70"
+                                    disabled={isLoading}
+                                    autoComplete="off"
+                                />
+                            </div>
                             <Button
                                 type="submit"
                                 size="icon"
                                 disabled={isLoading || !input.trim()}
-                                className="bg-primary hover:bg-orange-600 text-white"
+                                className={cn(
+                                    "h-12 w-12 rounded-2xl shadow-lg transition-all duration-300",
+                                    input.trim()
+                                        ? "bg-gradient-to-tr from-primary to-orange-500 hover:brightness-110 hover:shadow-primary/25 hover:-translate-y-0.5"
+                                        : "bg-muted text-muted-foreground opacity-50 cursor-not-allowed"
+                                )}
                             >
-                                <Send className="w-4 h-4" />
+                                <Send className="w-5 h-5" />
                             </Button>
+                        </form>
+                        <div className="text-[10px] text-center text-muted-foreground/40 mt-2 font-medium">
+                            AI can make mistakes. Check important info.
                         </div>
-                    </form>
+                    </div>
                 </div>
             )}
         </>

@@ -1560,10 +1560,10 @@ Outdated: ${outdated}
                 {/* Row 1: Network Performance (2 cols) + Storage Distribution (1 col) */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
-                    <NetworkPerformance data={metrics?.tpsHistory || []} />
+                    <NetworkPerformance data={metrics?.tpsHistory || []} onAskAI={askAI} />
                   </div>
                   <div className="lg:col-span-1">
-                    <StorageDistribution data={storageDistributionData} onDrillDown={(s) => handleDrillDown('storage', s)} />
+                    <StorageDistribution data={storageDistributionData} onDrillDown={(s) => handleDrillDown('storage', s)} onAskAI={askAI} />
                   </div>
                 </div>
 
@@ -2321,6 +2321,17 @@ Outdated: ${outdated}
                             <div>
                               <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
                                 <Globe className="h-4 w-4 text-primary" /> Network Intelligence
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-5 w-5 ml-auto text-muted-foreground hover:text-primary"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    askAI(`What network intelligence data is available for node ${selectedNode?.pubkey}?`);
+                                  }}
+                                >
+                                  <Sparkles className="h-3 w-3" />
+                                </Button>
                               </h4>
                               {!geoData && isGeoSyncing ? (
                                 <Skeleton className="h-20 w-full bg-muted" />

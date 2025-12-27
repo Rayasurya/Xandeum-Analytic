@@ -3,12 +3,15 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Area, AreaChart } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { Button } from "@/components/ui/button"
+import { Sparkles } from "lucide-react"
 
 interface NetworkPerformanceProps {
     data: { time: string; tps: number }[]
+    onAskAI?: (prompt: string) => void
 }
 
-export function NetworkPerformance({ data }: NetworkPerformanceProps) {
+export function NetworkPerformance({ data, onAskAI }: NetworkPerformanceProps) {
     if (!data || data.length === 0) {
         return (
             <Card className="bg-card/50 border-primary/20 shadow-sm col-span-1 lg:col-span-2 relative overflow-hidden group">
@@ -38,6 +41,16 @@ export function NetworkPerformance({ data }: NetworkPerformanceProps) {
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                     Real-Time Network Performance
                     <InfoTooltip content="Real-time Transactions Per Second (TPS) processed by the network." />
+                    {onAskAI && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5 text-muted-foreground hover:text-primary ml-1"
+                            onClick={() => onAskAI("Explain the 'Network Performance' chart and what TPS means in this context.")}
+                        >
+                            <Sparkles className="h-3 w-3" />
+                        </Button>
+                    )}
                 </CardTitle>
                 <div className="text-xs font-mono text-cyan-600 dark:text-cyan-500">Live TPS History</div>
             </CardHeader>

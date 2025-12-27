@@ -3,10 +3,13 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { Button } from "@/components/ui/button"
+import { Sparkles } from "lucide-react"
 
 interface StorageDistributionProps {
     data: { name: string; value: number }[];
     onDrillDown?: (range: string) => void;
+    onAskAI?: (prompt: string) => void;
 }
 
 const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
@@ -31,13 +34,23 @@ const CustomTooltip = ({ active, payload, onDrillDown }: any) => {
     return null;
 };
 
-export function StorageDistribution({ data, onDrillDown }: StorageDistributionProps) {
+export function StorageDistribution({ data, onDrillDown, onAskAI }: StorageDistributionProps) {
     return (
         <Card className="bg-card/50 border-border shadow-sm relative overflow-hidden group h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                     Storage Capacity
                     <InfoTooltip content="Categorization of nodes based on their committed storage capacity to the network." />
+                    {onAskAI && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5 text-muted-foreground hover:text-primary ml-1"
+                            onClick={() => onAskAI("Analyze the 'Storage Capacity' distribution of the network tiers.")}
+                        >
+                            <Sparkles className="h-3 w-3" />
+                        </Button>
+                    )}
                 </CardTitle>
             </CardHeader>
             <CardContent>

@@ -31,6 +31,7 @@ import {
   Sparkles,
   Star,
   Trash2,
+  TrendingUp,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { EnhancedOnboarding } from "@/components/enhanced-onboarding";
+import { CreditsSimulatorModal } from "@/components/credits-simulator-modal";
 
 // Dynamic import for Leaflet (SSR fix)
 const LeafletClusterMap = dynamic(
@@ -308,6 +310,9 @@ function HomeContent() {
   const [copyStatusLoading, setCopyStatusLoading] = useState(false);
   const [copyStatusError, setCopyStatusError] = useState(false);
   const [copyStatusSuccess, setCopyStatusSuccess] = useState(false);
+
+  // Credits Simulator State
+  const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
 
   // AI Chat State (controlled from header)
   const [aiChatOpen, setAiChatOpen] = useState(false);
@@ -2255,6 +2260,17 @@ Outdated: ${outdated}
                                             <div className="h-1 bg-background rounded-full overflow-hidden">
                                               <div className="h-full bg-amber-500/70" style={{ width: `${healthScore.breakdown.rpc.score}%` }} />
                                             </div>
+                                            <div className="mt-1 flex justify-end">
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setIsSimulatorOpen(true);
+                                                }}
+                                                className="text-[9px] uppercase font-bold tracking-wider text-amber-500 hover:text-amber-400 flex items-center gap-1 border border-amber-500/20 rounded px-1.5 py-0.5 hover:bg-amber-500/10 transition-colors"
+                                              >
+                                                <TrendingUp className="w-2.5 h-2.5" /> Forecast
+                                              </button>
+                                            </div>
                                           </div>
                                         </TooltipTrigger>
                                         <TooltipContent side="left"><p>Linear scale based on epoch participation</p></TooltipContent>
@@ -2891,6 +2907,12 @@ ${selectedNode?.pubkey}
 
           <Toaster />
           <EnhancedOnboarding />
+          <CreditsSimulatorModal
+            isOpen={isSimulatorOpen}
+            onClose={() => setIsSimulatorOpen(false)}
+            currentCredits={selectedNode?.credits || 0}
+            totalNetworkCredits={nodes.reduce((sum, n) => sum + (n.credits || 0), 0)}
+          />
         </main>
       </div >
     </div >

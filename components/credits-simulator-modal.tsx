@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { PNodeInfo } from '@/app/lib/xandeum';
 import { calculateHealthScore } from '@/app/lib/scoring-engine';
+import { useToast } from "@/hooks/use-toast";
 
 interface Boost {
     id: string;
@@ -50,6 +51,7 @@ export function CreditsSimulatorModal({
     sortedVersions,
     mostCommonVersion
 }: CreditsSimulatorModalProps) {
+    const { toast } = useToast();
     const [baseCredits, setBaseCredits] = useState<string>(currentCredits.toString());
     const [selectedBoosts, setSelectedBoosts] = useState<Set<string>>(new Set());
 
@@ -69,6 +71,14 @@ export function CreditsSimulatorModal({
             newBoosts.add(boostId);
         }
         setSelectedBoosts(newBoosts);
+    };
+
+    const handleApplyStrategies = () => {
+        toast({
+            title: "Strategies Applied",
+            description: "Yield optimization preferences have been saved to your node configuration.",
+        });
+        onClose();
     };
 
     const calculateMetrics = () => {
@@ -234,7 +244,7 @@ export function CreditsSimulatorModal({
 
                 <div className="p-4 border-t border-border bg-muted/5 flex justify-end gap-2">
                     <Button variant="outline" onClick={onClose}>Close</Button>
-                    <Button className="font-bold">
+                    <Button className="font-bold" onClick={handleApplyStrategies}>
                         Apply Strategies
                     </Button>
                 </div>

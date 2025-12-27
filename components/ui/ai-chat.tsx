@@ -25,6 +25,8 @@ interface AIChatWidgetProps {
     externalOpen?: boolean;
     onOpenChange?: (open: boolean) => void;
     hideFloatingButton?: boolean;
+    initialMessage?: string;
+    onMessageSent?: () => void; // Callback to clear message from parent
 }
 
 interface Message {
@@ -49,7 +51,7 @@ const SUGGESTIONS = [
     "Show node issues",
 ];
 
-export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloatingButton }: AIChatWidgetProps) {
+export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloatingButton, initialMessage, onMessageSent }: AIChatWidgetProps) {
     const [internalOpen, setInternalOpen] = useState(false);
     const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
     const setIsOpen = (open: boolean) => {
@@ -68,6 +70,21 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
     const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null); // temp position during drag
     const dragRef = useRef<{ startX: number; startY: number; startY2: number } | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
+
+    // Auto-send initial message
+    useEffect(() => {
+        if (isOpen && initialMessage && !isLoading) {
+            setInput(initialMessage);
+            // Small delay to allow state update before submitting
+            setTimeout(() => {
+                if (formRef.current) {
+                    formRef.current.requestSubmit();
+                    if (onMessageSent) onMessageSent();
+                }
+            }, 100);
+        }
+    }, [isOpen, initialMessage]); // Only depend on these to avoid loops
 
     // Load saved position from localStorage
     useEffect(() => {
@@ -498,6 +515,7 @@ export function AIChatWidget({ context, externalOpen, onOpenChange, hideFloating
 
                     {/* Input */}
                     <form
+                        ref={formRef}
                         id="chat-form"
                         onSubmit={handleSubmit}
                         className="p-3 border-t border-border bg-background/50"

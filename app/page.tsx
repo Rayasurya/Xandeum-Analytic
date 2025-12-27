@@ -242,6 +242,12 @@ function HomeContent() {
   // AI Chat State (controlled from header)
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [showAiNudge, setShowAiNudge] = useState(false);
+  const [aiInitialMessage, setAiInitialMessage] = useState("");
+
+  const askAI = (prompt: string) => {
+    setAiInitialMessage(prompt);
+    setAiChatOpen(true);
+  };
 
   // Scroll Control - only scroll to node when coming from the map
   const [shouldScrollToNode, setShouldScrollToNode] = useState(false);
@@ -689,12 +695,10 @@ function HomeContent() {
         const nodeVersion = node.version?.split(' ')[0] || "Unknown";
         if (filterVersion === "outdated") {
           // Special filter: show nodes NOT on the most common (official) version
-          const latestVersion = getMostCommonVersion(nodes);
-          if (nodeVersion === latestVersion) matchesVersion = false;
+          if (nodeVersion === mostCommonVersion) matchesVersion = false;
         } else if (filterVersion === "latest") {
           // Special filter: show nodes on the most common (official) version
-          const latestVersion = getMostCommonVersion(nodes);
-          if (nodeVersion !== latestVersion) matchesVersion = false;
+          if (nodeVersion !== mostCommonVersion) matchesVersion = false;
         } else if (nodeVersion !== filterVersion) {
           matchesVersion = false;
         }
@@ -715,7 +719,7 @@ function HomeContent() {
       // 6. Health Filter
       let matchesHealth = true;
       if (filterHealth !== "all") {
-        const health = calculateHealthScore(node, maxNetworkCredits);
+        const health = calculateHealthScore(node, maxNetworkCredits, sortedVersions, mostCommonVersion);
         if (filterHealth === "healthy" && health.status !== "HEALTHY") matchesHealth = false;
         if (filterHealth === "warning" && health.status !== "WARNING") matchesHealth = false;
         if (filterHealth === "critical" && health.status !== "CRITICAL") matchesHealth = false;
@@ -1416,7 +1420,20 @@ Outdated: ${outdated}
                                     stats.total > 0 && (stats.active / stats.total) >= 0.6 ? "Good" : "Degraded"}
                                 </span>
                               </div>
-                              <span className="text-xs text-primary font-medium whitespace-nowrap">View →</span>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-muted-foreground hover:text-primary z-10"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    askAI("Explain what 'Network Health Status' means and how it is calculated.");
+                                  }}
+                                >
+                                  <Sparkles className="h-3.5 w-3.5" />
+                                </Button>
+                                <span className="text-xs text-primary font-medium whitespace-nowrap">View →</span>
+                              </div>
                             </div>
                             <p className="text-sm text-muted-foreground">Network health status</p>
                           </div>
@@ -1458,7 +1475,20 @@ Outdated: ${outdated}
                                   {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total < 70).length}
                                 </span>
                               </div>
-                              <span className="text-xs text-primary font-medium">View →</span>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-muted-foreground hover:text-primary z-10"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    askAI("What are 'At-Risk Nodes' and why should I be concerned?");
+                                  }}
+                                >
+                                  <Sparkles className="h-3.5 w-3.5" />
+                                </Button>
+                                <span className="text-xs text-primary font-medium">View →</span>
+                              </div>
                             </div>
                             <p className="text-sm text-muted-foreground">
                               {nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).total < 70).length === 0
@@ -1498,7 +1528,20 @@ Outdated: ${outdated}
                                     <span className="text-lg">{outdated === 0 ? "✅" : "🔄"}</span>
                                     <span className="text-2xl font-bold text-foreground">{outdated}</span>
                                   </div>
-                                  <span className="text-xs text-primary font-medium">View →</span>
+                                  <div className="flex items-center gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 text-muted-foreground hover:text-primary z-10"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        askAI("Why is running an 'Outdated Version' bad for the network?");
+                                      }}
+                                    >
+                                      <Sparkles className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <span className="text-xs text-primary font-medium">View →</span>
+                                  </div>
                                 </div>
                                 <p className="text-sm text-muted-foreground">
                                   {outdated === 0 ? "All on latest version!" : "Outdated versions"}
@@ -2649,40 +2692,30 @@ ${selectedNode?.pubkey}
           {/* AI Chat Widget - controlled from header button */}
           <AIChatWidget
             externalOpen={aiChatOpen}
-            onOpenChange={setAiChatOpen}
-            hideFloatingButton={true}
+            initialMessage={aiInitialMessage}
+            onMessageSent={() => setAiInitialMessage("")}
+            onOpenChange={(open) => setAiChatOpen(open)}
+            hideFloatingButton={activeView === 'dashboard'} // Hide floating bubble on dashboard (use Header button)
             context={{
               totalNodes: stats.total,
               activeNodes: stats.active,
-              totalStorage: formatStorage(nodes.reduce((sum, n) => sum + (n.storage_committed || 0), 0)),
-              healthyCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).status === "HEALTHY").length,
-              warningCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).status === "WARNING").length,
-              criticalCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits).status === "CRITICAL").length,
+              totalStorage: formatStorage(nodes.reduce((acc, n) => acc + (n.storage_committed || 0), 0)),
+              healthyCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).status === "HEALTHY").length,
+              warningCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).status === "WARNING").length,
+              criticalCount: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).status === "CRITICAL").length,
               lastUpdated: new Date().toLocaleTimeString(),
-              atRiskNodes: nodes
-                .map(n => ({ pubkey: n.pubkey.slice(0, 8) + "..." + n.pubkey.slice(-4), health: calculateHealthScore(n, maxNetworkCredits) }))
-                .filter(n => n.health.status !== "HEALTHY")
-                .slice(0, 10)
-                .map(n => `${n.pubkey}: ${n.health.total}/100 (${n.health.status})`),
               topCountries: Object.entries(nodes.reduce((acc, n) => {
-                const country = n.location?.country || "Unknown";
+                const ip = n.gossip?.split(':')[0];
+                const country = (ip && geoCache[ip]?.country) || "Unknown";
                 acc[country] = (acc[country] || 0) + 1;
                 return acc;
               }, {} as Record<string, number>))
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 5)
-                .map(([country, count]) => `${country}: ${count}`),
-              offlineNodes: nodes
-                .filter(n => n.status !== "Active")
-                .slice(0, 10)
-                .map(n => n.pubkey),
-              softwareVersions: Object.entries(nodes.reduce((acc, n) => {
-                const version = n.version || "Unknown";
-                acc[version] = (acc[version] || 0) + 1;
-                return acc;
-              }, {} as Record<string, number>))
-                .sort((a, b) => b[1] - a[1])
-                .map(([ver, count]) => `${ver}: ${count}`),
+                .map(([country, number]) => `${country}: ${number}`),
+              offlineNodes: nodes.filter(n => !n.rpc).map(n => n.pubkey),
+              atRiskNodes: nodes.filter(n => calculateHealthScore(n, maxNetworkCredits, sortedVersions, mostCommonVersion).total < 70).map(n => n.pubkey),
+              softwareVersions: Array.from(new Set(nodes.map(n => n.version || "Unknown"))),
             }}
           />
 

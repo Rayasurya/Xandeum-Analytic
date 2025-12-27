@@ -184,12 +184,11 @@ const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): Healt
   }
 
   // 2. Uptime Score (35%) - Sigmoid Vitality Curve
-  // Rewards consistency: >7 days rapidly approaches 100, <7 days drops rapidly
+  // Rewards consistency: >12h rapidly approaches 100
   const uptimeSeconds = node?.uptime || 0;
   const uptimeDays = uptimeSeconds / 86400;
-  // Formula: 100 / (1 + e^(-0.5 * (days - 5))) -> Shifted sigmoid
-  // User asked for: 100 / (1 + e^(-0.2 * (days - 7)))
-  uptimeScore = 100 / (1 + Math.exp(-0.4 * (uptimeDays - 7)));
+  // Formula: Centered at 0.5 days (12h), Slope 2.0 (Steep rise)
+  uptimeScore = 100 / (1 + Math.exp(-2.0 * (uptimeDays - 0.5)));
 
   // 3. Storage Score (30%) - Logarithmic Scale
   // 50 * log2(TB + 1)
@@ -199,7 +198,7 @@ const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): Healt
   // If 3TB (max?) -> log2(4) = 2 * 50 = 100. So 3TB = 100 score. 
 
   // 4. Credits Score (20%) - Linear Growth
-  // Target: 2.5M credits = 100 (Estimate based on top performers)
+  // Target: 2.5M credits = 100 (Estimate)
   const credits = node?.credits || 0;
   if (credits > 0) {
     creditsScore = Math.min(100, (credits / 2500000) * 100);
@@ -237,7 +236,7 @@ const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): Healt
       version: { score: Math.round(versionScore), max: 100 },
       uptime: { score: Math.round(uptimeScore), max: 100 },
       storage: { score: Math.round(storageScore), max: 100 },
-      rpc: { score: Math.round(creditsScore), max: 100 }, // Mapping Credits to the 4th slot 
+      rpc: { score: Math.round(creditsScore), max: 100 }, // Mapping Credits to the 4th slot (labeled as Credits in UI)
     },
   };
 };
@@ -2409,7 +2408,7 @@ ${selectedNode?.pubkey}
 ┌─ Version: ${healthScore.breakdown.version.score}/${healthScore.breakdown.version.max}
 ├─ Uptime: ${healthScore.breakdown.uptime.score}/${healthScore.breakdown.uptime.max}
 ├─ Storage: ${healthScore.breakdown.storage.score}/${healthScore.breakdown.storage.max}
-└─ RPC: ${healthScore.breakdown.rpc.score}/${healthScore.breakdown.rpc.max}`;
+└─ Credits: ${healthScore.breakdown.rpc.score}/${healthScore.breakdown.rpc.max}`;
 
                                   if (metrics.length > 0) detailsText += `\n\n📈 Metrics\n${metrics.join('\n')}`;
 

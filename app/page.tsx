@@ -2190,6 +2190,53 @@ Outdated: ${outdated}
 
                             <Separator className="bg-border" />
 
+                            {/* Storage & Performance */}
+                            <div>
+                              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                                <Database className="h-4 w-4 text-primary" /> Storage & Performance
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-muted/50 p-3 rounded-lg">
+                                  <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Capacity</p>
+                                  <p className="font-mono text-lg font-bold text-foreground">
+                                    {formatStorage(selectedNode?.storage_committed || 0)}
+                                  </p>
+                                </div>
+                                <div className="bg-muted/50 p-3 rounded-lg">
+                                  <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Pod Credits</p>
+                                  <p className="font-mono text-lg font-bold text-primary">
+                                    {(selectedNode?.credits || 0).toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+                              {/* Storage Usage Bar */}
+                              {selectedNode?.storage_usage_percent !== undefined && (
+                                <div className="mt-3 space-y-2">
+                                  <div className="flex items-center justify-between text-xs">
+                                    <span className="text-muted-foreground">Storage Usage</span>
+                                    <span className="font-mono font-bold text-foreground">
+                                      {(selectedNode.storage_usage_percent || 0).toFixed(1)}%
+                                    </span>
+                                  </div>
+                                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                                    <div
+                                      className={cn(
+                                        "h-full rounded-full transition-all",
+                                        (selectedNode.storage_usage_percent || 0) > 80 ? "bg-destructive" :
+                                          (selectedNode.storage_usage_percent || 0) > 50 ? "bg-amber-500" : "bg-emerald-500"
+                                      )}
+                                      style={{ width: `${Math.min(100, selectedNode.storage_usage_percent || 0)}%` }}
+                                    />
+                                  </div>
+                                  <p className="text-[10px] text-muted-foreground">
+                                    {formatStorage(selectedNode.storage_used || 0)} of {formatStorage(selectedNode.storage_committed || 0)} used
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+
+                            <Separator className="bg-border" />
+
                             {/* Geolocation */}
                             <div>
                               <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
@@ -2717,10 +2764,28 @@ ${selectedNode?.pubkey}
                     {/* Storage */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="space-y-1">
-                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Storage</Label>
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Storage Capacity</Label>
                         <div className="font-mono text-lg font-bold text-foreground">
                           {formatStorage(selectedNode.storage_committed || 0)}
                         </div>
+                        {/* Storage Usage Bar */}
+                        {selectedNode.storage_usage_percent !== undefined && (
+                          <div className="space-y-1">
+                            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                              <div
+                                className={cn(
+                                  "h-full rounded-full transition-all",
+                                  (selectedNode.storage_usage_percent || 0) > 80 ? "bg-destructive" :
+                                    (selectedNode.storage_usage_percent || 0) > 50 ? "bg-amber-500" : "bg-emerald-500"
+                                )}
+                                style={{ width: `${Math.min(100, selectedNode.storage_usage_percent || 0)}%` }}
+                              />
+                            </div>
+                            <p className="text-[10px] text-muted-foreground">
+                              {formatStorage(selectedNode.storage_used || 0)} used ({(selectedNode.storage_usage_percent || 0).toFixed(1)}%)
+                            </p>
+                          </div>
+                        )}
                       </div>
                       <div className="space-y-1">
                         <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">Pod Credits</Label>

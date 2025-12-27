@@ -6,6 +6,8 @@
 
 > ⚠️ **Important:** The live demo may experience deployment delays. For the **complete, up-to-date experience** with all features (Watchlist, AI Chat, Deep Linking, etc.), please **run the application locally** using the instructions in the [How to Run](#%EF%B8%8F-how-to-run) section.
 
+> 📝 **For Reviewers:** This submission has been **enhanced post-deadline** based on feedback from bounty comments. Improvements include mobile-first responsive design, AI chat UX refinements, and bug fixes. To view the original submission, check commit history before `Dec 26, 2024`. All post-deadline changes are documented in the git log.
+
 ![Dashboard Preview](public/demo-final.gif)
 
 ---

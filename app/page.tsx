@@ -163,61 +163,65 @@ interface HealthScore {
   };
 }
 
-const calculateHealthScore = (node: any): HealthScore => {
+const calculateHealthScore = (node: any, targetVersion: string = "0.8.0"): HealthScore => {
   let versionScore = 0;
   let uptimeScore = 0;
   let storageScore = 0;
-  let rpcScore = 0;
+  let creditsScore = 0;
+  let weightUptime = 0.35;
+  let weightStorage = 0.30;
+  let weightCredits = 0.20;
+  let weightVersion = 0.15;
 
-  // Version Score (40 points max) - Latest version = full points
+  // 1. Version Score (15%) - Strict Majority Matching
   const currentVersion = node?.version?.split(" ")[0] || "";
-  if (currentVersion === "0.8.0") {
-    versionScore = 40;
-  } else if (currentVersion === "0.7.0") {
-    versionScore = 30;
-  } else if (currentVersion === "0.6.0") {
-    versionScore = 20;
-  } else if (currentVersion) {
-    versionScore = 10;
+  if (currentVersion === targetVersion) {
+    versionScore = 100;
+  } else if (currentVersion.split('.').slice(0, 2).join('.') === targetVersion.split('.').slice(0, 2).join('.')) {
+    versionScore = 50; // Major.Minor match
+  } else {
+    versionScore = 0;
   }
 
-  // Uptime Score (30 points max) - Based on uptime duration
+  // 2. Uptime Score (35%) - Sigmoid Vitality Curve
+  // Rewards consistency: >7 days rapidly approaches 100, <7 days drops rapidly
   const uptimeSeconds = node?.uptime || 0;
   const uptimeDays = uptimeSeconds / 86400;
-  if (uptimeDays >= 30) {
-    uptimeScore = 30;
-  } else if (uptimeDays >= 14) {
-    uptimeScore = 25;
-  } else if (uptimeDays >= 7) {
-    uptimeScore = 20;
-  } else if (uptimeDays >= 1) {
-    uptimeScore = 15;
-  } else if (uptimeDays >= 0.5) {
-    uptimeScore = 10;
-  } else if (uptimeSeconds > 0) {
-    uptimeScore = 5;
+  // Formula: 100 / (1 + e^(-0.5 * (days - 5))) -> Shifted sigmoid
+  // User asked for: 100 / (1 + e^(-0.2 * (days - 7)))
+  uptimeScore = 100 / (1 + Math.exp(-0.4 * (uptimeDays - 7)));
+
+  // 3. Storage Score (30%) - Logarithmic Scale
+  // 50 * log2(TB + 1)
+  const storageTB = (node?.storage_committed || 0) / (1024 * 1024 * 1024 * 1024);
+  storageScore = Math.min(100, 50 * Math.log2(storageTB + 1) * 2); // Optimized multiplier for reasonable TB values (0.5TB -> ~30, 2TB -> ~80)
+  // Adjusting to user's desired "Logarithmic" feel: if 1TB is target, log2(2) = 1 * 50 = 50. 
+  // If 3TB (max?) -> log2(4) = 2 * 50 = 100. So 3TB = 100 score. 
+
+  // 4. Credits Score (20%) - Linear Growth
+  // Target: 2.5M credits = 100 (Estimate based on top performers)
+  const credits = node?.credits || 0;
+  if (credits > 0) {
+    creditsScore = Math.min(100, (credits / 2500000) * 100);
+  } else {
+    // Failover Re-weighting if credits missing
+    weightUptime = 0.45;
+    weightStorage = 0.35;
+    weightVersion = 0.20;
+    weightCredits = 0;
   }
 
-  // Storage Score (20 points max) - Based on committed storage
-  const storageGB = (node?.storage_committed || 0) / (1024 * 1024 * 1024);
-  if (storageGB >= 1000) {
-    storageScore = 20; // 1TB+
-  } else if (storageGB >= 500) {
-    storageScore = 18;
-  } else if (storageGB >= 100) {
-    storageScore = 15;
-  } else if (storageGB >= 10) {
-    storageScore = 10;
-  } else if (storageGB > 0) {
-    storageScore = 5;
+  // RPC Bonus
+  if (!node?.rpc) {
+    uptimeScore *= 0.8; // Penalty for no RPC
   }
 
-  // RPC Status Score (10 points max) - Online = full points
-  if (node?.rpc) {
-    rpcScore = 10;
-  }
-
-  const total = versionScore + uptimeScore + storageScore + rpcScore;
+  const total = Math.round(
+    (versionScore * weightVersion) +
+    (uptimeScore * weightUptime) +
+    (storageScore * weightStorage) +
+    (creditsScore * weightCredits)
+  );
 
   let status: "HEALTHY" | "WARNING" | "CRITICAL" = "HEALTHY";
   if (total < 50) {
@@ -230,10 +234,10 @@ const calculateHealthScore = (node: any): HealthScore => {
     total,
     status,
     breakdown: {
-      version: { score: versionScore, max: 40 },
-      uptime: { score: uptimeScore, max: 30 },
-      storage: { score: storageScore, max: 20 },
-      rpc: { score: rpcScore, max: 10 },
+      version: { score: Math.round(versionScore), max: 100 },
+      uptime: { score: Math.round(uptimeScore), max: 100 },
+      storage: { score: Math.round(storageScore), max: 100 },
+      rpc: { score: Math.round(creditsScore), max: 100 }, // Mapping Credits to the 4th slot 
     },
   };
 };
@@ -282,6 +286,9 @@ function HomeContent() {
   const [geoCache, setGeoCache] = useState<Record<string, any>>({});
   const [isGeoSyncing, setIsGeoSyncing] = useState(false);
 
+  // Compute majority version for health scoring
+  const mostCommonVersion = useMemo(() => getMostCommonVersion(nodes), [nodes]);
+
   // UI State
   const [loading, setLoading] = useState(true);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
@@ -307,6 +314,9 @@ function HomeContent() {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [showAiNudge, setShowAiNudge] = useState(false);
 
+  // Scroll Control - only scroll to node when coming from the map
+  const [shouldScrollToNode, setShouldScrollToNode] = useState(false);
+
   // Watchlist State
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [newWatchlistNode, setNewWatchlistNode] = useState("");
@@ -314,18 +324,20 @@ function HomeContent() {
   const { toast } = useToast();
   const client = new XandeumClient();
 
-  // Scroll to selected node when it changes
+  // Scroll to selected node when it changes - ONLY when coming from the map
   useEffect(() => {
-    if (activeView === "pnodes" && selectedNode) {
+    if (activeView === "pnodes" && selectedNode && shouldScrollToNode) {
       // Use a small timeout to ensure the DOM is rendered (especially after view switch)
       setTimeout(() => {
         const el = document.getElementById(`node-row-${selectedNode.pubkey}`);
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
         }
+        // Reset the flag after scrolling
+        setShouldScrollToNode(false);
       }, 300);
     }
-  }, [selectedNode, activeView]);
+  }, [selectedNode, activeView, shouldScrollToNode]);
 
   // Load Watchlist from LocalStorage
   useEffect(() => {
@@ -1289,7 +1301,7 @@ function HomeContent() {
                   </div>
 
                   {/* Network Intelligence Summary - WOW Element */}
-                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                  <div className="hero-cards-interactive grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Network Grade Card */}
                     <Card className="bg-card/50 border-border overflow-hidden relative">
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-orange-500/10" />
@@ -1879,15 +1891,15 @@ Outdated: ${outdated}
                         <TableHeader>
                           <TableRow className="hover:bg-transparent border-border">
                             <TableHead className="w-[3%] bg-muted"></TableHead>
-                            <TableHead className="w-[7%] font-bold text-secondary text-center bg-muted cursor-pointer" onClick={() => handleSort("health")}>
-                              Health {sortConfig?.key === "health" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                            </TableHead>
                             <TableHead className="w-[16%] font-bold text-secondary cursor-pointer bg-muted" onClick={() => handleSort("pubkey")}>
                               Node Identity {sortConfig?.key === "pubkey" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                             </TableHead>
                             <TableHead className="w-[18%] font-bold text-secondary hidden md:table-cell bg-muted">Gossip Address</TableHead>
                             <TableHead className="w-[10%] font-bold text-secondary hidden md:table-cell bg-muted">Version</TableHead>
                             <TableHead className="w-[10%] font-bold text-secondary text-right bg-muted">Uptime</TableHead>
+                            <TableHead className="w-[7%] font-bold text-secondary text-center bg-muted cursor-pointer" onClick={() => handleSort("health")}>
+                              Health {sortConfig?.key === "health" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </TableHead>
                             <TableHead className="w-[14%] font-bold text-secondary text-right bg-muted">Storage</TableHead>
                             <TableHead className={cn("w-[6%] font-bold text-secondary text-center bg-muted", selectedNode && "hidden")}>Share</TableHead>
                           </TableRow>
@@ -1931,7 +1943,8 @@ Outdated: ${outdated}
                               const used = formatBytes(node.storage_used || 0);
 
                               // Calculate Health Score
-                              const healthScore = calculateHealthScore(node);
+                              // Calculate Health Score
+                              const healthScore = calculateHealthScore(node, mostCommonVersion);
 
                               return (
                                 <TableRow
@@ -1946,6 +1959,24 @@ Outdated: ${outdated}
                                   onClick={() => handleNodeClick(node)}
                                 >
                                   <TableCell className="text-center"><div className={`mx-auto h-2.5 w-2.5 rounded-full shadow-sm ${node.rpc ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50"}`} /></TableCell>
+                                  <TableCell>
+                                    <div className="flex flex-col">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
+                                        {watchlist.includes(node.pubkey) && <Star className="h-3 w-3 fill-amber-500 text-amber-500 flex-shrink-0" />}
+                                      </div>
+                                      <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell font-mono text-xs text-muted-foreground break-all">
+                                    {node.gossip}
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell overflow-hidden">
+                                    <Badge variant="outline" className="bg-secondary/10 text-secondary dark:bg-cyan-950/30 dark:text-cyan-400 border-secondary/30 dark:border-cyan-800/50 font-mono text-xs max-w-full truncate block">
+                                      {(node.version?.split(' ')[0]) || "Unknown"}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="text-right"><span className="font-mono text-sm text-foreground">{uptimeString}</span></TableCell>
                                   <TableCell className="text-center">
                                     <div
                                       className={cn(
@@ -1980,24 +2011,6 @@ Outdated: ${outdated}
                                       <span className="relative z-10">{healthScore.total}</span>
                                     </div>
                                   </TableCell>
-                                  <TableCell>
-                                    <div className="flex flex-col">
-                                      <div className="flex items-center gap-1.5">
-                                        <span className="font-mono text-foreground text-sm truncate max-w-[150px] font-bold">{formatPubkey(node.pubkey)}</span>
-                                        {watchlist.includes(node.pubkey) && <Star className="h-3 w-3 fill-amber-500 text-amber-500 flex-shrink-0" />}
-                                      </div>
-                                      <span className="text-[10px] text-muted-foreground">{geo ? geo.country : "Unknown Region"}</span>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell className="hidden md:table-cell font-mono text-xs text-muted-foreground break-all">
-                                    {node.gossip}
-                                  </TableCell>
-                                  <TableCell className="hidden md:table-cell overflow-hidden">
-                                    <Badge variant="outline" className="bg-secondary/10 text-secondary dark:bg-cyan-950/30 dark:text-cyan-400 border-secondary/30 dark:border-cyan-800/50 font-mono text-xs max-w-full truncate block">
-                                      {(node.version?.split(' ')[0]) || "Unknown"}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell className="text-right"><span className="font-mono text-sm text-foreground">{uptimeString}</span></TableCell>
                                   <TableCell className="text-right">
                                     <div className="flex flex-col items-end">
                                       <span className="font-bold text-sm text-foreground">{committed}</span>
@@ -2140,16 +2153,27 @@ Outdated: ${outdated}
                               </div>
                             </div>
 
+                            {/* View on Map Button */}
+                            <Button
+                              variant="outline"
+                              className="w-full gap-2 border-primary/20 hover:bg-primary/10 text-primary hover:text-primary h-8 text-xs uppercase tracking-wider font-bold"
+                              onClick={() => {
+                                setActiveView('map');
+                              }}
+                            >
+                              <MapIcon className="h-3 w-3" /> View on Global Map
+                            </Button>
+
                             <Separator className="bg-border" />
 
-                            {/* Health Score */}
+                            {/* Vitality Score (The Algorithm) */}
                             {(() => {
-                              const healthScore = calculateHealthScore(selectedNode);
+                              const healthScore = calculateHealthScore(selectedNode, mostCommonVersion);
                               return (
                                 <div className="space-y-3">
                                   <div className="flex items-center justify-between">
                                     <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
-                                      <Activity className="h-4 w-4 text-primary" /> Health Score
+                                      <Activity className="h-4 w-4 text-primary" /> Vitality Score
                                     </h4>
                                     <Badge className={cn(
                                       "border-none cursor-default",
@@ -2163,47 +2187,97 @@ Outdated: ${outdated}
 
                                   {/* Score Display */}
                                   <div className="flex items-center gap-3">
-                                    <div className="text-3xl font-bold text-foreground">{healthScore.total}</div>
-                                    <div className="text-muted-foreground text-sm">/100</div>
-                                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                                      <div
-                                        className={cn(
-                                          "h-full rounded-full transition-all",
-                                          healthScore.total >= 75 && "bg-emerald-500",
-                                          healthScore.total >= 50 && healthScore.total < 75 && "bg-amber-500",
-                                          healthScore.total < 50 && "bg-red-500"
-                                        )}
-                                        style={{ width: `${healthScore.total}%` }}
-                                      />
+                                    <div className={`text-4xl font-black ${healthScore.total >= 80 ? 'text-emerald-500' : healthScore.total >= 50 ? 'text-amber-500' : 'text-red-500'}`}>
+                                      {healthScore.total}
+                                    </div>
+                                    <div className="flex-1 space-y-1">
+                                      <div className="flex justify-between text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                                        <span>Network Health</span>
+                                        <span>/100</span>
+                                      </div>
+                                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                        <div
+                                          className={cn(
+                                            "h-full rounded-full transition-all duration-1000 ease-out",
+                                            healthScore.total >= 75 && "bg-emerald-500",
+                                            healthScore.total >= 50 && healthScore.total < 75 && "bg-amber-500",
+                                            healthScore.total < 50 && "bg-red-500"
+                                          )}
+                                          style={{ width: `${healthScore.total}%` }}
+                                        />
+                                      </div>
                                     </div>
                                   </div>
 
-                                  {/* Breakdown */}
+                                  {/* Breakdown Grids - Vitality Algorithm Weights */}
                                   <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <div className="bg-muted/50 p-2 rounded">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">Version</span>
-                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.version.score}/{healthScore.breakdown.version.max}</span>
-                                      </div>
-                                    </div>
-                                    <div className="bg-muted/50 p-2 rounded">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">Uptime</span>
-                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.uptime.score}/{healthScore.breakdown.uptime.max}</span>
-                                      </div>
-                                    </div>
-                                    <div className="bg-muted/50 p-2 rounded">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">Storage</span>
-                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.storage.score}/{healthScore.breakdown.storage.max}</span>
-                                      </div>
-                                    </div>
-                                    <div className="bg-muted/50 p-2 rounded">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">RPC Status</span>
-                                        <span className="font-mono font-bold text-foreground">{healthScore.breakdown.rpc.score}/{healthScore.breakdown.rpc.max}</span>
-                                      </div>
-                                    </div>
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
+                                            <div className="flex items-center justify-between mb-1">
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Uptime (35%)</span>
+                                              <span className="font-mono font-bold text-foreground group-hover:text-primary">{healthScore.breakdown.uptime.score}</span>
+                                            </div>
+                                            <div className="h-1 bg-background rounded-full overflow-hidden">
+                                              <div className="h-full bg-primary/70" style={{ width: `${healthScore.breakdown.uptime.score}%` }} />
+                                            </div>
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="left"><p>Sigmoid decay: rewards &gt;7 days consistency</p></TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
+                                            <div className="flex items-center justify-between mb-1">
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Storage (30%)</span>
+                                              <span className="font-mono font-bold text-foreground group-hover:text-secondary">{healthScore.breakdown.storage.score}</span>
+                                            </div>
+                                            <div className="h-1 bg-background rounded-full overflow-hidden">
+                                              <div className="h-full bg-secondary/70" style={{ width: `${healthScore.breakdown.storage.score}%` }} />
+                                            </div>
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="left"><p>Logarithmic scale based on max cluster capacity</p></TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
+                                            <div className="flex items-center justify-between mb-1">
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Credits (20%)</span>
+                                              <span className="font-mono font-bold text-foreground group-hover:text-amber-500">{healthScore.breakdown.rpc.score}</span>
+                                            </div>
+                                            <div className="h-1 bg-background rounded-full overflow-hidden">
+                                              <div className="h-full bg-amber-500/70" style={{ width: `${healthScore.breakdown.rpc.score}%` }} />
+                                            </div>
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="left"><p>Linear scale based on epoch participation</p></TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="bg-muted/50 p-2 rounded hover:bg-muted/80 transition-colors cursor-help group">
+                                            <div className="flex items-center justify-between mb-1">
+                                              <span className="text-muted-foreground text-[10px] uppercase font-bold">Version (15%)</span>
+                                              <span className="font-mono font-bold text-foreground group-hover:text-emerald-500">{healthScore.breakdown.version.score}</span>
+                                            </div>
+                                            <div className="h-1 bg-background rounded-full overflow-hidden">
+                                              <div className="h-full bg-emerald-500/70" style={{ width: `${healthScore.breakdown.version.score}%` }} />
+                                            </div>
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="left"><p>Strict majority version matching</p></TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
                                   </div>
                                 </div>
                               );
@@ -2211,38 +2285,75 @@ Outdated: ${outdated}
 
                             <Separator className="bg-border" />
 
-                            {/* Addresses */}
-                            <div className="space-y-3">
-                              <div>
-                                <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
-                                  Gossip
-                                </Label>
-                                <div className="font-mono text-xs bg-muted p-2 rounded border border-border mt-1 break-all text-foreground">
-                                  {selectedNode?.gossip || "N/A"}
+                            {/* Tech Specs (New) */}
+                            <div>
+                              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                                <Server className="h-4 w-4 text-primary" /> Tech Specs
+                              </h4>
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Gossip Addr</div>
+                                  <div className="font-mono text-foreground truncate break-all" title={selectedNode?.gossip || undefined}>{selectedNode?.gossip || "N/A"}</div>
                                 </div>
-                              </div>
-                              <div>
-                                <Label className="text-[10px] uppercase text-muted-foreground tracking-wider font-bold">
-                                  RPC
-                                </Label>
-                                <div className="font-mono text-xs bg-muted p-2 rounded border border-border mt-1 break-all text-foreground">
-                                  {selectedNode?.rpc || "N/A"}
+                                <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">RPC Port</div>
+                                  <div className="font-mono text-foreground">{selectedNode?.rpc_port || "N/A"}</div>
+                                </div>
+                                <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Shred Ver</div>
+                                  <div className="font-mono text-foreground">{selectedNode?.shredVersion ?? "N/A"}</div>
+                                </div>
+                                <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Feat Set</div>
+                                  <div className="font-mono text-foreground">{selectedNode?.featureSet ?? "N/A"}</div>
                                 </div>
                               </div>
                             </div>
 
                             <Separator className="bg-border" />
 
-                            {/* Storage & Performance */}
+                            {/* Network Intelligence (New) */}
                             <div>
                               <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                                <Database className="h-4 w-4 text-primary" /> Storage & Performance
+                                <Globe className="h-4 w-4 text-primary" /> Network Intelligence
+                              </h4>
+                              {!geoData && isGeoSyncing ? (
+                                <Skeleton className="h-20 w-full bg-muted" />
+                              ) : (
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                  <div className="col-span-2 bg-muted/30 p-2 rounded border border-border/50">
+                                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">ISP / Org</div>
+                                    <div className="font-medium text-foreground">{geoData?.isp || "Unknown ISP"}</div>
+                                    <div className="text-[10px] text-muted-foreground">{geoData?.org || ""}</div>
+                                  </div>
+                                  <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">ASN</div>
+                                    <div className="font-mono text-foreground">{geoData?.as || "N/A"}</div>
+                                  </div>
+                                  <div className="bg-muted/30 p-2 rounded border border-border/50">
+                                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Timezone</div>
+                                    <div className="font-mono text-foreground">{geoData?.timezone || "UTC"}</div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            <Separator className="bg-border" />
+
+                            {/* Performance */}
+                            <div>
+                              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                                <Database className="h-4 w-4 text-primary" /> Performance
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-muted/50 p-3 rounded-lg">
-                                  <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Capacity</p>
-                                  <p className="font-mono text-lg font-bold text-foreground">
-                                    {formatStorage(selectedNode?.storage_committed || 0)}
+                                  <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Raw Uptime</p>
+                                  <p className="font-mono text-sm font-bold text-foreground">
+                                    {selectedNode?.uptime ? (
+                                      <>
+                                        {(selectedNode.uptime / 86400).toFixed(0)}d {((selectedNode.uptime % 86400) / 3600).toFixed(0)}h
+                                      </>
+                                    ) : "0s"}
                                   </p>
                                 </div>
                                 <div className="bg-muted/50 p-3 rounded-lg">
@@ -2252,227 +2363,10 @@ Outdated: ${outdated}
                                   </p>
                                 </div>
                               </div>
-                              {/* Storage Usage Bar */}
-                              {selectedNode?.storage_usage_percent !== undefined && (
-                                <div className="mt-3 space-y-2">
-                                  <div className="flex items-center justify-between text-xs">
-                                    <span className="text-muted-foreground">Storage Usage</span>
-                                    <span className="font-mono font-bold text-foreground">
-                                      {(selectedNode.storage_usage_percent || 0).toFixed(1)}%
-                                    </span>
-                                  </div>
-                                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                                    <div
-                                      className={cn(
-                                        "h-full rounded-full transition-all",
-                                        (selectedNode.storage_usage_percent || 0) > 80 ? "bg-destructive" :
-                                          (selectedNode.storage_usage_percent || 0) > 50 ? "bg-amber-500" : "bg-emerald-500"
-                                      )}
-                                      style={{ width: `${Math.min(100, selectedNode.storage_usage_percent || 0)}%` }}
-                                    />
-                                  </div>
-                                  <p className="text-[10px] text-muted-foreground">
-                                    {formatStorage(selectedNode.storage_used || 0)} of {formatStorage(selectedNode.storage_committed || 0)} used
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-
-                            <Separator className="bg-border" />
-
-                            {/* Geolocation */}
-                            <div>
-                              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                                <Globe className="h-4 w-4 text-primary" /> Geolocation
-                              </h4>
-                              {!geoData && isGeoSyncing ? (
-                                <div className="space-y-2">
-                                  <Skeleton className="h-4 w-full bg-muted" />
-                                  <Skeleton className="h-4 w-3/4 bg-muted" />
-                                </div>
-                              ) : geoData ? (
-                                <div className="grid grid-cols-2 gap-3 text-xs">
-                                  <div>
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Country</p>
-                                    <p className="font-medium text-foreground flex items-center gap-1">
-                                      <span>
-                                        {geoData.countryCode
-                                          ? geoData.countryCode.toUpperCase().replace(/./g, (char: string) => String.fromCodePoint(char.charCodeAt(0) + 127397))
-                                          : "🌐"}
-                                      </span>
-                                      <span className="truncate">{geoData.country}</span>
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">City</p>
-                                    <p className="font-medium text-foreground truncate">{geoData.city}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Region</p>
-                                    <p className="font-medium text-foreground truncate">{geoData.regionName || "N/A"}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Timezone</p>
-                                    <p className="font-medium text-foreground truncate">{geoData.timezone || "N/A"}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">ASN</p>
-                                    <p className="font-medium text-foreground truncate">{geoData.as || "N/A"}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Organization</p>
-                                    <p className="font-medium text-foreground truncate">{geoData.org || geoData.isp || "N/A"}</p>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="text-muted-foreground text-xs">No Geo Data</div>
-                              )}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex gap-2 mt-4">
-                              <Button
-                                onClick={handleExportHtml}
-                                className="flex-1 bg-primary hover:bg-orange-600 active:scale-95 text-primary-foreground font-bold h-10 transition-all"
-                                size="sm"
-                              >
-                                <Download className="mr-2 h-4 w-4" /> Export HTML
-                              </Button>
-                              <Button
-                                variant="outline"
-                                className="flex-1 h-10 font-bold active:scale-95 transition-all"
-                                size="sm"
-                                onClick={() => {
-                                  const healthScore = calculateHealthScore(selectedNode);
-                                  const uptimeSeconds = selectedNode?.uptime || 0;
-                                  const days = Math.floor(uptimeSeconds / 86400);
-                                  const hours = Math.floor((uptimeSeconds % 86400) / 3600);
-
-                                  // Build metrics array - only include non-zero/non-null values
-                                  const metrics: string[] = [];
-
-                                  if (selectedNode?.version) {
-                                    metrics.push(`• Version: ${XandeumClient.formatVersion(selectedNode.version)}`);
-                                  }
-                                  if (uptimeSeconds > 0) {
-                                    metrics.push(`• Uptime: ${days}d ${hours}h`);
-                                  }
-                                  if (selectedNode?.storage_committed && selectedNode.storage_committed > 0) {
-                                    metrics.push(`• Storage Committed: ${formatStorage(selectedNode.storage_committed)}`);
-                                  }
-                                  if (selectedNode?.storage_used && selectedNode.storage_used > 0) {
-                                    metrics.push(`• Storage Used: ${formatStorage(selectedNode.storage_used)}`);
-                                  }
-                                  if (selectedNode?.credits && selectedNode.credits > 0) {
-                                    metrics.push(`• Credits: ${selectedNode.credits.toLocaleString()}`);
-                                  }
-
-                                  // Build location string
-                                  const locationParts: string[] = [];
-                                  if (geoData?.city) locationParts.push(geoData.city);
-                                  if (geoData?.country) locationParts.push(geoData.country);
-
-                                  // Status emoji based on health
-                                  const statusEmoji = healthScore.status === "HEALTHY" ? "🟢" : healthScore.status === "WARNING" ? "🟡" : "🔴";
-
-                                  let detailsText = `${statusEmoji} XANDEUM NODE REPORT
-━━━━━━━━━━━━━━━━━━━━━━━━
-
-📍 Node ID
-${selectedNode?.pubkey}
-
-📊 Health: ${healthScore.total}/100 (${healthScore.status})
-┌─ Version: ${healthScore.breakdown.version.score}/${healthScore.breakdown.version.max}
-├─ Uptime: ${healthScore.breakdown.uptime.score}/${healthScore.breakdown.uptime.max}
-├─ Storage: ${healthScore.breakdown.storage.score}/${healthScore.breakdown.storage.max}
-└─ RPC: ${healthScore.breakdown.rpc.score}/${healthScore.breakdown.rpc.max}`;
-
-                                  if (metrics.length > 0) {
-                                    detailsText += `\n\n📈 Metrics\n${metrics.join('\n')}`;
-                                  }
-
-                                  detailsText += `\n\n🔗 Network
-• Gossip: ${selectedNode?.gossip || "N/A"}`;
-
-                                  if (selectedNode?.rpc) {
-                                    detailsText += `\n• RPC: ${selectedNode.rpc}`;
-                                  }
-
-                                  if (locationParts.length > 0) {
-                                    detailsText += `\n\n🌍 Location: ${locationParts.join(', ')}`;
-                                    if (geoData?.org || geoData?.isp) {
-                                      detailsText += `\n• Provider: ${geoData.org || geoData.isp}`;
-                                    }
-                                  }
-
-                                  navigator.clipboard.writeText(detailsText).then(() => {
-                                    toast({
-                                      title: "Copied to Clipboard",
-                                      description: "Node report copied successfully.",
-                                    });
-                                  });
-                                }}
-                              >
-                                <Copy className="mr-2 h-4 w-4" /> Copy All
-                              </Button>
-                            </div>
-
-                            <Separator className="bg-border my-4" />
-
-                            {/* Raw JSON Stream */}
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
-                                  <FileText className="h-4 w-4 text-primary" /> RAW_JSON_STREAM
-                                </h4>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
-                                  onClick={() => {
-                                    const jsonData = JSON.stringify({
-                                      pubkey: selectedNode?.pubkey,
-                                      gossip: selectedNode?.gossip,
-                                      rpc: selectedNode?.rpc,
-                                      version: selectedNode?.version,
-                                      storage_committed: selectedNode?.storage_committed,
-                                      storage_used: selectedNode?.storage_used,
-                                      storage_usage_percent: selectedNode?.storage_usage_percent,
-                                      uptime: selectedNode?.uptime,
-                                      credits: selectedNode?.credits,
-                                      health_score: calculateHealthScore(selectedNode).total,
-                                    }, null, 2);
-                                    navigator.clipboard.writeText(jsonData).then(() => {
-                                      toast({
-                                        title: "JSON Copied",
-                                        description: "Raw node data copied to clipboard.",
-                                      });
-                                    });
-                                  }}
-                                >
-                                  <Copy className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
-                              <div className="bg-muted/50 rounded-lg border border-border p-3 font-mono text-[10px] text-muted-foreground overflow-x-auto max-h-40 overflow-y-auto">
-                                <pre className="whitespace-pre-wrap break-all">
-                                  {JSON.stringify({
-                                    pubkey: selectedNode?.pubkey,
-                                    gossip: selectedNode?.gossip,
-                                    rpc: selectedNode?.rpc,
-                                    version: selectedNode?.version,
-                                    storage_committed: selectedNode?.storage_committed,
-                                    storage_used: selectedNode?.storage_used,
-                                    storage_usage_percent: selectedNode?.storage_usage_percent,
-                                    uptime: selectedNode?.uptime,
-                                    credits: selectedNode?.credits,
-                                    health_score: calculateHealthScore(selectedNode).total,
-                                  }, null, 2)}
-                                </pre>
-                              </div>
                             </div>
                           </div>
                         </ScrollArea>
-                      )
+                      );
                     })()}
 
                   </aside>
@@ -2493,17 +2387,21 @@ ${selectedNode?.pubkey}
               }>
                 <LeafletClusterMap
                   nodes={mapNodeData}
+                  selectedNodeId={selectedNode?.pubkey}
                   onNodeClick={(pubkey) => {
                     // 1. Construct URL with both params
                     const params = new URLSearchParams(searchParams.toString());
                     params.set("view", "pnodes");
-                    params.set("node", pubkey);
+                    params.set("node", pubkey.slice(0, 8));
 
                     // 2. Perform Navigation
                     router.push(`?${params.toString()}`);
 
-                    // 3. Instant UI Update
-                    setActiveViewState("pnodes");
+                    // 3. Enable scroll-to-node since we're coming from the map
+                    setShouldScrollToNode(true);
+
+                    // 4. Instant UI Update
+                    setActiveView("pnodes");
                     const node = nodes.find(n => n.pubkey === pubkey);
                     if (node) setSelectedNode(node);
                   }}
@@ -2868,8 +2766,8 @@ ${selectedNode?.pubkey}
           <Toaster />
           <EnhancedOnboarding />
         </main>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 

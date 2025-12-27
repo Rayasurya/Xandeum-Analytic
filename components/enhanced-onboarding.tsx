@@ -114,29 +114,35 @@ export function EnhancedOnboarding() {
         ]
         : [
             {
-                target: ".dashboard-stats-row",
+                target: ".hero-cards-interactive",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">📊 Network Dashboard</h3>
+                        <h3 className="font-bold text-foreground">🎯 Interactive Intelligence Cards</h3>
                         <p className="text-sm text-muted-foreground">
-                            Real-time stats: total nodes, active nodes, health distribution, and storage capacity.
+                            These cards are <strong>clickable</strong>! Tap any card to drill-down:
                         </p>
-                        <p className="text-xs text-primary font-medium">Click any stat for deeper insights!</p>
+                        <ul className="text-xs text-muted-foreground space-y-1 pl-2">
+                            <li>• <strong>Network Health</strong> → View all healthy nodes</li>
+                            <li>• <strong>Nodes at Risk</strong> → Jump to at-risk node list</li>
+                            <li>• <strong>Outdated Versions</strong> → Filter outdated nodes</li>
+                        </ul>
+                        <p className="text-xs text-primary font-medium mt-2">Click any card now to see it in action!</p>
                     </div>
                 ),
                 placement: "bottom" as const,
                 disableBeacon: true,
                 disableScrolling: true,
+                spotlightClicks: true,
             },
             {
                 target: ".view-tabs-desktop",
                 content: (
                     <div className="space-y-2">
-                        <h3 className="font-bold text-foreground">🗂️ View Tabs</h3>
+                        <h3 className="font-bold text-foreground">🗂️ Navigation Tabs</h3>
                         <p className="text-sm text-muted-foreground">
-                            Switch between Dashboard, Node Registry (table), Watchlist, and Global Map.
+                            Switch views: Dashboard overview, Node Registry (full table), Watchlist for tracked nodes, and Global Map.
                         </p>
-                        <p className="text-xs text-primary font-medium">Try "Node Registry" to see all nodes!</p>
+                        <p className="text-xs text-primary font-medium">Try &quot;Node Registry&quot; to explore all nodes!</p>
                     </div>
                 ),
                 placement: "bottom" as const,
@@ -149,7 +155,7 @@ export function EnhancedOnboarding() {
                     <div className="space-y-2">
                         <h3 className="font-bold text-foreground">🤖 AI Assistant</h3>
                         <p className="text-sm text-muted-foreground">
-                            Ask anything! "Which nodes have low health?", "Show me storage stats", "Explain pNode credits"
+                            Ask anything! &quot;Show nodes with low health&quot;, &quot;Compare storage stats&quot;, &quot;Explain pNode credits&quot;
                         </p>
                         <p className="text-xs text-primary font-medium">Click to start a conversation!</p>
                     </div>

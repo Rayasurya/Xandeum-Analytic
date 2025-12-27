@@ -22,6 +22,7 @@ interface NodeLocation {
 interface LeafletClusterMapProps {
     nodes: NodeLocation[];
     onNodeClick?: (pubkey: string) => void;
+    selectedNodeId?: string | null;
 }
 
 // Health score color thresholds
@@ -366,7 +367,8 @@ function MapFilters({
     );
 }
 
-export function LeafletClusterMap({ nodes, onNodeClick }: LeafletClusterMapProps) {
+export function LeafletClusterMap({ nodes, onNodeClick, selectedNodeId }: LeafletClusterMapProps) {
+    const mapRef = React.useRef<L.Map | null>(null);
     const [isMounted, setIsMounted] = useState(false);
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [filters, setFilters] = useState<FilterState>({
@@ -432,6 +434,23 @@ export function LeafletClusterMap({ nodes, onNodeClick }: LeafletClusterMapProps
         });
     }, [nodes, filters]);
 
+    // Fly to selected node when it changes
+    useEffect(() => {
+        if (isMounted && mapRef.current && selectedNodeId) {
+            const node = nodes.find(n => n.pubkey === selectedNodeId);
+            if (node) {
+                const map = mapRef.current;
+                map.flyTo([node.lat, node.lng] as LatLngExpression, 10, {
+                    duration: 1.5,
+                    easeLinearity: 0.25
+                });
+
+                // Optional: open popup after flying
+                // map.openPopup(createPopupContent(node), [node.lat, node.lng]);
+            }
+        }
+    }, [selectedNodeId, isMounted, nodes]);
+
     if (!isMounted) {
         return (
             <div className="w-full h-full flex items-center justify-center bg-background">
@@ -442,7 +461,22 @@ export function LeafletClusterMap({ nodes, onNodeClick }: LeafletClusterMapProps
 
     return (
         <div className="relative w-full h-full">
+            <style jsx global>{`
+                /* Force Dark Tooltip Theme for Map */
+                .leaflet-tooltip {
+                    background-color: #1f2937 !important; /* gray-800 */
+                    color: #f3f4f6 !important; /* gray-100 */
+                    border: 1px solid #374151 !important; /* gray-700 */
+                    border-radius: 6px !important;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+                }
+                .leaflet-tooltip-top:before { border-top-color: #374151 !important; }
+                .leaflet-tooltip-bottom:before { border-bottom-color: #374151 !important; }
+                .leaflet-tooltip-left:before { border-left-color: #374151 !important; }
+                .leaflet-tooltip-right:before { border-right-color: #374151 !important; }
+            `}</style>
             <MapContainer
+                ref={mapRef}
                 center={[30, 0] as LatLngExpression}
                 zoom={2}
                 minZoom={2}

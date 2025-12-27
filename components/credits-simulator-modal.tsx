@@ -8,7 +8,7 @@ import { Calculator, Zap, TrendingUp, BarChart3, AlertCircle, ShieldCheck, Arrow
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { PNodeInfo } from '@/app/lib/xandeum';
-import { calculateHealthScore } from '@/app/page';
+import { calculateHealthScore } from '@/app/lib/scoring-engine';
 
 interface Boost {
     id: string;

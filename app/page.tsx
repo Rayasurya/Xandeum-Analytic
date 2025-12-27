@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState, useMemo, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { XandeumClient, PNodeInfo } from "./lib/xandeum";
+import { calculateHealthScore } from "./lib/scoring-engine";
 import { XANDEUM_CONFIG } from "./config";
 import {
   Activity,
@@ -154,119 +155,7 @@ const getMostCommonVersion = (nodes: any[]): string => {
   return mostCommon;
 };
 
-// Health Score Calculation (0-100)
-export interface HealthScore {
-  total: number;
-  status: "HEALTHY" | "WARNING" | "CRITICAL";
-  breakdown: {
-    version: { score: number; max: number };
-    uptime: { score: number; max: number };
-    storage: { score: number; max: number };
-    rpc: { score: number; max: number };
-  };
-}
 
-// Helper to compare SemVer-like version strings
-const compareVersions = (v1: string, v2: string) => {
-  return v1.localeCompare(v2, undefined, { numeric: true, sensitivity: 'base' });
-};
-
-export const calculateHealthScore = (node: any, maxNetworkCredits: number, sortedVersions: string[] = [], mostCommonVersion: string = ""): HealthScore => {
-  let versionScore = 0;
-  let uptimeScore = 0;
-  let storageScore = 0;
-  let creditsScore = 0;
-  let weightUptime = 0.35;
-  let weightStorage = 0.30;
-  let weightCredits = 0.20;
-  let weightVersion = 0.15;
-
-  // 1. Version Score (15%) - Majority Rules
-  // The version running on the most nodes is the "Standard".
-  // Nodes on Standard or Newer get 100. Nodes on Older get penalized.
-  const currentVersion = node?.version?.split(" ")[0] || "";
-
-  if (mostCommonVersion && currentVersion) {
-    if (currentVersion === mostCommonVersion) {
-      versionScore = 100; // Exact match with majority
-    } else if (compareVersions(currentVersion, mostCommonVersion) > 0) {
-      versionScore = 100; // Newer than majority (Leading edge)
-    } else {
-      // Older than majority
-      // Find distance in the sorted list
-      const majorIndex = sortedVersions.indexOf(mostCommonVersion);
-      const currentIndex = sortedVersions.indexOf(currentVersion);
-
-      if (majorIndex !== -1 && currentIndex !== -1) {
-        // Calculate penalty based on how many versions behind
-        const versionLag = Math.max(0, currentIndex - majorIndex);
-        versionScore = Math.max(0, 100 - (versionLag * 30)); // -30 points per version step behind
-      } else {
-        versionScore = 0; // Version not found in list (Unknown)
-      }
-    }
-  } else if (sortedVersions.length > 0) {
-    // Fallback if no majority detected (e.g. tie), use Top version as standard
-    const rank = sortedVersions.indexOf(currentVersion);
-    if (rank === 0) versionScore = 100;
-    else versionScore = Math.max(0, 100 - (rank * 20));
-  }
-
-  // 2. Uptime Score (35%) - Sigmoid Vitality Curve
-  const uptimeSeconds = node?.uptime || 0;
-  const uptimeDays = uptimeSeconds / 86400;
-  uptimeScore = 100 / (1 + Math.exp(-2.0 * (uptimeDays - 0.5)));
-
-  // 3. Storage Score (30%) - Tuned Logarithmic Scale
-  // Tuned: 1TB = 100. 500GB = ~85. 100GB = ~50.
-  const storageTB = (node?.storage_committed || 0) / (1024 * 1024 * 1024 * 1024);
-  // Formula: 25 * log2(15 * TB + 1). 
-  // If TB=1 -> 25 * log2(16) = 25 * 4 = 100.
-  // If TB=0.5 -> 25 * log2(8.5) = 25 * 3.08 = 77.
-  // If TB=0.1 -> 25 * log2(2.5) = 25 * 1.32 = 33.
-  storageScore = Math.min(100, 25 * Math.log2((15 * storageTB) + 1));
-
-  // 4. Credits Score (20%) - Dynamic Scaling relative to Network Max
-  // This ensures the top performer always gets 100, and others are scored relative to the best.
-  // Fixes "Single Digit" issue caused by unrealistic fixed targets.
-  const credits = node?.credits || 0;
-  if (maxNetworkCredits > 0) {
-    creditsScore = Math.min(100, (credits / maxNetworkCredits) * 100);
-  } else if (credits > 0) {
-    creditsScore = 100; // Fallback if max is 0 but node has credits
-  }
-
-  // RPC Bonus
-  if (!node?.rpc) {
-    uptimeScore *= 0.8; // Penalty for no RPC
-  }
-
-  const total = Math.round(
-    (versionScore * weightVersion) +
-    (uptimeScore * weightUptime) +
-    (storageScore * weightStorage) +
-    (creditsScore * weightCredits)
-  );
-
-  // New Thresholds: >70 Excellent, <30 Critical
-  let status: "HEALTHY" | "WARNING" | "CRITICAL" = "HEALTHY";
-  if (total < 30) {
-    status = "CRITICAL";
-  } else if (total < 70) {
-    status = "WARNING";
-  }
-
-  return {
-    total,
-    status,
-    breakdown: {
-      version: { score: Math.round(versionScore), max: 100 },
-      uptime: { score: Math.round(uptimeScore), max: 100 },
-      storage: { score: Math.round(storageScore), max: 100 },
-      rpc: { score: Math.round(creditsScore), max: 100 },
-    },
-  };
-};
 
 function HomeContent() {
   // URL-based Navigation (enables browser back/forward)
